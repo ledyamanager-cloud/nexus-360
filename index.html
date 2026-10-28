@@ -1,1 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090c">
+<title>NEXUS 360 | Votre monde, connecté</title>
 
+<style>
+:root {
+  --bg: #09090c;
+  --card: #15151c;
+  --gold: #e8bd62;
+  --text: #ffffff;
+  --muted: #aaaab5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top right, #302414, transparent 35%),
+    var(--bg);
+}
+
+header {
+  padding: 18px 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ffffff15;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.logo span {
+  color: var(--gold);
+}
+
+.subtitle {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.menu {
+  color: var(--gold);
+  font-size: 13px;
+}
+
+.hero {
+  padding: 65px 6% 45px;
+}
+
+.badge {
+  display: inline-block;
+  color: var(--gold);
+  border: 1px solid #e8bd624d;
+  padding: 9px 13px;
+  border-radius: 30px;
+  font-size: 11px;
+}
+
+h1 {
+  font-size: clamp(38px, 8vw, 65px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+  margin: 25px 0 18px;
+}
+
+h1 span {
+  color: var(--gold);
+}
+
+.description {
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 15px;
+  max-width: 500px;
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 20px;
+  margin-top: 15px;
+  border-radius: 10px;
+  background: var(--gold);
+  color: #17120a;
+  font-size: 13px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.section {
+  padding: 35px 6%;
+}
+
+.section-label {
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: 29px;
+  margin: 12px 0 25px;
+}
+
+.services {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.service {
+  padding: 23px;
+  background: linear-gradient(145deg, #191920, #101014);
+  border: 1px solid #ffffff12;
+  border-radius: 18px;
+  transition: .2s;
+}
+
+.service:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+}
+
+.icon {
+  width: 55px;
+  height: 55px;
+  display: grid;
+  place-items: center;
+  background: #e8bd6218;
+  border-radius: 15px;
+  font-size: 27px;
+}
+
+.service h3 {
+  font-size: 19px;
+  margin: 20px 0 10px;
+}
+
+.service p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.service a {
+  display: inline-block;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+.search {
+  background: var(--card);
+  border: 1px solid #ffffff12;
+  border-radius: 17px;
+  padding: 20px;
+}
+
+input, select {
+  width: 100%;
+  margin: 8px 0 15px;
+  padding: 14px;
+  background: #09090c;
+  border: 1px solid #ffffff20;
+  border-radius: 9px;
+  color: white;
+}
+
+label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.search button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 9px;
+  background: var(--gold);
+  color: #17120a;
+  font-weight: bold;
+}
+
+#result {
+  color: var(--gold);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+footer {
+  margin-top: 35px;
+  padding: 28px 6%;
+  border-top: 1px solid #ffffff15;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+footer strong {
+  color: var(--gold);
+}
+
+@media (max-width: 700px) {
+  .services {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding-top: 45px;
+  }
+
+  h1 {
+    letter-spacing: -1px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <div class="logo">NEXUS <span>360</span></div>
+    <div class="subtitle">VOTRE MONDE, CONNECTÉ</div>
+  </div>
+  <div class="menu">EXPLORER ↗</div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="badge">✦ UNE NOUVELLE EXPÉRIENCE</div>
+
+  <h1>
+    Tout un monde<br>
+    de services,<br>
+    <span>une seule plateforme.</span>
+  </h1>
+
+  <p class="description">
+    Découvrez une nouvelle manière de trouver des véhicules,
+    organiser le transport de vos colis et préparer vos événements.
+    Tous vos services réunis au même endroit.
+  </p>
+
+  <a href="#services" class="button">Découvrir nos services →</a>
+</section>
+
+<section class="section" id="services">
+  <div class="section-label">L'écosystème NEXUS</div>
+  <h2>Que recherchez-vous ?</h2>
+
+  <div class="services">
+
+    <article class="service">
+      <div class="icon">🚘</div>
+      <h3>NEXUS AUTO</h3>
+      <p>
+        Découvrez des véhicules, des pièces détachées,
+        des locations et des services de garage.
+      </p>
+      <a href="#recherche" onclick="choisir('Auto')">
+        Explorer AUTO →
+      </a>
+    </article>
+
+    <article class="service">
+      <div class="icon">📦</div>
+      <h3>NEXUS CONSIGNE</h3>
+      <p>
+        Organisez vos demandes de dépôt, de transport
+        et de prise en charge de colis.
+      </p>
+      <a href="#recherche" onclick="choisir('Consigne')">
+        Explorer CONSIGNE →
+      </a>
+    </article>
+
+    <article class="service">
+      <div class="icon">🎉</div>
+      <h3>NEXUS EVENTS</h3>
+      <p>
+        Trouvez des salles, des tentes, des chaises,
+        des décorateurs, des DJ et des traiteurs.
+      </p>
+      <a href="#recherche" onclick="choisir('Events')">
+        Explorer EVENTS →
+      </a>
+    </article>
+
+  </div>
+</section>
+
+<section class="section" id="recherche">
+  <div class="section-label">Recherche rapide</div>
+  <h2>Trouvez votre service</h2>
+
+  <div class="search">
+    <label for="query">Que recherchez-vous ?</label>
+    <input id="query" placeholder="Ex. voiture, colis, salle...">
+
+    <label for="category">Catégorie</label>
+    <select id="category">
+      <option value="Tous les services">Tous les services</option>
+      <option value="Auto">NEXUS AUTO</option>
+      <option value="Consigne">NEXUS CONSIGNE</option>
+      <option value="Events">NEXUS EVENTS</option>
+    </select>
+
+    <label for="city">Ville</label>
+    <input id="city" placeholder="Entrez votre ville">
+
+    <button onclick="rechercher()">Rechercher →</button>
+    <p id="result" role="status"></p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="logo">NEXUS <span>360</span></div>
+  <p>Tout un monde de services, sur une seule plateforme.</p>
+  <p>Une expérience conçue pour évoluer avec vos besoins.</p>
+  <strong>© 2026 NEXUS 360</strong>
+</footer>
+
+<script>
+function choisir(categorie) {
+  document.getElementById("category").value = categorie;
+}
+
+function rechercher() {
+  const query = document.getElementById("query").value.trim();
+  const category = document.getElementById("category").value;
+  const city = document.getElementById("city").value.trim();
+
+  let message = "Votre recherche est prête.";
+
+  if (query) message += " Service recherché : " + query + ".";
+  if (category !== "Tous les services") message += " Univers : " + category + ".";
+  if (city) message += " Ville : " + city + ".";
+
+  message += " Cette maquette est une démonstration : les annonces réelles ne sont pas encore connectées.";
+
+  document.getElementById("result").textContent = message;
+}
+</script>
+
+</body>
+                  </html>
