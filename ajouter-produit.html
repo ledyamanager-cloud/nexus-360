@@ -274,18 +274,44 @@
       button.textContent = "Publication en cours...";
 
       try {
-        const { data, error } = await supabase
-          .from("products")
-          .insert({
-            store_id: currentStore.id,
-            product_name: productName,
-            description: descriptionInput.value.trim(),
-            price: price,
-            stock: stock,
-            image_url: ""
-          })
-          .select()
-          .single();
+        let imageUrl = "";
+const imageFile = document.getElementById("image").files[0];
+
+if (imageFile) {
+  const { data: userData, error: userError } =
+    await supabase.auth.getUser();
+
+  if (userError) throw userError;
+
+  const userId = userData.user.id;
+  const safeName = imageFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const filePath = `${userId}/${Date.now()}-${safeName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("product-images")
+    .upload(filePath, imageFile);
+
+  if (uploadError) throw uploadError;
+
+  const { data: publicData } = supabase.storage
+    .from("product-images")
+    .getPublicUrl(filePath);
+
+  imageUrl = publicData.publicUrl;
+}
+
+const { data, error } = await supabase
+  .from("products")
+  .insert({
+    store_id: currentStore.id,
+    product_name: productName,
+    description: descriptionInput.value.trim(),
+    price: price,
+    stock: stock,
+    image_url: imageUrl
+  })
+  .select()
+  .single();
 
         if (error) throw error;
 
