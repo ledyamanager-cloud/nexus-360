@@ -3,133 +3,271 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Administration | NEXUS 360</title>
+  <title>Catalogue - NEXUS 360</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      color: #0f172a;
+      background: #f4f6f9;
+      color: #222;
     }
 
     header {
-      background: #0f172a;
+      background: #14213d;
       color: white;
-      padding: 22px;
+      padding: 22px 15px;
+      text-align: center;
     }
 
     header h1 {
+      color: #fca311;
       margin: 0 0 8px;
     }
 
-    main {
-      width: min(100% - 24px, 1000px);
-      margin: 24px auto;
+    nav {
+      background: white;
+      padding: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 5px 10px;
+      color: #14213d;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .search {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
     }
 
     .card {
       background: white;
       border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 10px #0000000d;
+      overflow: hidden;
+      box-shadow: 0 3px 12px #00000012;
     }
 
-    input, button {
+    .product-image,
+    .placeholder {
       width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 8px;
-      font-size: 16px;
+      height: 190px;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e9edf2;
     }
 
-    input {
-      border: 1px solid #cbd5e1;
+    .placeholder {
+      color: #666;
+      font-size: 45px;
     }
 
-    button {
-      border: none;
-      background: #0284c7;
-      color: white;
+    .details { padding: 16px; }
+
+    .details h3 {
+      margin: 0 0 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .price {
+      color: #b36b00;
       font-weight: bold;
-      cursor: pointer;
+      font-size: 20px;
+      margin: 10px 0;
     }
 
-    button.secondary {
-      background: #475569;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 14px;
-    }
-
-    .stat {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      padding: 18px;
-      border-radius: 10px;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 28px;
-      margin-top: 10px;
-      color: #0369a1;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .muted {
-      color: #475569;
-    }
-
-    #message,
-    #ordersMessage {
+    .description {
+      color: #555;
       overflow-wrap: anywhere;
       white-space: pre-wrap;
     }
 
-    a {
-      color: #0369a1;
-      display: inline-block;
-      margin: 8px 12px 8px 0;
+    .store {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+      font-size: 13px;
+      color: #555;
     }
 
-    .table-container {
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 15px;
+    }
+
+    button:focus-visible {
+      outline: 3px solid #fca311;
+      outline-offset: 2px;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .add-button {
+      background: #14213d;
+      color: white;
       width: 100%;
-      overflow-x: auto;
-      margin-top: 16px;
+      margin-top: 14px;
+      font-weight: bold;
     }
 
-    table {
-      width: 100%;
-      min-width: 700px;
-      border-collapse: collapse;
-      text-align: left;
+    .add-button:hover { background: #243b68; }
+
+    #status {
+      background: white;
+      padding: 18px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow-wrap: anywhere;
     }
 
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #e2e8f0;
-      vertical-align: top;
+    .hidden { display: none !important; }
+
+    .cart {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      margin: 25px 0;
+      box-shadow: 0 3px 12px #00000012;
     }
 
-    th {
-      background: #f8fafc;
-      color: #334155;
+    .cart h2 { margin-top: 0; }
+
+    .cart-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
     }
 
-    .orders-button {
-      margin-bottom: 12px;
+    .cart-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cart-name {
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .cart-price {
+      font-size: 14px;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .quantity-controls button {
+      background: #e9edf2;
+      color: #14213d;
+      min-width: 36px;
+      font-weight: bold;
+    }
+
+    .remove-button {
+      background: #ffe8e8;
+      color: #a00000;
+      margin-top: 8px;
+      padding: 8px 10px;
+    }
+
+    .cart-total {
+      font-size: 22px;
+      font-weight: bold;
+      color: #b36b00;
+      margin: 20px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .cart-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .clear-button {
+      background: #eee;
+      color: #222;
+    }
+
+    .checkout-button {
+      background: #16a34a;
+      color: white;
+      font-weight: bold;
+    }
+
+    .checkout-button:hover { background: #15803d; }
+
+    .cart-note {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #14213d;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px #0003;
+      z-index: 9999;
+      width: max-content;
+      max-width: 90%;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 14px; }
+      .cart-actions { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -137,441 +275,449 @@
 <body>
   <header>
     <h1>NEXUS 360</h1>
-    <div>Administration de la plateforme</div>
+    <p>Découvrez les produits de nos vendeurs</p>
   </header>
 
-  <main>
-    <section class="card" id="loginCard">
-      <h2>Connexion administrateur</h2>
+  <nav>
+    <a href="./index.html">Accueil</a>
+    <a href="./boutique.html">Ma boutique</a>
+    <a href="./ajouter-produit.html">Ajouter un produit</a>
+    <a href="./gestion-produits.html">Gérer mes produits</a>
+  </nav>
 
-      <form id="loginForm">
-        <label for="email">Adresse e-mail</label>
-        <input
-          id="email"
-          type="email"
-          autocomplete="username"
-          required
-        >
+  <main class="container">
+    <h2>🛍️ Notre catalogue</h2>
 
-        <label for="password">Mot de passe</label>
-        <input
-          id="password"
-          type="password"
-          autocomplete="current-password"
-          required
-        >
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="Rechercher un produit..."
+      aria-label="Rechercher un produit"
+    >
 
-        <button type="submit">Se connecter</button>
-      </form>
-    </section>
+    <div id="status" role="status" aria-live="polite">
+      Chargement des produits...
+    </div>
 
-    <section id="dashboard" class="hidden">
+    <section id="products" class="products"></section>
 
-      <div class="card">
-        <h2>Bienvenue dans l'administration</h2>
-        <p id="accountInfo"></p>
+    <section class="cart" id="cart">
+      <h2>🛒 Mon panier (<span id="cart-count">0</span>)</h2>
 
-        <button id="refreshButton">
-          Actualiser les statistiques
+      <div id="cart-items"></div>
+      <p id="empty-cart">Ton panier est vide pour le moment.</p>
+
+      <div class="cart-total">
+        Total : <span id="cart-total">0 CDF</span>
+      </div>
+
+      <div class="cart-actions">
+        <button id="clear-cart" class="clear-button" type="button">
+          Vider le panier
         </button>
 
-        <button id="logoutButton" class="secondary">
-          Se déconnecter
+        <button id="checkout-button" class="checkout-button" type="button">
+          ✅ Passer commande
         </button>
       </div>
 
-      <div class="card">
-        <h2>Vue d'ensemble</h2>
-
-        <div class="grid">
-          <div class="stat">
-            Utilisateurs
-            <strong id="usersCount">—</strong>
-          </div>
-
-          <div class="stat">
-            Vendeurs
-            <strong id="sellersCount">—</strong>
-          </div>
-
-          <div class="stat">
-            Boutiques
-            <strong id="storesCount">—</strong>
-          </div>
-
-          <div class="stat">
-            Produits
-            <strong id="productsCount">—</strong>
-          </div>
-
-          <div class="stat">
-            Commandes
-            <strong id="ordersCount">—</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- GESTION DES COMMANDES -->
-      <div class="card">
-        <h2>📦 Gestion des commandes</h2>
-
-        <p class="muted">
-          Consulte les commandes enregistrées sur NEXUS 360.
-        </p>
-
-        <button
-          id="loadOrdersButton"
-          class="orders-button"
-          type="button"
-        >
-          Afficher les commandes
-        </button>
-
-        <p id="ordersMessage" role="status">
-          Appuie sur le bouton pour afficher les commandes.
-        </p>
-
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>N° commande</th>
-                <th>Client</th>
-                <th>Téléphone</th>
-                <th>Adresse de livraison</th>
-                <th>Total</th>
-                <th>Statut</th>
-              </tr>
-            </thead>
-
-            <tbody id="ordersTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Accès rapides</h2>
-
-        <a href="catalogue.html">
-          Catalogue des produits
-        </a>
-
-        <a href="ajouter-produit.html">
-          Ajouter un produit
-        </a>
-
-        <a href="tableau-vendeur.html">
-          Espace vendeur
-        </a>
-
-        <a href="commande.html">
-          Page de commande
-        </a>
-      </div>
-
-    </section>
-
-    <section class="card">
-      <p id="message" role="status"></p>
+      <p class="cart-note">
+        Le panier est conservé sur cet appareil. La commande et la livraison
+        ne sont confirmées qu'après validation sur la page de commande.
+      </p>
     </section>
   </main>
+
+  <footer>© 2026 NEXUS 360</footer>
+
+  <div id="toast" class="hidden" role="status" aria-live="polite"></div>
 
   <script type="module">
     import { supabase } from "./supabase.js";
 
-    const loginCard = document.getElementById("loginCard");
-    const dashboard = document.getElementById("dashboard");
-    const message = document.getElementById("message");
+    const status = document.getElementById("status");
+    const productsContainer = document.getElementById("products");
+    const searchInput = document.getElementById("search");
+    const cartItemsContainer = document.getElementById("cart-items");
+    const cartCount = document.getElementById("cart-count");
+    const cartTotal = document.getElementById("cart-total");
+    const emptyCart = document.getElementById("empty-cart");
+    const clearCartButton = document.getElementById("clear-cart");
+    const checkoutButton = document.getElementById("checkout-button");
+    const toast = document.getElementById("toast");
 
-    const ordersMessage =
-      document.getElementById("ordersMessage");
+    const CART_KEY = "nexus360_cart_v1";
 
-    const ordersTableBody =
-      document.getElementById("ordersTableBody");
+    let allProducts = [];
+    let toastTimer;
+    let cart = loadCart();
 
-    function showMessage(text, isError = false) {
-      message.textContent = text;
-      message.style.color = isError ? "#b91c1c" : "#166534";
+    function showStatus(message) {
+      status.textContent = message;
+      status.classList.remove("hidden");
     }
 
-    async function loadDashboard() {
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.remove("hidden");
+      clearTimeout(toastTimer);
 
-      if (sessionError) throw sessionError;
+      toastTimer = setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 2800);
+    }
 
-      const user = sessionData.session?.user;
+    function formatPrice(price) {
+      return new Intl.NumberFormat("fr-FR", {
+        maximumFractionDigits: 2
+      }).format(Number(price) || 0) + " CDF";
+    }
 
-      if (!user) {
-        loginCard.classList.remove("hidden");
-        dashboard.classList.add("hidden");
+    function createElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+
+    function loadCart() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+
+        if (!Array.isArray(saved)) return [];
+
+        return saved.filter(item =>
+          item &&
+          typeof item.id === "string" &&
+          Number.isInteger(item.quantity) &&
+          item.quantity > 0
+        );
+      } catch (error) {
+        console.warn("Erreur de lecture du panier :", error);
+        return [];
+      }
+    }
+
+    function saveCart() {
+      try {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        return true;
+      } catch (error) {
+        console.error("Erreur d'enregistrement du panier :", error);
+        showToast("Impossible d'enregistrer le panier sur cet appareil.");
+        return false;
+      }
+    }
+
+    function getCartQuantity() {
+      return cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    function getCartTotal() {
+      return cart.reduce(
+        (sum, item) => sum + Number(item.price) * item.quantity,
+        0
+      );
+    }
+
+    function addToCart(product) {
+      const price = Number(product.price);
+      const stock = product.stock == null ? NaN : Number(product.stock);
+
+      if (!Number.isFinite(price) || price < 0) {
+        showToast("Le prix de ce produit est invalide.");
         return;
       }
 
-      const { data: profile, error: profileError } =
-        await supabase
-          .from("profiles")
-          .select("role, full_name")
-          .eq("id", user.id)
-          .maybeSingle();
+      if (Number.isFinite(stock) && stock <= 0) {
+        showToast("Ce produit n'est plus disponible.");
+        return;
+      }
 
-      if (profileError) throw profileError;
+      const existing = cart.find(item => item.id === product.id);
 
-      if (!profile || profile.role !== "admin") {
-        await supabase.auth.signOut();
+      if (existing) {
+        if (Number.isFinite(stock) && existing.quantity >= stock) {
+          showToast("La quantité dépasse le stock disponible.");
+          return;
+        }
+        existing.quantity += 1;
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.product_name || "Produit",
+          price,
+          image_url: product.image_url || "",
+          quantity: 1
+        });
+      }
 
-        loginCard.classList.remove("hidden");
-        dashboard.classList.add("hidden");
+      saveCart();
+      renderCart();
+      showToast("✅ Produit ajouté au panier !");
+    }
 
-        showMessage(
-          "Accès réservé aux administrateurs.",
-          true
+    function changeQuantity(productId, change) {
+      const item = cart.find(item => item.id === productId);
+      if (!item) return;
+
+      const product = allProducts.find(p => p.id === productId);
+      const stock = product && product.stock != null
+        ? Number(product.stock)
+        : NaN;
+
+      const newQuantity = item.quantity + change;
+
+      if (newQuantity <= 0) {
+        removeFromCart(productId);
+        return;
+      }
+
+      if (Number.isFinite(stock) && newQuantity > stock) {
+        showToast("La quantité dépasse le stock disponible.");
+        return;
+      }
+
+      item.quantity = newQuantity;
+      saveCart();
+      renderCart();
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.id !== productId);
+      saveCart();
+      renderCart();
+      showToast("Article retiré du panier.");
+    }
+
+    function renderCart() {
+      cartItemsContainer.replaceChildren();
+
+      cartCount.textContent = String(getCartQuantity());
+      cartTotal.textContent = formatPrice(getCartTotal());
+      emptyCart.classList.toggle("hidden", cart.length > 0);
+      checkoutButton.disabled = cart.length === 0;
+
+      cart.forEach(item => {
+        const row = createElement("div", "cart-item");
+        const info = createElement("div", "cart-info");
+
+        info.appendChild(createElement("div", "cart-name", item.name));
+        info.appendChild(createElement(
+          "div",
+          "cart-price",
+          formatPrice(item.price) + " × " + item.quantity
+        ));
+
+        const controls = createElement("div", "quantity-controls");
+
+        const minus = createElement("button", "", "−");
+        minus.type = "button";
+        minus.setAttribute("aria-label", "Diminuer la quantité");
+        minus.addEventListener("click", () => changeQuantity(item.id, -1));
+
+        const quantity = createElement("span", "", String(item.quantity));
+
+        const plus = createElement("button", "", "+");
+        plus.type = "button";
+        plus.setAttribute("aria-label", "Augmenter la quantité");
+        plus.addEventListener("click", () => changeQuantity(item.id, 1));
+
+        controls.append(minus, quantity, plus);
+        info.appendChild(controls);
+
+        const remove = createElement("button", "remove-button", "Retirer");
+        remove.type = "button";
+        remove.addEventListener("click", () => removeFromCart(item.id));
+
+        info.appendChild(remove);
+        row.appendChild(info);
+        cartItemsContainer.appendChild(row);
+      });
+    }
+
+    function renderProducts() {
+      const query = searchInput.value.trim().toLocaleLowerCase("fr");
+
+      const filtered = allProducts.filter(product => {
+        const text = [
+          product.product_name,
+          product.description,
+          product.stores?.store_name,
+          product.stores?.city
+        ].filter(Boolean).join(" ").toLocaleLowerCase("fr");
+
+        return text.includes(query);
+      });
+
+      productsContainer.replaceChildren();
+
+      if (filtered.length === 0) {
+        showStatus(
+          allProducts.length === 0
+            ? "Aucun produit actif n'est disponible pour le moment."
+            : "Aucun produit ne correspond à ta recherche."
+        );
+        return;
+      }
+
+      status.classList.add("hidden");
+
+      filtered.forEach(product => {
+        const card = createElement("article", "card");
+
+        if (product.image_url) {
+          const image = createElement("img", "product-image");
+          image.src = product.image_url;
+          image.alt = product.product_name || "Produit";
+          image.loading = "lazy";
+
+          image.onerror = () => {
+            image.replaceWith(createElement("div", "placeholder", "📦"));
+          };
+
+          card.appendChild(image);
+        } else {
+          card.appendChild(createElement("div", "placeholder", "📦"));
+        }
+
+        const details = createElement("div", "details");
+        details.appendChild(
+          createElement("h3", "", product.product_name || "Produit")
+        );
+        details.appendChild(
+          createElement("p", "price", formatPrice(product.price))
         );
 
-        return;
-      }
-
-      loginCard.classList.add("hidden");
-      dashboard.classList.remove("hidden");
-
-      document.getElementById("accountInfo").textContent =
-        `${profile.full_name || user.email} — Administrateur`;
-
-      await loadStatistics();
-    }
-
-    async function getCount(table, filters = null) {
-      let query = supabase
-        .from(table)
-        .select("*", {
-          count: "exact",
-          head: true
-        });
-
-      if (filters) {
-        for (const filter of filters) {
-          query = query.eq(
-            filter.column,
-            filter.value
+        if (product.description) {
+          details.appendChild(
+            createElement("p", "description", product.description)
           );
         }
-      }
 
-      const { count, error } = await query;
+        const store = product.stores;
+        const storeName = store?.store_name || "Boutique NEXUS 360";
+        const city = store?.city || "";
 
-      if (error) throw error;
+        details.appendChild(createElement(
+          "div",
+          "store",
+          "🏪 " + storeName + (city ? " — " + city : "")
+        ));
 
-      return count ?? 0;
-    }
-
-    async function loadStatistics() {
-      showMessage("Chargement des statistiques...");
-
-      const ids = [
-        "usersCount",
-        "sellersCount",
-        "storesCount",
-        "productsCount",
-        "ordersCount"
-      ];
-
-      for (const id of ids) {
-        document.getElementById(id).textContent = "…";
-      }
-
-      try {
-        const results = await Promise.all([
-          getCount("profiles"),
-
-          getCount("profiles", [
-            { column: "role", value: "vendeur" }
-          ]),
-
-          getCount("stores"),
-          getCount("products"),
-          getCount("orders")
-        ]);
-
-        document.getElementById("usersCount").textContent =
-          results[0];
-
-        document.getElementById("sellersCount").textContent =
-          results[1];
-
-        document.getElementById("storesCount").textContent =
-          results[2];
-
-        document.getElementById("productsCount").textContent =
-          results[3];
-
-        document.getElementById("ordersCount").textContent =
-          results[4];
-
-        showMessage("Statistiques chargées.");
-
-      } catch (error) {
-        for (const id of ids) {
-          document.getElementById(id).textContent = "—";
-        }
-
-        showMessage(
-          "Impossible de charger les statistiques. " +
-          "Vérifie les permissions RLS de Supabase. " +
-          "Détail : " + error.message,
-          true
+        const addButton = createElement(
+          "button",
+          "add-button",
+          "🛒 Ajouter au panier"
         );
-      }
+
+        addButton.type = "button";
+        addButton.addEventListener("click", () => addToCart(product));
+
+        details.appendChild(addButton);
+        card.appendChild(details);
+        productsContainer.appendChild(card);
+      });
     }
 
-    // AFFICHER LES COMMANDES
-    async function loadOrders() {
-      ordersMessage.textContent =
-        "Chargement des commandes...";
-
-      ordersTableBody.replaceChildren();
+    async function loadProducts() {
+      showStatus("Chargement des produits...");
 
       try {
         const { data, error } = await supabase
-          .from("orders")
-          .select(
-            "order_number, customer_name, customer_phone, delivery_address, total_amount, status"
-          )
-          .order("order_number", {
-            ascending: false
-          });
+          .from("products")
+          .select(`
+            id,
+            product_name,
+            description,
+            price,
+            stock,
+            image_url,
+            is_active,
+            stores (
+              store_name,
+              city
+            )
+          `)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
 
         if (error) throw error;
 
-        if (!data || data.length === 0) {
-          ordersMessage.textContent =
-            "Aucune commande trouvée ou aucune commande accessible.";
+        allProducts = data || [];
 
-          return;
-        }
+        // Garder uniquement les articles qui existent encore dans le catalogue.
+        cart = cart.map(item => {
+          const product = allProducts.find(p => p.id === item.id);
+          if (!product) return null;
 
-        for (const order of data) {
-          const row = document.createElement("tr");
+          return {
+            id: product.id,
+            name: product.product_name || "Produit",
+            price: Number(product.price),
+            image_url: product.image_url || "",
+            quantity: item.quantity
+          };
+        }).filter(Boolean);
 
-          const values = [
-            order.order_number ?? "—",
-            order.customer_name ?? "—",
-            order.customer_phone ?? "—",
-            order.delivery_address ?? "—",
-            order.total_amount == null
-              ? "—"
-              : Number(order.total_amount)
-                  .toLocaleString("fr-FR") + " FC",
-            order.status ?? "En attente"
-          ];
-
-          for (const value of values) {
-            const cell = document.createElement("td");
-
-            cell.textContent = String(value);
-            row.appendChild(cell);
-          }
-
-          ordersTableBody.appendChild(row);
-        }
-
-        ordersMessage.textContent =
-          data.length + " commande(s) affichée(s).";
-
+        saveCart();
+        renderProducts();
+        renderCart();
       } catch (error) {
-        console.error(
-          "Erreur de chargement des commandes :",
-          error
+        console.error("Erreur catalogue :", error);
+        showStatus(
+          "Impossible de charger les produits. Vérifie ta connexion Internet " +
+          "puis actualise la page. Détail : " +
+          (error.message || "Erreur inconnue")
         );
-
-        ordersMessage.textContent =
-          "Impossible d'afficher les commandes. " +
-          "Détail : " + error.message;
       }
     }
 
-    document
-      .getElementById("loadOrdersButton")
-      .addEventListener("click", loadOrders);
+    searchInput.addEventListener("input", renderProducts);
 
-    document.getElementById("loginForm").addEventListener(
-      "submit",
-      async (event) => {
-        event.preventDefault();
-
-        showMessage("Connexion en cours...");
-
-        const email =
-          document.getElementById("email").value.trim();
-
-        const password =
-          document.getElementById("password").value;
-
-        const { error } =
-          await supabase.auth.signInWithPassword({
-            email,
-            password
-          });
-
-        if (error) {
-          showMessage(error.message, true);
-          return;
-        }
-
-        try {
-          await loadDashboard();
-        } catch (error) {
-          showMessage(
-            error.message || "Erreur de chargement.",
-            true
-          );
-        }
+    clearCartButton.addEventListener("click", () => {
+      if (cart.length === 0) {
+        showToast("Le panier est déjà vide.");
+        return;
       }
-    );
 
-    document.getElementById("refreshButton").addEventListener(
-      "click",
-      async () => {
-        try {
-          await loadStatistics();
-        } catch (error) {
-          showMessage(error.message, true);
-        }
+      if (confirm("Veux-tu vraiment vider tout le panier ?")) {
+        cart = [];
+        saveCart();
+        renderCart();
+        showToast("Panier vidé.");
       }
-    );
-
-    document.getElementById("logoutButton").addEventListener(
-      "click",
-      async () => {
-        const { error } = await supabase.auth.signOut();
-
-        if (error) {
-          showMessage(error.message, true);
-          return;
-        }
-
-        dashboard.classList.add("hidden");
-        loginCard.classList.remove("hidden");
-
-        ordersTableBody.replaceChildren();
-
-        ordersMessage.textContent =
-          "Connecte-toi pour consulter les commandes.";
-
-        showMessage("Déconnexion réussie.");
-      }
-    );
-
-    supabase.auth.onAuthStateChange(() => {
-      setTimeout(() => {
-        loadDashboard().catch(error => {
-          showMessage(error.message, true);
-        });
-      }, 0);
     });
 
-    loadDashboard().catch(error => {
-      showMessage(error.message, true);
+    // OUVRIR LA PAGE DE COMMANDE AVEC LE PANIER ENREGISTRÉ
+    checkoutButton.addEventListener("click", () => {
+      if (cart.length === 0) {
+        showToast("Ton panier est vide. Ajoute d'abord un produit.");
+        return;
+      }
+
+      const invalidProduct = cart.find(item => {
+        const product = allProducts.find(p => p.id === item.id);
+        return !product ||
+          !Number.isFinite(Number(product.price)) ||
+          Number(product.price) < 0;
+      });
+
+      if (invalidProduct) {
+        showToast(
+          "Un produit n'est plus disponible. Actualise le catalogue."
+        );
+        return;
+      }
+
+      if (!saveCart()) return;
+
+      window.location.href = "./commande.html";
     });
+
+    renderCart();
+    loadProducts();
   </script>
 </body>
-  </html>
+</html>
