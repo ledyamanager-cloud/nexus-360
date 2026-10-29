@@ -122,6 +122,11 @@
       font-size: 15px;
     }
 
+    button:focus-visible {
+      outline: 3px solid #fca311;
+      outline-offset: 2px;
+    }
+
     .add-button {
       background: #14213d;
       color: white;
@@ -154,7 +159,7 @@
 
     .cart-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
       padding: 14px 0;
@@ -203,6 +208,7 @@
       font-weight: bold;
       color: #b36b00;
       margin: 20px 0;
+      overflow-wrap: anywhere;
     }
 
     .clear-button {
@@ -216,6 +222,23 @@
       line-height: 1.5;
     }
 
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #14213d;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px #0003;
+      z-index: 9999;
+      width: max-content;
+      max-width: 90%;
+      text-align: center;
+      font-size: 15px;
+    }
+
     footer {
       text-align: center;
       padding: 25px;
@@ -224,7 +247,6 @@
 
     @media (max-width: 480px) {
       .container { padding: 14px; }
-      .cart-item { align-items: flex-start; }
     }
   </style>
 </head>
@@ -281,9 +303,9 @@
     </section>
   </main>
 
-  <footer>
-    © 2026 NEXUS 360
-  </footer>
+  <footer>© 2026 NEXUS 360</footer>
+
+  <div id="toast" class="hidden" role="status" aria-live="polite"></div>
 
   <script type="module">
     import { supabase } from "./supabase.js";
@@ -296,46 +318,28 @@
     const cartTotal = document.getElementById("cart-total");
     const emptyCart = document.getElementById("empty-cart");
     const clearCartButton = document.getElementById("clear-cart");
+    const toast = document.getElementById("toast");
 
     const CART_KEY = "nexus360_cart_v1";
 
     let allProducts = [];
+    let toastTimer;
     let cart = loadCart();
 
+    function showStatus(message) {
+      status.textContent = message;
+      status.classList.remove("hidden");
+    }
+
     function showToast(message) {
-  let toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.remove("hidden");
 
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "toast";
+      clearTimeout(toastTimer);
 
-    toast.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #14213d;
-      color: white;
-      padding: 14px 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px #0003;
-      z-index: 9999;
-      max-width: 90%;
-      text-align: center;
-      font-size: 15px;
-    `;
-
-    document.body.appendChild(toast);
-  }
-
-  toast.textContent = message;
-  toast.style.display = "block";
-
-  clearTimeout(window.nexusToastTimer);
-
-  window.nexusToastTimer = setTimeout(() => {
-    toast.style.display = "none";
-  }, 2500);
+      toastTimer = setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 2500);
     }
 
     function formatPrice(price) {
@@ -346,14 +350,18 @@
 
     function createElement(tag, className, text) {
       const element = document.createElement(tag);
+
       if (className) element.className = className;
       if (text !== undefined) element.textContent = text;
+
       return element;
     }
 
     function loadCart() {
       try {
-        const saved = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+        const saved = JSON.parse(
+          localStorage.getItem(CART_KEY) || "[]"
+        );
 
         if (!Array.isArray(saved)) return [];
 
@@ -364,7 +372,7 @@
           item.quantity > 0
         );
       } catch (error) {
-        console.warn("Impossible de lire le panier :", error);
+        console.warn("Erreur de lecture du panier :", error);
         return [];
       }
     }
@@ -372,9 +380,11 @@
     function saveCart() {
       try {
         localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        return true;
       } catch (error) {
-        console.error("Impossible d'enregistrer le panier :", error);
-        alert("Le panier n'a pas pu être enregistré sur cet appareil.");
+        console.error("Erreur d'enregistrement du panier :", error);
+        showToast("Impossible d'enregistrer le panier sur cet appareil.");
+        return false;
       }
     }
 
@@ -383,22 +393,25 @@
     }
 
     function getCartTotal() {
-      return cart.reduce((sum, item) => {
-        return sum + item.price * item.quantity;
-      }, 0);
+      return cart.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
     }
 
     function addToCart(product) {
-      const stock = Number(product.stock);
+      const price = Number(product.price);
+      const stock = product.stock == null
+        ? NaN
+        : Number(product.stock);
 
-      if (!Number.isFinite(Number(product.price)) ||
-          Number(product.price) < 0) {
-        alert("Le prix de ce produit est invalide.");
+      if (!Number.isFinite(price) || price < 0) {
+        showToast("Le prix de ce produit est invalide.");
         return;
       }
 
       if (Number.isFinite(stock) && stock <= 0) {
-        alert("Ce produit n'est actuellement plus disponible.");
+        showToast("Ce produit n'est plus disponible.");
         return;
       }
 
@@ -406,7 +419,7 @@
 
       if (existing) {
         if (Number.isFinite(stock) && existing.quantity >= stock) {
-          alert("La quantité demandée dépasse le stock disponible.");
+          showToast("La quantité dépasse le stock disponible.");
           return;
         }
 
@@ -415,7 +428,7 @@
         cart.push({
           id: product.id,
           name: product.product_name || "Produit",
-          price: Number(product.price),
+          price,
           image_url: product.image_url || "",
           quantity: 1
         });
@@ -423,28 +436,31 @@
 
       saveCart();
       renderCart();
-      alert("Produit ajouté au panier !");
+      showToast("✅ Produit ajouté au panier !");
     }
 
     function changeQuantity(productId, change) {
       const item = cart.find(item => item.id === productId);
       if (!item) return;
 
-      const product = allProducts.find(product => product.id === productId);
-      const stock = product ? Number(product.stock) : NaN;
+      const product = allProducts.find(p => p.id === productId);
+      const stock = product && product.stock != null
+        ? Number(product.stock)
+        : NaN;
+
       const newQuantity = item.quantity + change;
 
       if (newQuantity <= 0) {
-        cart = cart.filter(item => item.id !== productId);
-      } else {
-        if (Number.isFinite(stock) && newQuantity > stock) {
-          alert("La quantité demandée dépasse le stock disponible.");
-          return;
-        }
-
-        item.quantity = newQuantity;
+        removeFromCart(productId);
+        return;
       }
 
+      if (Number.isFinite(stock) && newQuantity > stock) {
+        showToast("La quantité dépasse le stock disponible.");
+        return;
+      }
+
+      item.quantity = newQuantity;
       saveCart();
       renderCart();
     }
@@ -453,6 +469,7 @@
       cart = cart.filter(item => item.id !== productId);
       saveCart();
       renderCart();
+      showToast("Article retiré du panier.");
     }
 
     function renderCart() {
@@ -467,7 +484,9 @@
         const row = createElement("div", "cart-item");
         const info = createElement("div", "cart-info");
 
-        info.appendChild(createElement("div", "cart-name", item.name));
+        info.appendChild(
+          createElement("div", "cart-name", item.name)
+        );
 
         info.appendChild(
           createElement(
@@ -481,31 +500,51 @@
 
         const minus = createElement("button", "", "−");
         minus.type = "button";
-        minus.setAttribute("aria-label", "Diminuer la quantité de " + item.name);
-        minus.addEventListener("click", () => changeQuantity(item.id, -1));
+        minus.setAttribute("aria-label", "Diminuer la quantité");
+        minus.addEventListener(
+          "click",
+          () => changeQuantity(item.id, -1)
+        );
 
-        const quantity = createElement("span", "", String(item.quantity));
+        const quantity = createElement(
+          "span",
+          "",
+          String(item.quantity)
+        );
 
         const plus = createElement("button", "", "+");
         plus.type = "button";
-        plus.setAttribute("aria-label", "Augmenter la quantité de " + item.name);
-        plus.addEventListener("click", () => changeQuantity(item.id, 1));
+        plus.setAttribute("aria-label", "Augmenter la quantité");
+        plus.addEventListener(
+          "click",
+          () => changeQuantity(item.id, 1)
+        );
 
         controls.append(minus, quantity, plus);
         info.appendChild(controls);
 
-        const remove = createElement("button", "remove-button", "Retirer");
-        remove.type = "button";
-        remove.addEventListener("click", () => removeFromCart(item.id));
-        info.appendChild(remove);
+        const remove = createElement(
+          "button",
+          "remove-button",
+          "Retirer"
+        );
 
+        remove.type = "button";
+        remove.addEventListener(
+          "click",
+          () => removeFromCart(item.id)
+        );
+
+        info.appendChild(remove);
         row.appendChild(info);
         cartItemsContainer.appendChild(row);
       });
     }
 
     function renderProducts() {
-      const query = searchInput.value.trim().toLocaleLowerCase("fr");
+      const query = searchInput.value
+        .trim()
+        .toLocaleLowerCase("fr");
 
       const filtered = allProducts.filter(product => {
         const text = [
@@ -513,7 +552,10 @@
           product.description,
           product.stores?.store_name,
           product.stores?.city
-        ].filter(Boolean).join(" ").toLocaleLowerCase("fr");
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLocaleLowerCase("fr");
 
         return text.includes(query);
       });
@@ -523,7 +565,7 @@
       if (filtered.length === 0) {
         showStatus(
           allProducts.length === 0
-            ? "Aucun produit n'est encore publié."
+            ? "Aucun produit actif n'est disponible pour le moment."
             : "Aucun produit ne correspond à ta recherche."
         );
         return;
@@ -541,13 +583,16 @@
           image.loading = "lazy";
 
           image.onerror = () => {
-            const placeholder = createElement("div", "placeholder", "📦");
-            image.replaceWith(placeholder);
+            image.replaceWith(
+              createElement("div", "placeholder", "📦")
+            );
           };
 
           card.appendChild(image);
         } else {
-          card.appendChild(createElement("div", "placeholder", "📦"));
+          card.appendChild(
+            createElement("div", "placeholder", "📦")
+          );
         }
 
         const details = createElement("div", "details");
@@ -585,7 +630,10 @@
         );
 
         addButton.type = "button";
-        addButton.addEventListener("click", () => addToCart(product));
+        addButton.addEventListener(
+          "click",
+          () => addToCart(product)
+        );
 
         details.appendChild(addButton);
         card.appendChild(details);
@@ -618,11 +666,10 @@
 
         allProducts = data || [];
 
-        // Mettre à jour les informations des produits déjà présents
-        // dans le panier, à partir du catalogue actuel.
         cart = cart
           .map(item => {
             const product = allProducts.find(p => p.id === item.id);
+
             if (!product) return null;
 
             return {
@@ -640,8 +687,11 @@
         renderCart();
       } catch (error) {
         console.error("Erreur catalogue :", error);
+
         showStatus(
-          "Impossible de charger les produits. Détail : " + error.message
+          "Impossible de charger les produits. " +
+          "Vérifie ta connexion Internet puis actualise la page. " +
+          "Détail : " + (error.message || "Erreur inconnue")
         );
       }
     }
@@ -650,7 +700,7 @@
 
     clearCartButton.addEventListener("click", () => {
       if (cart.length === 0) {
-        alert("Le panier est déjà vide.");
+        showToast("Le panier est déjà vide.");
         return;
       }
 
@@ -658,6 +708,7 @@
         cart = [];
         saveCart();
         renderCart();
+        showToast("Panier vidé.");
       }
     });
 
