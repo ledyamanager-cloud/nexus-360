@@ -187,10 +187,10 @@ function firebaseErrorMessage(error) {
     "auth/unauthorized-domain":
       "Ce domaine n'est pas autorisé dans Firebase Authentication."
   };
+console.error("Erreur Firebase NEXUS 360 :", error);
 
-  return messages[error.code] ||
-    "Une erreur est survenue. Vérifie les informations et réessaie.";
-}
+return messages[error.code] ||
+    `Erreur Firebase : ${error.code || error.message}`;
 
 function showAuthMessage(message, type = "") {
   const box = document.getElementById("nexusAuthMessage");
