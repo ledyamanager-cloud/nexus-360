@@ -24,7 +24,7 @@
     header h1 { margin: 0 0 8px; }
 
     main {
-      width: min(100% - 24px, 900px);
+      width: min(100% - 24px, 1000px);
       margin: 24px auto;
     }
 
@@ -67,12 +67,44 @@
 
     .muted { color: #475569; }
 
-    #message {
+    #message,
+    #ordersMessage {
       white-space: pre-wrap;
       overflow-wrap: anywhere;
     }
 
     a { color: #0369a1; }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 650px;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 12px;
+      background: #e0f2fe;
+      color: #075985;
+    }
   </style>
 </head>
 
@@ -112,6 +144,7 @@
       <div class="card">
         <h2>Mon compte</h2>
         <p id="accountInfo"></p>
+
         <button class="secondary" id="logoutButton">
           Se déconnecter
         </button>
@@ -133,12 +166,38 @@
         <div id="productsInfo">Chargement...</div>
       </div>
 
+      <!-- COMMANDES DU VENDEUR -->
       <div class="card">
-        <h2>Mes commandes</h2>
+        <h2>📦 Mes commandes</h2>
+
         <p class="muted">
-          La gestion des commandes sera ajoutée après vérification
-          des permissions vendeur dans Supabase.
+          Consulte les commandes contenant les produits de ta boutique.
         </p>
+
+        <button id="refreshOrdersButton" type="button">
+          Actualiser mes commandes
+        </button>
+
+        <p id="ordersMessage" role="status">
+          Chargement des commandes...
+        </p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>N° commande</th>
+                <th>Client</th>
+                <th>Téléphone</th>
+                <th>Adresse</th>
+                <th>Montant commande</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -153,110 +212,37 @@
     const loginCard = document.getElementById("loginCard");
     const dashboard = document.getElementById("dashboard");
     const message = document.getElementById("message");
+    const ordersMessage = document.getElementById("ordersMessage");
+    const ordersTableBody = document.getElementById("ordersTableBody");
+
+    let currentStoreId = null;
+    let loadingDashboard = false;
 
     function showMessage(text, isError = false) {
       message.textContent = text;
       message.style.color = isError ? "#b91c1c" : "#166534";
     }
 
-    async function loadDashboard() {
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
-
-      if (sessionError) throw sessionError;
-
-      const user = sessionData.session?.user;
-
-      if (!user) {
-        loginCard.classList.remove("hidden");
-        dashboard.classList.add("hidden");
-        return;
+    function formatMoney(value) {
+      if (value == null || !Number.isFinite(Number(value))) {
+        return "—";
       }
 
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("role, full_name")
-        .eq("id", user.id)
-        .maybeSingle();
+      return Number(value).toLocaleString("fr-FR") + " FC";
+    }
 
-      if (profileError) throw profileError;
+    async function loadProducts(storeId) {
+      const productsInfo = document.getElementById("productsInfo");
+      productsInfo.textContent = "Chargement des produits...";
 
-      if (!profile || profile.role !== "vendeur") {
-        await supabase.auth.signOut();
-
-        loginCard.classList.remove("hidden");
-        dashboard.classList.add("hidden");
-
-        showMessage(
-          "Accès réservé aux comptes ayant le rôle vendeur.",
-          true
-        );
-        return;
-      }
-
-      loginCard.classList.add("hidden");
-      dashboard.classList.remove("hidden");
-
-      document.getElementById("accountInfo").textContent =
-        `${profile.full_name || user.email} — rôle vendeur`;
-
-      // Chargement de la boutique sans la colonne inexistante "name".
-      const { data: store, error: storeError } = await supabase
-        .from("stores")
-        .select("id, store_name, city, description")
-        .eq("owner_id", user.id)
-        .maybeSingle();
-
-      if (storeError) {
-        document.getElementById("storeInfo").textContent =
-          "Erreur lors du chargement de la boutique.";
-
-        document.getElementById("productsInfo").textContent =
-          "Les produits ne peuvent pas être chargés pour le moment.";
-
-        throw storeError;
-      }
-
-      if (!store) {
-        document.getElementById("storeInfo").textContent =
-          "Aucune boutique trouvée pour ce compte. Crée d’abord ta boutique.";
-
-        document.getElementById("productsInfo").textContent =
-          "Les produits apparaîtront ici après la création de ta boutique.";
-
-        return;
-      }
-
-      const storeInfo = document.getElementById("storeInfo");
-      storeInfo.replaceChildren();
-
-      const storeTitle = document.createElement("h3");
-      storeTitle.textContent = store.store_name || "Ma boutique";
-
-      const storeCity = document.createElement("p");
-      storeCity.textContent = store.city || "Ville non renseignée";
-
-      const storeDescription = document.createElement("p");
-      storeDescription.textContent =
-        store.description || "Aucune description renseignée.";
-
-      storeInfo.append(storeTitle, storeCity, storeDescription);
-
-      // Chargement des produits de cette boutique.
-      const { data: products, error: productsError } = await supabase
+      const { data: products, error } = await supabase
         .from("products")
         .select("id, product_name, price, stock, is_active")
-        .eq("store_id", store.id)
+        .eq("store_id", storeId)
         .order("created_at", { ascending: false });
 
-      if (productsError) {
-        document.getElementById("productsInfo").textContent =
-          "Erreur lors du chargement des produits.";
+      if (error) throw error;
 
-        throw productsError;
-      }
-
-      const productsInfo = document.getElementById("productsInfo");
       productsInfo.replaceChildren();
 
       if (!products || products.length === 0) {
@@ -270,12 +256,11 @@
         item.className = "item";
 
         const name = document.createElement("strong");
-        name.textContent =
-          product.product_name || "Produit sans nom";
+        name.textContent = product.product_name || "Produit sans nom";
 
         const details = document.createElement("p");
         details.textContent =
-          `Prix : ${product.price} FC — ` +
+          `Prix : ${formatMoney(product.price)} — ` +
           `Stock : ${product.stock ?? 0} — ` +
           `${product.is_active ? "Actif" : "Inactif"}`;
 
@@ -284,9 +269,207 @@
       }
     }
 
+    async function loadOrders() {
+      ordersTableBody.replaceChildren();
+
+      if (!currentStoreId) {
+        ordersMessage.textContent =
+          "Aucune boutique associée à ce compte.";
+        return;
+      }
+
+      ordersMessage.textContent = "Chargement des commandes...";
+
+      try {
+        // Récupérer les produits appartenant à cette boutique.
+        const { data: products, error: productsError } =
+          await supabase
+            .from("products")
+            .select("id")
+            .eq("store_id", currentStoreId);
+
+        if (productsError) throw productsError;
+
+        if (!products || products.length === 0) {
+          ordersMessage.textContent =
+            "Ta boutique ne possède encore aucun produit.";
+          return;
+        }
+
+        const productIds = products.map(product => product.id);
+
+        // Chercher les lignes de commande liées aux produits de la boutique.
+        const { data: orderItems, error: itemsError } =
+          await supabase
+            .from("order_items")
+            .select("order_id, product_id")
+            .in("product_id", productIds);
+
+        if (itemsError) throw itemsError;
+
+        if (!orderItems || orderItems.length === 0) {
+          ordersMessage.textContent =
+            "Aucune commande contenant tes produits pour le moment.";
+          return;
+        }
+
+        const orderIds = [
+          ...new Set(orderItems.map(item => item.order_id))
+        ];
+
+        const { data: orders, error: ordersError } =
+          await supabase
+            .from("orders")
+            .select(
+              "id, order_number, customer_name, customer_phone, delivery_address, total_amount, status"
+            )
+            .in("id", orderIds)
+            .order("order_number", { ascending: false });
+
+        if (ordersError) throw ordersError;
+
+        if (!orders || orders.length === 0) {
+          ordersMessage.textContent =
+            "Aucune commande accessible. Vérifie les permissions RLS de Supabase.";
+          return;
+        }
+
+        for (const order of orders) {
+          const row = document.createElement("tr");
+
+          const values = [
+            order.order_number ?? "—",
+            order.customer_name ?? "—",
+            order.customer_phone ?? "—",
+            order.delivery_address ?? "—",
+            formatMoney(order.total_amount),
+            order.status ?? "En attente"
+          ];
+
+          for (let index = 0; index < values.length; index++) {
+            const cell = document.createElement("td");
+            cell.textContent = String(values[index]);
+            row.appendChild(cell);
+          }
+
+          ordersTableBody.appendChild(row);
+        }
+
+        ordersMessage.textContent =
+          orders.length + " commande(s) contenant tes produits.";
+
+      } catch (error) {
+        console.error("Erreur de chargement des commandes :", error);
+
+        ordersMessage.textContent =
+          "Impossible de charger les commandes. " +
+          "Détail : " + error.message;
+      }
+    }
+
+    async function loadDashboard() {
+      if (loadingDashboard) return;
+      loadingDashboard = true;
+
+      try {
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        const user = sessionData.session?.user;
+
+        if (!user) {
+          currentStoreId = null;
+          loginCard.classList.remove("hidden");
+          dashboard.classList.add("hidden");
+          return;
+        }
+
+        const { data: profile, error: profileError } =
+          await supabase
+            .from("profiles")
+            .select("role, full_name")
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if (profileError) throw profileError;
+
+        if (!profile || profile.role !== "vendeur") {
+          await supabase.auth.signOut();
+
+          currentStoreId = null;
+          loginCard.classList.remove("hidden");
+          dashboard.classList.add("hidden");
+
+          showMessage(
+            "Accès réservé aux comptes ayant le rôle vendeur.",
+            true
+          );
+          return;
+        }
+
+        loginCard.classList.add("hidden");
+        dashboard.classList.remove("hidden");
+
+        document.getElementById("accountInfo").textContent =
+          `${profile.full_name || user.email} — rôle vendeur`;
+
+        const storeInfo = document.getElementById("storeInfo");
+        storeInfo.textContent = "Chargement de la boutique...";
+
+        const { data: store, error: storeError } =
+          await supabase
+            .from("stores")
+            .select("id, store_name, city, description")
+            .eq("owner_id", user.id)
+            .maybeSingle();
+
+        if (storeError) throw storeError;
+
+        if (!store) {
+          currentStoreId = null;
+
+          storeInfo.textContent =
+            "Aucune boutique trouvée pour ce compte.";
+
+          document.getElementById("productsInfo").textContent =
+            "Les produits apparaîtront ici après la création de ta boutique.";
+
+          ordersTableBody.replaceChildren();
+
+          ordersMessage.textContent =
+            "Crée ta boutique pour commencer à gérer tes commandes.";
+
+          return;
+        }
+
+        currentStoreId = store.id;
+        storeInfo.replaceChildren();
+
+        const title = document.createElement("h3");
+        title.textContent = store.store_name || "Ma boutique";
+
+        const city = document.createElement("p");
+        city.textContent = store.city || "Ville non renseignée";
+
+        const description = document.createElement("p");
+        description.textContent =
+          store.description || "Aucune description renseignée.";
+
+        storeInfo.append(title, city, description);
+
+        await loadProducts(store.id);
+        await loadOrders();
+
+      } finally {
+        loadingDashboard = false;
+      }
+    }
+
     document.getElementById("loginForm").addEventListener(
       "submit",
-      async (event) => {
+      async event => {
         event.preventDefault();
         showMessage("Connexion en cours...");
 
@@ -310,12 +493,14 @@
           await loadDashboard();
           showMessage("Connexion vérifiée.");
         } catch (error) {
-          showMessage(
-            error.message || "Erreur lors du chargement.",
-            true
-          );
+          showMessage(error.message || "Erreur de chargement.", true);
         }
       }
+    );
+
+    document.getElementById("refreshOrdersButton").addEventListener(
+      "click",
+      loadOrders
     );
 
     document.getElementById("logoutButton").addEventListener(
@@ -328,8 +513,14 @@
           return;
         }
 
+        currentStoreId = null;
         dashboard.classList.add("hidden");
         loginCard.classList.remove("hidden");
+        ordersTableBody.replaceChildren();
+
+        ordersMessage.textContent =
+          "Connecte-toi pour consulter tes commandes.";
+
         showMessage("Tu es déconnecté.");
       }
     );
@@ -337,19 +528,13 @@
     supabase.auth.onAuthStateChange(() => {
       setTimeout(() => {
         loadDashboard().catch(error => {
-          showMessage(
-            error.message || "Erreur de chargement.",
-            true
-          );
+          showMessage(error.message || "Erreur de chargement.", true);
         });
       }, 0);
     });
 
     loadDashboard().catch(error => {
-      showMessage(
-        error.message || "Erreur de chargement.",
-        true
-      );
+      showMessage(error.message || "Erreur de chargement.", true);
     });
   </script>
 </body>
