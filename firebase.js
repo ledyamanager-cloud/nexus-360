@@ -589,13 +589,23 @@ function connectAccountButtons() {
   }
 }
 
+function connectAccountButtonsSafely() {
+  try {
+    connectAccountButtons();
+    console.log("NEXUS 360 : boutons de connexion activés.");
+  } catch (error) {
+    console.error("Erreur des boutons NEXUS 360 :", error);
+    alert("Erreur d'activation des boutons : " + error.message);
+  }
+}
+
 if (document.readyState === "loading") {
   document.addEventListener(
     "DOMContentLoaded",
-    connectAccountButtons
+    connectAccountButtonsSafely
   );
 } else {
-  connectAccountButtons();
+  connectAccountButtonsSafely();
 }
 
 console.log("NEXUS 360 : Firebase est initialisé.");
