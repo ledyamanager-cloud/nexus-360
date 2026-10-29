@@ -1,1 +1,317 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalogue - NEXUS 360</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      color: #222;
+    }
+
+    header {
+      background: #14213d;
+      color: white;
+      padding: 22px 15px;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #fca311;
+      margin: 0 0 8px;
+    }
+
+    nav {
+      background: white;
+      padding: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 5px 10px;
+      color: #14213d;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .search {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px #00000012;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      background: #e9edf2;
+      display: block;
+    }
+
+    .placeholder {
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e9edf2;
+      color: #666;
+      font-size: 45px;
+    }
+
+    .details {
+      padding: 16px;
+    }
+
+    .details h3 {
+      margin: 0 0 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .price {
+      color: #b36b00;
+      font-weight: bold;
+      font-size: 20px;
+      margin: 10px 0;
+    }
+
+    .description {
+      color: #555;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .store {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+      font-size: 13px;
+      color: #555;
+    }
+
+    #status {
+      background: white;
+      padding: 18px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .hidden { display: none !important; }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>NEXUS 360</h1>
+    <p>Découvrez les produits de nos vendeurs</p>
+  </header>
+
+  <nav>
+    <a href="./index.html">Accueil</a>
+    <a href="./boutique.html">Ma boutique</a>
+    <a href="./ajouter-produit.html">Ajouter un produit</a>
+    <a href="./gestion-produits.html">Gérer mes produits</a>
+  </nav>
+
+  <main class="container">
+    <h2>🛍️ Notre catalogue</h2>
+
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="Rechercher un produit..."
+      aria-label="Rechercher un produit"
+    >
+
+    <div id="status" role="status" aria-live="polite">
+      Chargement des produits...
+    </div>
+
+    <section id="products" class="products"></section>
+  </main>
+
+  <footer>
+    © 2026 NEXUS 360
+  </footer>
+
+  <script type="module">
+    import { supabase } from "./supabase.js";
+
+    const status = document.getElementById("status");
+    const productsContainer = document.getElementById("products");
+    const searchInput = document.getElementById("search");
+
+    let allProducts = [];
+
+    function showStatus(text) {
+      status.textContent = text;
+      status.classList.remove("hidden");
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat("fr-FR", {
+        maximumFractionDigits: 2
+      }).format(price) + " CDF";
+    }
+
+    function createElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+
+    function renderProducts() {
+      const query = searchInput.value.trim().toLocaleLowerCase("fr");
+      const filtered = allProducts.filter(product => {
+        const text = [
+          product.product_name,
+          product.description,
+          product.stores?.store_name,
+          product.stores?.city
+        ].filter(Boolean).join(" ").toLocaleLowerCase("fr");
+
+        return text.includes(query);
+      });
+
+      productsContainer.replaceChildren();
+
+      if (filtered.length === 0) {
+        showStatus(
+          allProducts.length === 0
+            ? "Aucun produit n'est encore publié."
+            : "Aucun produit ne correspond à ta recherche."
+        );
+        return;
+      }
+
+      status.classList.add("hidden");
+
+      filtered.forEach(product => {
+        const card = createElement("article", "card");
+
+        if (product.image_url) {
+          const image = createElement("img", "product-image");
+          image.src = product.image_url;
+          image.alt = product.product_name || "Produit";
+          image.loading = "lazy";
+          image.onerror = () => {
+            const placeholder = createElement("div", "placeholder", "📦");
+            image.replaceWith(placeholder);
+          };
+          card.appendChild(image);
+        } else {
+          card.appendChild(
+            createElement("div", "placeholder", "📦")
+          );
+        }
+
+        const details = createElement("div", "details");
+        details.appendChild(
+          createElement("h3", "", product.product_name)
+        );
+
+        details.appendChild(
+          createElement("p", "price", formatPrice(product.price))
+        );
+
+        if (product.description) {
+          details.appendChild(
+            createElement("p", "description", product.description)
+          );
+        }
+
+        const store = product.stores;
+        const storeName = store?.store_name || "Boutique NEXUS 360";
+        const city = store?.city || "";
+
+        details.appendChild(
+          createElement(
+            "div",
+            "store",
+            "🏪 " + storeName + (city ? " — " + city : "")
+          )
+        );
+
+        card.appendChild(details);
+        productsContainer.appendChild(card);
+      });
+    }
+
+    async function loadProducts() {
+      showStatus("Chargement des produits...");
+
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select(`
+            id,
+            product_name,
+            description,
+            price,
+            stock,
+            image_url,
+            stores (
+              store_name,
+              city
+            )
+          `)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        allProducts = data || [];
+        renderProducts();
+      } catch (error) {
+        console.error("Erreur catalogue :", error);
+        showStatus(
+          "Impossible de charger les produits. Détail : " + error.message
+        );
+      }
+    }
+
+    searchInput.addEventListener("input", renderProducts);
+
+    loadProducts();
+  </script>
+</body>
+</html>
