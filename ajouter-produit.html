@@ -9,7 +9,6 @@
     * { box-sizing: border-box; }
 
     body {
-      <p style="background:yellow;color:black;padding:20px;">TEST NEXUS 360</p>
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f4f6f9;
@@ -88,7 +87,11 @@
       border-radius: 8px;
     }
 
-    a { display: inline-block; margin-top: 20px; color: #14213d; }
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      color: #14213d;
+    }
   </style>
 </head>
 
@@ -124,7 +127,7 @@
         <input id="photo" type="file" accept="image/*">
         <img id="preview" alt="Aperçu du produit">
 
-        <button id="saveButton" type="submit">
+        <button id="saveButton" type="submit" disabled>
           Publier le produit
         </button>
       </form>
@@ -134,6 +137,8 @@
       </div>
 
       <a href="./boutique.html">← Retour à ma boutique</a>
+      <br>
+      <a href="./catalogue.html">Voir le catalogue →</a>
     </section>
   </main>
 
@@ -160,15 +165,18 @@
     }
 
     async function initialize() {
+      button.disabled = true;
+
       try {
         const { data, error } = await supabase.auth.getUser();
 
-        if (error || !data.user) {
+        if (error) throw error;
+
+        if (!data.user) {
           showMessage(
             "Connecte-toi à NEXUS 360 avant de publier un produit.",
             "error"
           );
-          button.disabled = true;
           return;
         }
 
@@ -187,12 +195,12 @@
             "Tu dois d'abord créer ta boutique avant d'ajouter un produit.",
             "error"
           );
-          button.disabled = true;
           return;
         }
 
         currentStore = store;
         ready = true;
+        button.disabled = false;
 
         showMessage(
           "Boutique trouvée : " + store.store_name +
@@ -202,10 +210,9 @@
       } catch (error) {
         console.error(error);
         showMessage(
-          "Impossible de vérifier ta boutique : " + error.message,
+          "Vérification impossible : " + error.message,
           "error"
         );
-        button.disabled = true;
       }
     }
 
@@ -220,6 +227,7 @@
 
       if (!file.type.startsWith("image/")) {
         photoInput.value = "";
+        preview.style.display = "none";
         showMessage("Choisis un fichier image valide.", "error");
         return;
       }
@@ -227,15 +235,13 @@
       if (file.size > 5 * 1024 * 1024) {
         photoInput.value = "";
         preview.style.display = "none";
-        showMessage(
-          "La photo ne doit pas dépasser 5 Mo.",
-          "error"
-        );
+        showMessage("La photo ne doit pas dépasser 5 Mo.", "error");
         return;
       }
 
       preview.src = URL.createObjectURL(file);
       preview.style.display = "block";
+      showMessage("Photo sélectionnée.", "info");
     });
 
     form.addEventListener("submit", async (event) => {
@@ -243,7 +249,7 @@
 
       if (!ready || !currentUser || !currentStore) {
         showMessage(
-          "Ta connexion ou ta boutique n'est pas encore prête.",
+          "La connexion ou la boutique n'est pas prête. Recharge la page.",
           "error"
         );
         return;
@@ -252,10 +258,15 @@
       const productName = nameInput.value.trim();
       const price = Number(priceInput.value);
       const stock = Number(stockInput.value);
-      const photo = photoInput.files[0];
+      const imageFile = photoInput.files[0];
 
-      if (!productName || price < 0 || !Number.isFinite(price) ||
-          !Number.isInteger(stock) || stock < 0) {
+      if (
+        !productName ||
+        !Number.isFinite(price) ||
+        price < 0 ||
+        !Number.isInteger(stock) ||
+        stock < 0
+      ) {
         showMessage(
           "Vérifie le nom, le prix et la quantité en stock.",
           "error"
@@ -263,59 +274,48 @@
         return;
       }
 
-      if (photo) {
-        showMessage(
-          "La photo est sélectionnée, mais le téléversement des images doit encore être configuré. Le produit sera enregistré sans photo pour le moment.",
-          "info"
-        );
-      }
-
       button.disabled = true;
       button.textContent = "Publication en cours...";
 
+      let uploadedFilePath = null;
+
       try {
         let imageUrl = "";
-const imageFile = document.getElementById("image").files[0];
 
-if (imageFile) {
-  let imageUrl = "";
-const imageFile = document.getElementById("photo").files[0];
+        if (imageFile) {
+          const safeName = imageFile.name.replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+          );
 
-if (imageFile) {
-  const { data: userData, error: userError } =
-    await supabase.auth.getUser();
+          uploadedFilePath =
+            `${currentUser.id}/${Date.now()}-${safeName}`;
 
-  if (userError) throw userError;
+          const { error: uploadError } = await supabase.storage
+            .from("product-images")
+            .upload(uploadedFilePath, imageFile);
 
-  const userId = userData.user.id;
-  const safeName = imageFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const filePath = `${userId}/${Date.now()}-${safeName}`;
+          if (uploadError) throw uploadError;
 
-  const { error: uploadError } = await supabase.storage
-    .from("product-images")
-    .upload(filePath, imageFile);
+          const { data: publicData } = supabase.storage
+            .from("product-images")
+            .getPublicUrl(uploadedFilePath);
 
-  if (uploadError) throw uploadError;
+          imageUrl = publicData.publicUrl;
+        }
 
-  const { data: publicData } = supabase.storage
-    .from("product-images")
-    .getPublicUrl(filePath);
-
-  imageUrl = publicData.publicUrl;
-}
-
-const { data, error } = await supabase
-  .from("products")
-  .insert({
-    store_id: currentStore.id,
-    product_name: productName,
-    description: descriptionInput.value.trim(),
-    price: price,
-    stock: stock,
-    image_url: imageUrl
-  })
-  .select()
-  .single();
+        const { data, error } = await supabase
+          .from("products")
+          .insert({
+            store_id: currentStore.id,
+            product_name: productName,
+            description: descriptionInput.value.trim(),
+            price: price,
+            stock: stock,
+            image_url: imageUrl
+          })
+          .select()
+          .single();
 
         if (error) throw error;
 
@@ -324,18 +324,33 @@ const { data, error } = await supabase
         preview.removeAttribute("src");
 
         showMessage(
-          "Produit publié avec succès ! Identifiant : " + data.id +
-          ". La photo pourra être ajoutée après la configuration du stockage.",
+          "Produit publié avec succès !" +
+          (imageUrl ? " Sa photo a été enregistrée." : " Sans photo.") +
+          " Identifiant : " + data.id,
           "success"
         );
       } catch (error) {
         console.error(error);
+
+        if (uploadedFilePath) {
+          const { error: cleanupError } = await supabase.storage
+            .from("product-images")
+            .remove([uploadedFilePath]);
+
+          if (cleanupError) {
+            console.error(
+              "Impossible de nettoyer la photo après l'erreur :",
+              cleanupError
+            );
+          }
+        }
+
         showMessage(
           "Erreur lors de la publication : " + error.message,
           "error"
         );
       } finally {
-        button.disabled = false;
+        button.disabled = !ready;
         button.textContent = "Publier le produit";
       }
     });
