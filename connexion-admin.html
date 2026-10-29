@@ -1,1 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administration | NEXUS 360</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #101827;
+      color: #fff;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      background: #1d293b;
+      border-radius: 18px;
+      box-shadow: 0 10px 35px #0005;
+    }
+
+    h1 {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #cbd5e1;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 22px;
+      border: none;
+      border-radius: 8px;
+      background: #0284c7;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #message {
+      margin-top: 18px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      color: #7dd3fc;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <h1>NEXUS 360</h1>
+    <p class="subtitle">Espace administrateur</p>
+
+    <form id="loginForm">
+      <label for="email">Adresse e-mail</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="username"
+        required
+      >
+
+      <label for="password">Mot de passe</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button id="submitButton" type="submit">
+        Se connecter
+      </button>
+    </form>
+
+    <p id="message" role="status"></p>
+
+    <a class="back" href="index.html">
+      Retour à l'accueil
+    </a>
+  </main>
+
+  <script type="module">
+    import { supabase } from "./supabase.js";
+
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+    const button = document.getElementById("submitButton");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      message.textContent = "";
+      button.disabled = true;
+      button.textContent = "Vérification...";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        const { data, error } =
+          await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+
+        if (error) throw error;
+
+        const user = data.user;
+
+        const { data: profile, error: profileError } =
+          await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if (profileError) throw profileError;
+
+        if (!profile || profile.role !== "admin") {
+          await supabase.auth.signOut();
+          throw new Error(
+            "Accès refusé : ce compte n'est pas administrateur."
+          );
+        }
+
+        message.textContent =
+          "Connexion administrateur réussie ! Ton compte est vérifié.";
+
+        message.style.color = "#4ade80";
+
+        form.reset();
+      } catch (error) {
+        message.textContent =
+          error.message || "Connexion impossible. Réessaie.";
+        message.style.color = "#f87171";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Se connecter";
+      }
+    });
+  </script>
+</body>
+</html>
