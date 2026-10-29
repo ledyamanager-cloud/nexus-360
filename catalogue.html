@@ -302,9 +302,40 @@
     let allProducts = [];
     let cart = loadCart();
 
-    function showStatus(text) {
-      status.textContent = text;
-      status.classList.remove("hidden");
+    function showToast(message) {
+  let toast = document.getElementById("toast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #14213d;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px #0003;
+      z-index: 9999;
+      max-width: 90%;
+      text-align: center;
+      font-size: 15px;
+    `;
+
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.style.display = "block";
+
+  clearTimeout(window.nexusToastTimer);
+
+  window.nexusToastTimer = setTimeout(() => {
+    toast.style.display = "none";
+  }, 2500);
     }
 
     function formatPrice(price) {
