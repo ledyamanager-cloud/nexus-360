@@ -278,6 +278,10 @@
 const imageFile = document.getElementById("image").files[0];
 
 if (imageFile) {
+  let imageUrl = "";
+const imageFile = document.getElementById("photo").files[0];
+
+if (imageFile) {
   const { data: userData, error: userError } =
     await supabase.auth.getUser();
 
