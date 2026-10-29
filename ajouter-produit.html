@@ -64,9 +64,13 @@
       border-radius: 8px;
       font-weight: bold;
       font-size: 16px;
+      cursor: pointer;
     }
 
-    button:disabled { opacity: 0.6; }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
     #message {
       margin-top: 18px;
@@ -108,20 +112,39 @@
 
       <form id="productForm">
         <label for="productName">Nom du produit *</label>
-        <input id="productName" maxlength="150" required
-               placeholder="Ex. : Chaussures élégantes">
+        <input
+          id="productName"
+          maxlength="150"
+          required
+          placeholder="Ex. : Chaussures élégantes"
+        >
 
         <label for="description">Description</label>
-        <textarea id="description" maxlength="3000"
-                  placeholder="Décris ton produit..."></textarea>
+        <textarea
+          id="description"
+          maxlength="3000"
+          placeholder="Décris ton produit..."
+        ></textarea>
 
-        <label for="price">Prix *</label>
-        <input id="price" type="number" min="0" step="0.01"
-               required placeholder="Ex. : 25000">
+        <label for="price">Prix (CDF) *</label>
+        <input
+          id="price"
+          type="number"
+          min="0"
+          step="0.01"
+          required
+          placeholder="Ex. : 25000"
+        >
 
         <label for="stock">Quantité en stock *</label>
-        <input id="stock" type="number" min="0" step="1"
-               value="1" required>
+        <input
+          id="stock"
+          type="number"
+          min="0"
+          step="1"
+          value="1"
+          required
+        >
 
         <label for="photo">Photo du produit</label>
         <input id="photo" type="file" accept="image/*">
@@ -133,7 +156,7 @@
       </form>
 
       <div id="message" class="info" role="status" aria-live="polite">
-        Vérification de ta connexion...
+        Chargement de NEXUS 360...
       </div>
 
       <a href="./boutique.html">← Retour à ma boutique</a>
@@ -143,219 +166,232 @@
   </main>
 
   <script type="module">
-    import { supabase } from "./supabase.js";
-
-    const form = document.getElementById("productForm");
-    const nameInput = document.getElementById("productName");
-    const descriptionInput = document.getElementById("description");
-    const priceInput = document.getElementById("price");
-    const stockInput = document.getElementById("stock");
-    const photoInput = document.getElementById("photo");
-    const preview = document.getElementById("preview");
-    const button = document.getElementById("saveButton");
     const message = document.getElementById("message");
-
-    let currentUser = null;
-    let currentStore = null;
-    let ready = false;
+    const button = document.getElementById("saveButton");
 
     function showMessage(text, type = "info") {
       message.textContent = text;
       message.className = type;
     }
 
-    async function initialize() {
-      button.disabled = true;
+    try {
+      const { supabase } = await import("./supabase.js");
 
-      try {
-        const { data, error } = await supabase.auth.getUser();
+      const form = document.getElementById("productForm");
+      const nameInput = document.getElementById("productName");
+      const descriptionInput = document.getElementById("description");
+      const priceInput = document.getElementById("price");
+      const stockInput = document.getElementById("stock");
+      const photoInput = document.getElementById("photo");
+      const preview = document.getElementById("preview");
 
-        if (error) throw error;
+      let currentUser = null;
+      let currentStore = null;
+      let ready = false;
 
-        if (!data.user) {
-          showMessage(
-            "Connecte-toi à NEXUS 360 avant de publier un produit.",
-            "error"
-          );
-          return;
-        }
+      async function initialize() {
+        ready = false;
+        button.disabled = true;
+        showMessage("Vérification de ta connexion...", "info");
 
-        currentUser = data.user;
+        try {
+          const { data, error } = await supabase.auth.getUser();
 
-        const { data: store, error: storeError } = await supabase
-          .from("stores")
-          .select("id, store_name")
-          .eq("owner_id", currentUser.id)
-          .maybeSingle();
+          if (error) throw error;
 
-        if (storeError) throw storeError;
-
-        if (!store) {
-          showMessage(
-            "Tu dois d'abord créer ta boutique avant d'ajouter un produit.",
-            "error"
-          );
-          return;
-        }
-
-        currentStore = store;
-        ready = true;
-        button.disabled = false;
-
-        showMessage(
-          "Boutique trouvée : " + store.store_name +
-          ". Tu peux ajouter un produit.",
-          "success"
-        );
-      } catch (error) {
-        console.error(error);
-        showMessage(
-          "Vérification impossible : " + error.message,
-          "error"
-        );
-      }
-    }
-
-    photoInput.addEventListener("change", () => {
-      const file = photoInput.files[0];
-
-      if (!file) {
-        preview.style.display = "none";
-        preview.removeAttribute("src");
-        return;
-      }
-
-      if (!file.type.startsWith("image/")) {
-        photoInput.value = "";
-        preview.style.display = "none";
-        showMessage("Choisis un fichier image valide.", "error");
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        photoInput.value = "";
-        preview.style.display = "none";
-        showMessage("La photo ne doit pas dépasser 5 Mo.", "error");
-        return;
-      }
-
-      preview.src = URL.createObjectURL(file);
-      preview.style.display = "block";
-      showMessage("Photo sélectionnée.", "info");
-    });
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      if (!ready || !currentUser || !currentStore) {
-        showMessage(
-          "La connexion ou la boutique n'est pas prête. Recharge la page.",
-          "error"
-        );
-        return;
-      }
-
-      const productName = nameInput.value.trim();
-      const price = Number(priceInput.value);
-      const stock = Number(stockInput.value);
-      const imageFile = photoInput.files[0];
-
-      if (
-        !productName ||
-        !Number.isFinite(price) ||
-        price < 0 ||
-        !Number.isInteger(stock) ||
-        stock < 0
-      ) {
-        showMessage(
-          "Vérifie le nom, le prix et la quantité en stock.",
-          "error"
-        );
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = "Publication en cours...";
-
-      let uploadedFilePath = null;
-
-      try {
-        let imageUrl = "";
-
-        if (imageFile) {
-          const safeName = imageFile.name.replace(
-            /[^a-zA-Z0-9._-]/g,
-            "_"
-          );
-
-          uploadedFilePath =
-            `${currentUser.id}/${Date.now()}-${safeName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from("product-images")
-            .upload(uploadedFilePath, imageFile);
-
-          if (uploadError) throw uploadError;
-
-          const { data: publicData } = supabase.storage
-            .from("product-images")
-            .getPublicUrl(uploadedFilePath);
-
-          imageUrl = publicData.publicUrl;
-        }
-
-        const { data, error } = await supabase
-          .from("products")
-          .insert({
-            store_id: currentStore.id,
-            product_name: productName,
-            description: descriptionInput.value.trim(),
-            price: price,
-            stock: stock,
-            image_url: imageUrl
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        form.reset();
-        preview.style.display = "none";
-        preview.removeAttribute("src");
-
-        showMessage(
-          "Produit publié avec succès !" +
-          (imageUrl ? " Sa photo a été enregistrée." : " Sans photo.") +
-          " Identifiant : " + data.id,
-          "success"
-        );
-      } catch (error) {
-        console.error(error);
-
-        if (uploadedFilePath) {
-          const { error: cleanupError } = await supabase.storage
-            .from("product-images")
-            .remove([uploadedFilePath]);
-
-          if (cleanupError) {
-            console.error(
-              "Impossible de nettoyer la photo après l'erreur :",
-              cleanupError
+          if (!data.user) {
+            showMessage(
+              "Tu n'es pas connecté. Connecte-toi puis reviens sur cette page.",
+              "error"
             );
+            return;
           }
+
+          currentUser = data.user;
+
+          const { data: store, error: storeError } = await supabase
+            .from("stores")
+            .select("id, store_name")
+            .eq("owner_id", currentUser.id)
+            .maybeSingle();
+
+          if (storeError) throw storeError;
+
+          if (!store) {
+            showMessage(
+              "Aucune boutique trouvée. Crée d'abord ta boutique.",
+              "error"
+            );
+            return;
+          }
+
+          currentStore = store;
+          ready = true;
+          button.disabled = false;
+
+          showMessage(
+            "Boutique trouvée : " + store.store_name +
+            ". Tu peux publier un produit.",
+            "success"
+          );
+        } catch (error) {
+          console.error("Erreur de vérification :", error);
+          showMessage(
+            "Erreur de connexion : " +
+            (error.message || "Impossible de vérifier le compte."),
+            "error"
+          );
+        }
+      }
+
+      photoInput.addEventListener("change", () => {
+        const file = photoInput.files[0];
+
+        if (!file) {
+          preview.style.display = "none";
+          preview.removeAttribute("src");
+          return;
         }
 
-        showMessage(
-          "Erreur lors de la publication : " + error.message,
-          "error"
-        );
-      } finally {
-        button.disabled = !ready;
-        button.textContent = "Publier le produit";
-      }
-    });
+        if (!file.type.startsWith("image/")) {
+          photoInput.value = "";
+          preview.style.display = "none";
+          showMessage("Choisis un fichier image valide.", "error");
+          return;
+        }
 
-    initialize();
+        if (file.size > 5 * 1024 * 1024) {
+          photoInput.value = "";
+          preview.style.display = "none";
+          showMessage("La photo ne doit pas dépasser 5 Mo.", "error");
+          return;
+        }
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+        showMessage("Photo sélectionnée.", "info");
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!ready || !currentUser || !currentStore) {
+          showMessage(
+            "La connexion ou la boutique n'est pas prête. Recharge la page.",
+            "error"
+          );
+          return;
+        }
+
+        const productName = nameInput.value.trim();
+        const price = Number(priceInput.value);
+        const stock = Number(stockInput.value);
+        const imageFile = photoInput.files[0];
+
+        if (
+          !productName ||
+          !Number.isFinite(price) ||
+          price < 0 ||
+          !Number.isInteger(stock) ||
+          stock < 0
+        ) {
+          showMessage(
+            "Vérifie le nom, le prix et la quantité en stock.",
+            "error"
+          );
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Publication en cours...";
+
+        let uploadedFilePath = null;
+
+        try {
+          let imageUrl = "";
+
+          if (imageFile) {
+            const safeName = imageFile.name.replace(
+              /[^a-zA-Z0-9._-]/g,
+              "_"
+            );
+
+            uploadedFilePath =
+              `${currentUser.id}/${Date.now()}-${safeName}`;
+
+            const { error: uploadError } = await supabase.storage
+              .from("product-images")
+              .upload(uploadedFilePath, imageFile);
+
+            if (uploadError) throw uploadError;
+
+            const { data: publicData } = supabase.storage
+              .from("product-images")
+              .getPublicUrl(uploadedFilePath);
+
+            imageUrl = publicData.publicUrl;
+          }
+
+          const { data, error } = await supabase
+            .from("products")
+            .insert({
+              store_id: currentStore.id,
+              product_name: productName,
+              description: descriptionInput.value.trim(),
+              price,
+              stock,
+              image_url: imageUrl
+            })
+            .select()
+            .single();
+
+          if (error) throw error;
+
+          form.reset();
+          preview.style.display = "none";
+          preview.removeAttribute("src");
+
+          showMessage(
+            "Produit publié avec succès !" +
+            (imageUrl ? " Photo enregistrée." : " Sans photo.") +
+            " Identifiant : " + data.id,
+            "success"
+          );
+        } catch (error) {
+          console.error("Erreur de publication :", error);
+
+          if (uploadedFilePath) {
+            const { error: cleanupError } = await supabase.storage
+              .from("product-images")
+              .remove([uploadedFilePath]);
+
+            if (cleanupError) {
+              console.error("Erreur de nettoyage :", cleanupError);
+            }
+          }
+
+          showMessage(
+            "Erreur lors de la publication : " +
+            (error.message || "Erreur inconnue."),
+            "error"
+          );
+        } finally {
+          button.disabled = !ready;
+          button.textContent = "Publier le produit";
+        }
+      });
+
+      await initialize();
+
+    } catch (error) {
+      console.error("Erreur de chargement de Supabase :", error);
+
+      showMessage(
+        "Impossible de charger Supabase. Vérifie le fichier supabase.js et ta connexion Internet. Détail : " +
+        (error.message || "Erreur inconnue."),
+        "error"
+      );
+    }
   </script>
 </body>
-</html>
+  </html>
