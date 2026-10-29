@@ -189,10 +189,9 @@ function firebaseErrorMessage(error) {
   };
 console.error("Erreur Firebase NEXUS 360 :", error);
 
-return messages[error.code] ||
+  return messages[error.code] ||
     `Erreur Firebase : ${error.code || error.message}`;
 }
-
 function showAuthMessage(message, type = "") {
   const box = document.getElementById("nexusAuthMessage");
 
