@@ -1,1 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ma boutique - NEXUS 360</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      color: #222;
+    }
+
+    header {
+      background: #14213d;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #fca311;
+    }
+
+    header p {
+      margin-bottom: 0;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      color: #14213d;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 22px;
+      background: #fca311;
+      color: #14213d;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    #message {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+      overflow-wrap: anywhere;
+    }
+
+    .success {
+      display: block !important;
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .error {
+      display: block !important;
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .info {
+      display: block !important;
+      background: #e2e3e5;
+      color: #383d41;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 20px;
+      color: #14213d;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>NEXUS 360</h1>
+    <p>Crée et gère ta boutique en ligne</p>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2 id="formTitle">🏪 Ma boutique</h2>
+
+      <p>
+        Présente ta boutique aux clients et prépare-toi
+        à vendre tes produits sur NEXUS 360.
+      </p>
+
+      <form id="storeForm">
+        <label for="storeName">Nom de la boutique *</label>
+        <input
+          id="storeName"
+          type="text"
+          maxlength="100"
+          placeholder="Ex. : Boutique Excellence"
+          required
+        >
+
+        <label for="storeDescription">Description</label>
+        <textarea
+          id="storeDescription"
+          maxlength="2000"
+          placeholder="Présente ta boutique et tes produits..."
+        ></textarea>
+
+        <label for="storeCity">Ville</label>
+        <input
+          id="storeCity"
+          type="text"
+          maxlength="100"
+          placeholder="Ex. : Kinshasa"
+        >
+
+        <button id="saveButton" type="submit">
+          Créer ma boutique
+        </button>
+      </form>
+
+      <div id="message" role="status" aria-live="polite"></div>
+
+      <a class="back" href="./index.html">
+        ← Retour à l'accueil
+      </a>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 NEXUS 360 — Tous droits réservés.
+  </footer>
+
+  <script type="module">
+    import { supabase } from "./supabase.js";
+
+    const form = document.getElementById("storeForm");
+    const storeName = document.getElementById("storeName");
+    const storeDescription =
+      document.getElementById("storeDescription");
+    const storeCity = document.getElementById("storeCity");
+    const saveButton = document.getElementById("saveButton");
+    const message = document.getElementById("message");
+    const formTitle = document.getElementById("formTitle");
+
+    let currentUser = null;
+    let existingStore = null;
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = type;
+    }
+
+    async function initializePage() {
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error || !data.user) {
+        showMessage(
+          "Connecte-toi d'abord à NEXUS 360, puis reviens créer ta boutique.",
+          "error"
+        );
+
+        saveButton.disabled = true;
+        return;
+      }
+
+      currentUser = data.user;
+
+      const { data: store, error: storeError } = await supabase
+        .from("stores")
+        .select("*")
+        .eq("owner_id", currentUser.id)
+        .maybeSingle();
+
+      if (storeError) {
+        showMessage(
+          "Impossible de charger ta boutique. Vérifie la configuration Supabase.",
+          "error"
+        );
+        return;
+      }
+
+      if (store) {
+        existingStore = store;
+
+        storeName.value = store.store_name || "";
+        storeDescription.value = store.description || "";
+        storeCity.value = store.city || "";
+
+        formTitle.textContent = "🏪 Modifier ma boutique";
+        saveButton.textContent = "Enregistrer les modifications";
+
+        showMessage(
+          "Ta boutique existe déjà. Tu peux modifier ses informations.",
+          "info"
+        );
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!currentUser) {
+        showMessage(
+          "Connecte-toi avant de créer ta boutique.",
+          "error"
+        );
+        return;
+      }
+
+      const name = storeName.value.trim();
+
+      if (!name) {
+        showMessage(
+          "Le nom de la boutique est obligatoire.",
+          "error"
+        );
+        return;
+      }
+
+      saveButton.disabled = true;
+      saveButton.textContent = "Enregistrement...";
+
+      const storeData = {
+        owner_id: currentUser.id,
+        store_name: name,
+        description: storeDescription.value.trim(),
+        city: storeCity.value.trim()
+      };
+
+      let result;
+
+      if (existingStore) {
+        result = await supabase
+          .from("stores")
+          .update({
+            store_name: storeData.store_name,
+            description: storeData.description,
+            city: storeData.city
+          })
+          .eq("owner_id", currentUser.id)
+          .select()
+          .single();
+      } else {
+        result = await supabase
+          .from("stores")
+          .insert(storeData)
+          .select()
+          .single();
+      }
+
+      saveButton.disabled = false;
+      saveButton.textContent = existingStore
+        ? "Enregistrer les modifications"
+        : "Créer ma boutique";
+
+      if (result.error) {
+        console.error(result.error);
+
+        showMessage(
+          "Erreur : " + result.error.message,
+          "error"
+        );
+        return;
+      }
+
+      existingStore = result.data;
+
+      formTitle.textContent = "🏪 Modifier ma boutique";
+      saveButton.textContent = "Enregistrer les modifications";
+
+      showMessage(
+        "Félicitations ! Ta boutique a été enregistrée avec succès.",
+        "success"
+      );
+    });
+
+    initializePage();
+  </script>
+
+</body>
+  </html>
