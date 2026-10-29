@@ -283,6 +283,11 @@ async function initNexusAuth() {
     const subtext = document.getElementById("accountSubtext");
     const loginButton = document.getElementById("loginButton");
     const registerButton = document.getElementById("registerButton");
+     const profileButton = document.getElementById("nexusProfileButton");
+
+if (profileButton) {
+  profileButton.style.display = user ? "inline-block" : "none";
+}
 
     if (label) {
       label.textContent = user
@@ -312,6 +317,207 @@ async function initNexusAuth() {
       registerButton.style.display = user ? "none" : "block";
     }
   }
+
+   /* =====================================
+   PROFIL NEXUS 360
+===================================== */
+
+let profileModal = document.getElementById("nexusProfileModal");
+
+if (!profileModal) {
+  profileModal = document.createElement("div");
+  profileModal.id = "nexusProfileModal";
+
+  profileModal.style.cssText = `
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000000;
+    background: rgba(0,0,0,.75);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
+  `;
+
+  profileModal.innerHTML = `
+    <div style="
+      background: white;
+      color: #13213b;
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      border-radius: 16px;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+    ">
+      <h2 style="color:#0759dc">Mon profil NEXUS 360</h2>
+
+      <label for="nexusProfileName">Nom complet</label>
+      <input id="nexusProfileName" type="text"
+        autocomplete="name"
+        style="box-sizing:border-box;width:100%;padding:12px;margin:8px 0 16px">
+
+      <label for="nexusProfileEmail">Adresse e-mail</label>
+      <input id="nexusProfileEmail" type="email" readonly
+        style="box-sizing:border-box;width:100%;padding:12px;margin:8px 0 16px">
+
+      <label for="nexusProfilePhone">Numéro de téléphone</label>
+      <input id="nexusProfilePhone" type="tel"
+        placeholder="+243..."
+        autocomplete="tel"
+        style="box-sizing:border-box;width:100%;padding:12px;margin:8px 0 16px">
+
+      <p id="nexusProfileRole">Rôle : Client</p>
+      <p id="nexusProfileMessage" role="status" style="overflow-wrap:anywhere"></p>
+
+      <button id="nexusProfileSave" type="button"
+        style="width:100%;padding:12px;background:#0759dc;color:white;border:0;border-radius:8px;font-weight:bold">
+        Enregistrer
+      </button>
+
+      <button id="nexusProfileClose" type="button"
+        style="width:100%;padding:12px;margin-top:8px">
+        Fermer
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(profileModal);
+}
+
+const profileButton = document.createElement("button");
+profileButton.id = "nexusProfileButton";
+profileButton.type = "button";
+profileButton.textContent = "Mon profil";
+profileButton.style.cssText = `
+  display: none;
+  padding: 10px 14px;
+  margin: 8px;
+  background: white;
+  color: #0759dc;
+  border: 1px solid #0759dc;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+`;
+
+const profileHeader = document.getElementById("loginTop");
+
+if (profileHeader && !document.getElementById("nexusProfileButton")) {
+  profileHeader.insertAdjacentElement("afterend", profileButton);
+}
+
+profileButton.addEventListener("click", async () => {
+  if (!currentUser) {
+    openAuth("login");
+    return;
+  }
+
+  const nameField = document.getElementById("nexusProfileName");
+  const emailField = document.getElementById("nexusProfileEmail");
+  const phoneField = document.getElementById("nexusProfilePhone");
+  const roleField = document.getElementById("nexusProfileRole");
+  const messageField = document.getElementById("nexusProfileMessage");
+
+  profileModal.style.display = "flex";
+  messageField.textContent = "Chargement du profil…";
+
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("full_name, phone, role")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    nameField.value =
+      data?.full_name || currentUser.user_metadata?.full_name || "";
+
+    emailField.value = currentUser.email || "";
+    phoneField.value = data?.phone || "";
+    roleField.textContent =
+      "Rôle : " + (data?.role === "vendeur" ? "Vendeur" : "Client");
+
+    messageField.textContent = data
+      ? ""
+      : "Profil non trouvé dans la base de données.";
+  } catch (error) {
+    messageField.textContent = "Erreur : " + error.message;
+  }
+});
+
+document.getElementById("nexusProfileClose").addEventListener("click", () => {
+  profileModal.style.display = "none";
+});
+
+document.getElementById("nexusProfileSave").addEventListener("click", async () => {
+  if (!currentUser) return;
+
+  const name = document.getElementById("nexusProfileName").value.trim();
+  const phone = document.getElementById("nexusProfilePhone").value.trim();
+  const messageField = document.getElementById("nexusProfileMessage");
+  const saveButton = document.getElementById("nexusProfileSave");
+
+  if (!name) {
+    messageField.textContent = "Entre ton nom complet.";
+    return;
+  }
+
+  saveButton.disabled = true;
+  messageField.textContent = "Enregistrement…";
+
+  try {
+    const { data: existingProfile, error: readError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+    if (readError) throw readError;
+
+    if (!existingProfile) {
+      throw new Error(
+        "Ton profil n'existe pas encore dans la base de données. Il faut le créer avant de l'enregistrer."
+      );
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        full_name: name,
+        phone: phone,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", currentUser.id);
+
+    if (error) throw error;
+
+    const { error: authError } = await supabase.auth.updateUser({
+      data: { full_name: name }
+    });
+
+    if (authError) throw authError;
+
+    currentUser = {
+      ...currentUser,
+      user_metadata: {
+        ...currentUser.user_metadata,
+        full_name: name
+      }
+    };
+
+    updateAccountDisplay(currentUser);
+    messageField.textContent = "Profil enregistré avec succès !";
+  } catch (error) {
+    messageField.textContent = "Erreur : " + error.message;
+  } finally {
+    saveButton.disabled = false;
+  }
+});
 
   /* =====================================
      CONNEXION ET DÉCONNEXION
