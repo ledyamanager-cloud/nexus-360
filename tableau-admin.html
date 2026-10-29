@@ -92,7 +92,8 @@
       color: #475569;
     }
 
-    #message {
+    #message,
+    #ordersMessage {
       overflow-wrap: anywhere;
       white-space: pre-wrap;
     }
@@ -101,6 +102,34 @@
       color: #0369a1;
       display: inline-block;
       margin: 8px 12px 8px 0;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 700px;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .orders-button {
+      margin-bottom: 12px;
     }
   </style>
 </head>
@@ -137,11 +166,15 @@
     </section>
 
     <section id="dashboard" class="hidden">
+
       <div class="card">
         <h2>Bienvenue dans l'administration</h2>
         <p id="accountInfo"></p>
 
-        <button id="refreshButton">Actualiser les statistiques</button>
+        <button id="refreshButton">
+          Actualiser les statistiques
+        </button>
+
         <button id="logoutButton" class="secondary">
           Se déconnecter
         </button>
@@ -178,14 +211,64 @@
         </div>
       </div>
 
+      <!-- GESTION DES COMMANDES -->
+      <div class="card">
+        <h2>📦 Gestion des commandes</h2>
+
+        <p class="muted">
+          Consulte les commandes enregistrées sur NEXUS 360.
+        </p>
+
+        <button
+          id="loadOrdersButton"
+          class="orders-button"
+          type="button"
+        >
+          Afficher les commandes
+        </button>
+
+        <p id="ordersMessage" role="status">
+          Appuie sur le bouton pour afficher les commandes.
+        </p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>N° commande</th>
+                <th>Client</th>
+                <th>Téléphone</th>
+                <th>Adresse de livraison</th>
+                <th>Total</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="card">
         <h2>Accès rapides</h2>
 
-        <a href="catalogue.html">Catalogue des produits</a>
-        <a href="ajouter-produit.html">Ajouter un produit</a>
-        <a href="tableau-vendeur.html">Espace vendeur</a>
-        <a href="commande.html">Page de commande</a>
+        <a href="catalogue.html">
+          Catalogue des produits
+        </a>
+
+        <a href="ajouter-produit.html">
+          Ajouter un produit
+        </a>
+
+        <a href="tableau-vendeur.html">
+          Espace vendeur
+        </a>
+
+        <a href="commande.html">
+          Page de commande
+        </a>
       </div>
+
     </section>
 
     <section class="card">
@@ -199,6 +282,12 @@
     const loginCard = document.getElementById("loginCard");
     const dashboard = document.getElementById("dashboard");
     const message = document.getElementById("message");
+
+    const ordersMessage =
+      document.getElementById("ordersMessage");
+
+    const ordersTableBody =
+      document.getElementById("ordersTableBody");
 
     function showMessage(text, isError = false) {
       message.textContent = text;
@@ -219,11 +308,12 @@
         return;
       }
 
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("role, full_name")
-        .eq("id", user.id)
-        .maybeSingle();
+      const { data: profile, error: profileError } =
+        await supabase
+          .from("profiles")
+          .select("role, full_name")
+          .eq("id", user.id)
+          .maybeSingle();
 
       if (profileError) throw profileError;
 
@@ -237,6 +327,7 @@
           "Accès réservé aux administrateurs.",
           true
         );
+
         return;
       }
 
@@ -252,11 +343,17 @@
     async function getCount(table, filters = null) {
       let query = supabase
         .from(table)
-        .select("*", { count: "exact", head: true });
+        .select("*", {
+          count: "exact",
+          head: true
+        });
 
       if (filters) {
         for (const filter of filters) {
-          query = query.eq(filter.column, filter.value);
+          query = query.eq(
+            filter.column,
+            filter.value
+          );
         }
       }
 
@@ -285,9 +382,11 @@
       try {
         const results = await Promise.all([
           getCount("profiles"),
+
           getCount("profiles", [
             { column: "role", value: "vendeur" }
           ]),
+
           getCount("stores"),
           getCount("products"),
           getCount("orders")
@@ -309,6 +408,7 @@
           results[4];
 
         showMessage("Statistiques chargées.");
+
       } catch (error) {
         for (const id of ids) {
           document.getElementById(id).textContent = "—";
@@ -323,10 +423,81 @@
       }
     }
 
+    // AFFICHER LES COMMANDES
+    async function loadOrders() {
+      ordersMessage.textContent =
+        "Chargement des commandes...";
+
+      ordersTableBody.replaceChildren();
+
+      try {
+        const { data, error } = await supabase
+          .from("orders")
+          .select(
+            "order_number, customer_name, customer_phone, delivery_address, total_amount, status"
+          )
+          .order("order_number", {
+            ascending: false
+          });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          ordersMessage.textContent =
+            "Aucune commande trouvée ou aucune commande accessible.";
+
+          return;
+        }
+
+        for (const order of data) {
+          const row = document.createElement("tr");
+
+          const values = [
+            order.order_number ?? "—",
+            order.customer_name ?? "—",
+            order.customer_phone ?? "—",
+            order.delivery_address ?? "—",
+            order.total_amount == null
+              ? "—"
+              : Number(order.total_amount)
+                  .toLocaleString("fr-FR") + " FC",
+            order.status ?? "En attente"
+          ];
+
+          for (const value of values) {
+            const cell = document.createElement("td");
+
+            cell.textContent = String(value);
+            row.appendChild(cell);
+          }
+
+          ordersTableBody.appendChild(row);
+        }
+
+        ordersMessage.textContent =
+          data.length + " commande(s) affichée(s).";
+
+      } catch (error) {
+        console.error(
+          "Erreur de chargement des commandes :",
+          error
+        );
+
+        ordersMessage.textContent =
+          "Impossible d'afficher les commandes. " +
+          "Détail : " + error.message;
+      }
+    }
+
+    document
+      .getElementById("loadOrdersButton")
+      .addEventListener("click", loadOrders);
+
     document.getElementById("loginForm").addEventListener(
       "submit",
       async (event) => {
         event.preventDefault();
+
         showMessage("Connexion en cours...");
 
         const email =
@@ -335,10 +506,11 @@
         const password =
           document.getElementById("password").value;
 
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
+        const { error } =
+          await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
 
         if (error) {
           showMessage(error.message, true);
@@ -358,10 +530,12 @@
 
     document.getElementById("refreshButton").addEventListener(
       "click",
-      () => {
-        loadStatistics().catch(error => {
+      async () => {
+        try {
+          await loadStatistics();
+        } catch (error) {
           showMessage(error.message, true);
-        });
+        }
       }
     );
 
@@ -377,6 +551,12 @@
 
         dashboard.classList.add("hidden");
         loginCard.classList.remove("hidden");
+
+        ordersTableBody.replaceChildren();
+
+        ordersMessage.textContent =
+          "Connecte-toi pour consulter les commandes.";
+
         showMessage("Déconnexion réussie.");
       }
     );
@@ -394,4 +574,4 @@
     });
   </script>
 </body>
-          </html>
+  </html>
