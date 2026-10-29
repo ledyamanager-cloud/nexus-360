@@ -1,1 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tableau de bord vendeur | NEXUS 360</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    header {
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+    header h1 { margin: 0 0 8px; }
+    main {
+      width: min(100% - 24px, 900px);
+      margin: 24px auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 10px #0000000d;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    input { border: 1px solid #cbd5e1; }
+    button {
+      border: 0;
+      background: #0284c7;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button.secondary { background: #475569; }
+    .hidden { display: none; }
+    .item {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .muted { color: #475569; }
+    #message { white-space: pre-wrap; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NEXUS 360</h1>
+    <div>Espace vendeur</div>
+  </header>
 
+  <main>
+    <section class="card" id="loginCard">
+      <h2>Connexion vendeur</h2>
+      <p class="muted">Connecte-toi avec ton compte NEXUS 360.</p>
+      <form id="loginForm">
+        <label for="email">Adresse e-mail</label>
+        <input id="email" type="email" autocomplete="username" required>
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <button type="submit">Se connecter</button>
+      </form>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="card">
+        <h2>Mon compte</h2>
+        <p id="accountInfo"></p>
+        <button class="secondary" id="logoutButton">Se déconnecter</button>
+      </div>
+
+      <div class="card">
+        <h2>Ma boutique</h2>
+        <div id="storeInfo">Chargement...</div>
+        <p>
+          <a href="ajouter-produit.html">Ajouter un produit</a>
+          &nbsp;|&nbsp;
+          <a href="catalogue.html">Voir le catalogue</a>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Mes produits</h2>
+        <div id="productsInfo">Chargement...</div>
+      </div>
+
+      <div class="card">
+        <h2>Mes commandes</h2>
+        <p class="muted">
+          L’affichage des commandes sera activé après vérification
+          des permissions vendeur dans Supabase.
+        </p>
+      </div>
+    </section>
+
+    <section class="card">
+      <p id="message" role="status"></p>
+    </section>
+  </main>
+
+  <script type="module">
+    import { supabase } from "./supabase.js";
+
+    const loginCard = document.getElementById("loginCard");
+    const dashboard = document.getElementById("dashboard");
+    const message = document.getElementById("message");
+
+    function showMessage(text, isError = false) {
+      message.textContent = text;
+      message.style.color = isError ? "#b91c1c" : "#166534";
+    }
+
+    async function loadDashboard() {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      const user = sessionData.session?.user;
+      if (!user) {
+        loginCard.classList.remove("hidden");
+        dashboard.classList.add("hidden");
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role, full_name")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profileError) throw profileError;
+
+      if (!profile || profile.role !== "vendeur") {
+        await supabase.auth.signOut();
+        loginCard.classList.remove("hidden");
+        dashboard.classList.add("hidden");
+        showMessage(
+          "Accès réservé aux comptes ayant le rôle vendeur.",
+          true
+        );
+        return;
+      }
+
+      loginCard.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+      document.getElementById("accountInfo").textContent =
+        `${profile.full_name || user.email} — rôle vendeur`;
+
+      const { data: store, error: storeError } = await supabase
+        .from("stores")
+        .select("id, store_name, name, city, description")
+        .eq("owner_id", user.id)
+        .maybeSingle();
+
+      if (storeError) {
+        document.getElementById("storeInfo").textContent =
+          "Impossible de charger la boutique. Vérifie les permissions Supabase et les noms des colonnes.";
+        throw storeError;
+      }
+
+      if (!store) {
+        document.getElementById("storeInfo").textContent =
+          "Aucune boutique trouvée. Crée d’abord ta boutique depuis la page prévue sur NEXUS 360.";
+        document.getElementById("productsInfo").textContent =
+          "Les produits apparaîtront ici après la création de ta boutique.";
+        return;
+      }
+
+      document.getElementById("storeInfo").innerHTML = "";
+      const storeTitle = document.createElement("h3");
+      storeTitle.textContent = store.store_name || store.name || "Ma boutique";
+      const storeCity = document.createElement("p");
+      storeCity.textContent = store.city || "Ville non renseignée";
+      const storeDescription = document.createElement("p");
+      storeDescription.textContent = store.description || "";
+      document.getElementById("storeInfo").append(
+        storeTitle, storeCity, storeDescription
+      );
+
+      const { data: products, error: productsError } = await supabase
+        .from("products")
+        .select("id, product_name, price, stock, is_active")
+        .eq("store_id", store.id)
+        .order("created_at", { ascending: false });
+
+      if (productsError) {
+        document.getElementById("productsInfo").textContent =
+          "Impossible de charger les produits. Vérifie les permissions Supabase.";
+        throw productsError;
+      }
+
+      const productsInfo = document.getElementById("productsInfo");
+      productsInfo.innerHTML = "";
+
+      if (!products?.length) {
+        productsInfo.textContent = "Aucun produit publié pour le moment.";
+      } else {
+        for (const product of products) {
+          const item = document.createElement("div");
+          item.className = "item";
+
+          const name = document.createElement("strong");
+          name.textContent = product.product_name || "Produit sans nom";
+
+          const details = document.createElement("p");
+          details.textContent =
+            `Prix : ${product.price} FC — Stock : ${product.stock ?? 0} — ` +
+            `${product.is_active ? "Actif" : "Inactif"}`;
+
+          item.append(name, details);
+          productsInfo.appendChild(item);
+        }
+      }
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      showMessage("Connexion en cours...");
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        showMessage(error.message, true);
+        return;
+      }
+
+      try {
+        await loadDashboard();
+        showMessage("Connexion vérifiée.");
+      } catch (error) {
+        showMessage(error.message || "Erreur lors du chargement.", true);
+      }
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      dashboard.classList.add("hidden");
+      loginCard.classList.remove("hidden");
+      showMessage("Tu es déconnecté.");
+    });
+
+    supabase.auth.onAuthStateChange(() => {
+      setTimeout(() => {
+        loadDashboard().catch(error =>
+          showMessage(error.message || "Erreur de chargement.", true)
+        );
+      }, 0);
+    });
+
+    loadDashboard().catch(error =>
+      showMessage(error.message || "Erreur de chargement.", true)
+    );
+  </script>
+</body>
+</html>
