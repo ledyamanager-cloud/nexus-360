@@ -94,9 +94,7 @@
       vertical-align: top;
     }
 
-    th {
-      background: #f8fafc;
-    }
+    th { background: #f8fafc; }
 
     .badge {
       display: inline-block;
@@ -166,7 +164,6 @@
         <div id="productsInfo">Chargement...</div>
       </div>
 
-      <!-- COMMANDES DU VENDEUR -->
       <div class="card">
         <h2>📦 Mes commandes</h2>
 
@@ -269,6 +266,7 @@
       }
     }
 
+    // CHARGEMENT CORRIGÉ DES COMMANDES
     async function loadOrders() {
       ordersTableBody.replaceChildren();
 
@@ -281,7 +279,7 @@
       ordersMessage.textContent = "Chargement des commandes...";
 
       try {
-        // Récupérer les produits appartenant à cette boutique.
+        // 1. Récupérer les produits de la boutique.
         const { data: products, error: productsError } =
           await supabase
             .from("products")
@@ -292,47 +290,71 @@
 
         if (!products || products.length === 0) {
           ordersMessage.textContent =
-            "Ta boutique ne possède encore aucun produit.";
+            "Aucun produit trouvé dans ta boutique.";
           return;
         }
 
-        const productIds = products.map(product => product.id);
+        const productIds = new Set(
+          products.map(product => String(product.id))
+        );
 
-        // Chercher les lignes de commande liées aux produits de la boutique.
-        const { data: orderItems, error: itemsError } =
+        // 2. Récupérer les articles de commande visibles
+        // pour le compte vendeur connecté.
+        const { data: items, error: itemsError } =
           await supabase
             .from("order_items")
-            .select("order_id, product_id")
-            .in("product_id", productIds);
+            .select("order_id, product_id");
 
         if (itemsError) throw itemsError;
 
-        if (!orderItems || orderItems.length === 0) {
+        if (!items || items.length === 0) {
+          ordersMessage.textContent =
+            "Aucun article de commande accessible. " +
+            "Vérifie les autorisations RLS de order_items.";
+          return;
+        }
+
+        // 3. Garder uniquement les articles de cette boutique.
+        const matchingOrderIds = new Set();
+
+        for (const item of items) {
+          if (productIds.has(String(item.product_id))) {
+            matchingOrderIds.add(String(item.order_id));
+          }
+        }
+
+        if (matchingOrderIds.size === 0) {
           ordersMessage.textContent =
             "Aucune commande contenant tes produits pour le moment.";
           return;
         }
 
-        const orderIds = [
-          ...new Set(orderItems.map(item => item.order_id))
-        ];
+        // 4. Charger les commandes correspondantes.
+        const orderIds = [...matchingOrderIds];
 
         const { data: orders, error: ordersError } =
           await supabase
             .from("orders")
             .select(
-              "id, order_number, customer_name, customer_phone, delivery_address, total_amount, status"
+              "id, order_number, customer_name, customer_phone, " +
+              "delivery_address, total_amount, status"
             )
-            .in("id", orderIds)
-            .order("order_number", { ascending: false });
+            .in("id", orderIds);
 
         if (ordersError) throw ordersError;
 
         if (!orders || orders.length === 0) {
           ordersMessage.textContent =
-            "Aucune commande accessible. Vérifie les permissions RLS de Supabase.";
+            "Les articles sont trouvés, mais aucune commande " +
+            "n'est accessible. Vérifie les permissions RLS de orders.";
           return;
         }
+
+        // 5. Afficher les commandes.
+        orders.sort((a, b) =>
+          Number(b.order_number || 0) -
+          Number(a.order_number || 0)
+        );
 
         for (const order of orders) {
           const row = document.createElement("tr");
@@ -346,9 +368,9 @@
             order.status ?? "En attente"
           ];
 
-          for (let index = 0; index < values.length; index++) {
+          for (const value of values) {
             const cell = document.createElement("td");
-            cell.textContent = String(values[index]);
+            cell.textContent = String(value);
             row.appendChild(cell);
           }
 
@@ -359,11 +381,14 @@
           orders.length + " commande(s) contenant tes produits.";
 
       } catch (error) {
-        console.error("Erreur de chargement des commandes :", error);
+        console.error(
+          "Erreur de chargement des commandes :",
+          error
+        );
 
         ordersMessage.textContent =
-          "Impossible de charger les commandes. " +
-          "Détail : " + error.message;
+          "Impossible de charger les commandes. Détail : " +
+          (error.message || "Erreur inconnue.");
       }
     }
 
@@ -462,6 +487,12 @@
         await loadProducts(store.id);
         await loadOrders();
 
+      } catch (error) {
+        console.error("Erreur du tableau vendeur :", error);
+        showMessage(
+          error.message || "Erreur de chargement du tableau vendeur.",
+          true
+        );
       } finally {
         loadingDashboard = false;
       }
@@ -528,13 +559,19 @@
     supabase.auth.onAuthStateChange(() => {
       setTimeout(() => {
         loadDashboard().catch(error => {
-          showMessage(error.message || "Erreur de chargement.", true);
+          showMessage(
+            error.message || "Erreur de chargement.",
+            true
+          );
         });
       }, 0);
     });
 
     loadDashboard().catch(error => {
-      showMessage(error.message || "Erreur de chargement.", true);
+      showMessage(
+        error.message || "Erreur de chargement.",
+        true
+      );
     });
   </script>
 </body>
