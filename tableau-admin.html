@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administration | NEXUS 360</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    header {
+      background: #0f172a;
+      color: white;
+      padding: 22px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+    }
+
+    main {
+      width: min(100% - 24px, 1000px);
+      margin: 24px auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 10px #0000000d;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input {
+      border: 1px solid #cbd5e1;
+    }
+
+    button {
+      border: none;
+      background: #0284c7;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #475569;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+    }
+
+    .stat {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 18px;
+      border-radius: 10px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      margin-top: 10px;
+      color: #0369a1;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .muted {
+      color: #475569;
+    }
+
+    #message {
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    a {
+      color: #0369a1;
+      display: inline-block;
+      margin: 8px 12px 8px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>NEXUS 360</h1>
+    <div>Administration de la plateforme</div>
+  </header>
+
+  <main>
+    <section class="card" id="loginCard">
+      <h2>Connexion administrateur</h2>
+
+      <form id="loginForm">
+        <label for="email">Adresse e-mail</label>
+        <input
+          id="email"
+          type="email"
+          autocomplete="username"
+          required
+        >
+
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        >
+
+        <button type="submit">Se connecter</button>
+      </form>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="card">
+        <h2>Bienvenue dans l'administration</h2>
+        <p id="accountInfo"></p>
+
+        <button id="refreshButton">Actualiser les statistiques</button>
+        <button id="logoutButton" class="secondary">
+          Se déconnecter
+        </button>
+      </div>
+
+      <div class="card">
+        <h2>Vue d'ensemble</h2>
+
+        <div class="grid">
+          <div class="stat">
+            Utilisateurs
+            <strong id="usersCount">—</strong>
+          </div>
+
+          <div class="stat">
+            Vendeurs
+            <strong id="sellersCount">—</strong>
+          </div>
+
+          <div class="stat">
+            Boutiques
+            <strong id="storesCount">—</strong>
+          </div>
+
+          <div class="stat">
+            Produits
+            <strong id="productsCount">—</strong>
+          </div>
+
+          <div class="stat">
+            Commandes
+            <strong id="ordersCount">—</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Accès rapides</h2>
+
+        <a href="catalogue.html">Catalogue des produits</a>
+        <a href="ajouter-produit.html">Ajouter un produit</a>
+        <a href="tableau-vendeur.html">Espace vendeur</a>
+        <a href="commande.html">Page de commande</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <p id="message" role="status"></p>
+    </section>
+  </main>
+
+  <script type="module">
+    import { supabase } from "./supabase.js";
+
+    const loginCard = document.getElementById("loginCard");
+    const dashboard = document.getElementById("dashboard");
+    const message = document.getElementById("message");
+
+    function showMessage(text, isError = false) {
+      message.textContent = text;
+      message.style.color = isError ? "#b91c1c" : "#166534";
+    }
+
+    async function loadDashboard() {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      const user = sessionData.session?.user;
+
+      if (!user) {
+        loginCard.classList.remove("hidden");
+        dashboard.classList.add("hidden");
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role, full_name")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profileError) throw profileError;
+
+      if (!profile || profile.role !== "admin") {
+        await supabase.auth.signOut();
+
+        loginCard.classList.remove("hidden");
+        dashboard.classList.add("hidden");
+
+        showMessage(
+          "Accès réservé aux administrateurs.",
+          true
+        );
+        return;
+      }
+
+      loginCard.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+
+      document.getElementById("accountInfo").textContent =
+        `${profile.full_name || user.email} — Administrateur`;
+
+      await loadStatistics();
+    }
+
+    async function getCount(table, filters = null) {
+      let query = supabase
+        .from(table)
+        .select("*", { count: "exact", head: true });
+
+      if (filters) {
+        for (const filter of filters) {
+          query = query.eq(filter.column, filter.value);
+        }
+      }
+
+      const { count, error } = await query;
+
+      if (error) throw error;
+
+      return count ?? 0;
+    }
+
+    async function loadStatistics() {
+      showMessage("Chargement des statistiques...");
+
+      const ids = [
+        "usersCount",
+        "sellersCount",
+        "storesCount",
+        "productsCount",
+        "ordersCount"
+      ];
+
+      for (const id of ids) {
+        document.getElementById(id).textContent = "…";
+      }
+
+      try {
+        const results = await Promise.all([
+          getCount("profiles"),
+          getCount("profiles", [
+            { column: "role", value: "vendeur" }
+          ]),
+          getCount("stores"),
+          getCount("products"),
+          getCount("orders")
+        ]);
+
+        document.getElementById("usersCount").textContent =
+          results[0];
+
+        document.getElementById("sellersCount").textContent =
+          results[1];
+
+        document.getElementById("storesCount").textContent =
+          results[2];
+
+        document.getElementById("productsCount").textContent =
+          results[3];
+
+        document.getElementById("ordersCount").textContent =
+          results[4];
+
+        showMessage("Statistiques chargées.");
+      } catch (error) {
+        for (const id of ids) {
+          document.getElementById(id).textContent = "—";
+        }
+
+        showMessage(
+          "Impossible de charger les statistiques. " +
+          "Vérifie les permissions RLS de Supabase. " +
+          "Détail : " + error.message,
+          true
+        );
+      }
+    }
+
+    document.getElementById("loginForm").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+        showMessage("Connexion en cours...");
+
+        const email =
+          document.getElementById("email").value.trim();
+
+        const password =
+          document.getElementById("password").value;
+
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          showMessage(error.message, true);
+          return;
+        }
+
+        try {
+          await loadDashboard();
+        } catch (error) {
+          showMessage(
+            error.message || "Erreur de chargement.",
+            true
+          );
+        }
+      }
+    );
+
+    document.getElementById("refreshButton").addEventListener(
+      "click",
+      () => {
+        loadStatistics().catch(error => {
+          showMessage(error.message, true);
+        });
+      }
+    );
+
+    document.getElementById("logoutButton").addEventListener(
+      "click",
+      async () => {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          showMessage(error.message, true);
+          return;
+        }
+
+        dashboard.classList.add("hidden");
+        loginCard.classList.remove("hidden");
+        showMessage("Déconnexion réussie.");
+      }
+    );
+
+    supabase.auth.onAuthStateChange(() => {
+      setTimeout(() => {
+        loadDashboard().catch(error => {
+          showMessage(error.message, true);
+        });
+      }, 0);
+    });
+
+    loadDashboard().catch(error => {
+      showMessage(error.message, true);
+    });
+  </script>
+</body>
+          </html>
