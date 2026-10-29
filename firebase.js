@@ -15,7 +15,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA4kaTteTE4A68vjBPtWf5yj_0EV_ew8A",
+  apiKey: "AIzaSyA4kaTteTE4A68vjBPtWf5yj_0EV_ewA8Q",
   authDomain: "nexus-360-30fb7.firebaseapp.com",
   projectId: "nexus-360-30fb7",
   storageBucket: "nexus-360-30fb7.firebasestorage.app",
