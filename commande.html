@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Passer commande - NEXUS 360</title>
-
-  <style>
+  <title>Passer commande - NEXUS 360</title>  <style>
     * { box-sizing: border-box; }
 
     body {
@@ -89,7 +86,10 @@
       cursor: pointer;
     }
 
-    button:disabled { background: #888; cursor: not-allowed; }
+    button:disabled {
+      background: #888;
+      cursor: not-allowed;
+    }
 
     .message {
       margin-top: 18px;
@@ -109,6 +109,57 @@
       font-size: 25px;
       font-weight: bold;
       letter-spacing: 1px;
+      overflow-wrap: anywhere;
+    }
+
+    .payment-section {
+      margin-top: 22px;
+      padding: 16px;
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      background: #fff;
+      color: #222;
+    }
+
+    .payment-section h3 {
+      margin-top: 0;
+      color: #123b72;
+    }
+
+    .payment-choice {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .cash-choice {
+      background: #15803d;
+      color: white;
+    }
+
+    .electronic-choice {
+      background: #d1d5db;
+      color: #555;
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    .payment-info {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .payment-info a {
+      color: #123b72;
+      font-weight: bold;
+      overflow-wrap: anywhere;
     }
 
     .contact-button {
@@ -133,6 +184,15 @@
       color: #123b72;
     }
 
+    .cash-confirmation {
+      margin-top: 14px;
+      padding: 12px;
+      background: #e3f8e8;
+      border-radius: 8px;
+      color: #176b2c;
+      line-height: 1.5;
+    }
+
     .back {
       display: block;
       margin-top: 20px;
@@ -144,56 +204,51 @@
       body { padding: 10px; }
       .container { margin: 10px auto; padding: 18px; }
     }
-  </style>
-</head>
-
-<body>
+  </style></head><body>
   <main class="container">
-    <h1>🛒 Finaliser ma commande</h1>
+    <h1>🛒 Finaliser ma commande</h1><p>
+  Complétez vos coordonnées pour recevoir votre commande.
+  Aucun compte client n'est nécessaire.
+</p>
 
-    <p>
-      Complétez vos coordonnées pour recevoir votre commande.
-      Aucun compte client n'est nécessaire.
-    </p>
+<h2>Votre panier</h2>
+<div id="cartItems"></div>
 
-    <h2>Votre panier</h2>
-    <div id="cartItems"></div>
+<div class="total">
+  Total : <span id="total">0 FC</span>
+</div>
 
-    <div class="total">
-      Total : <span id="total">0 FC</span>
-    </div>
+<h2>Informations de livraison</h2>
 
-    <h2>Informations de livraison</h2>
+<form id="orderForm">
+  <label for="customerName">Nom complet</label>
+  <input id="customerName" type="text" minlength="2" maxlength="150"
+    autocomplete="name" required>
 
-    <form id="orderForm">
-      <label for="customerName">Nom complet</label>
-      <input id="customerName" type="text" minlength="2" maxlength="150"
-        autocomplete="name" required>
+  <label for="customerPhone">Numéro de téléphone</label>
+  <input id="customerPhone" type="tel" minlength="6" maxlength="30"
+    autocomplete="tel" required>
 
-      <label for="customerPhone">Numéro de téléphone</label>
-      <input id="customerPhone" type="tel" minlength="6" maxlength="30"
-        autocomplete="tel" required>
+  <label for="deliveryAddress">Adresse de livraison</label>
+  <textarea id="deliveryAddress" minlength="5" maxlength="500"
+    autocomplete="street-address"
+    placeholder="Commune, quartier, avenue, numéro..." required></textarea>
 
-      <label for="deliveryAddress">Adresse de livraison</label>
-      <textarea id="deliveryAddress" minlength="5" maxlength="500"
-        autocomplete="street-address"
-        placeholder="Commune, quartier, avenue, numéro..." required></textarea>
+  <button id="submitButton" type="submit">Confirmer ma commande</button>
+</form>
 
-      <button id="submitButton" type="submit">Confirmer ma commande</button>
-    </form>
+<div id="message" class="message hidden" role="status" aria-live="polite"></div>
 
-    <div id="message" class="message hidden" role="status" aria-live="polite"></div>
+<a class="back" href="./catalogue.html">← Retour au catalogue</a>
 
-    <a class="back" href="./catalogue.html">← Retour au catalogue</a>
-  </main>
-
-  <script type="module">
+  </main>  <script type="module">
     import { supabase } from "./supabase.js";
 
     const CART_KEY = "nexus360_cart_v1";
     const CUSTOMER_KEY = "nexus360_customer_details_v1";
 
     const STORE_PHONE = "243966557344";
+    const PAYMENT_EMAIL = "ngomafilscher@gmail.com";
 
     const cartItems = document.getElementById("cartItems");
     const totalElement = document.getElementById("total");
@@ -208,6 +263,12 @@
       message.replaceChildren();
       message.className = "message " + type;
       message.textContent = text;
+    }
+
+    function formatPrice(value) {
+      return new Intl.NumberFormat("fr-FR", {
+        maximumFractionDigits: 2
+      }).format(Number(value) || 0);
     }
 
     function showSuccess(orderNumber, totalAmount, customerName) {
@@ -230,12 +291,49 @@
       const advice = document.createElement("p");
       advice.textContent = "Conservez ce numéro pour suivre votre commande.";
 
+      const paymentSection = document.createElement("section");
+      paymentSection.className = "payment-section";
+
+      const paymentTitle = document.createElement("h3");
+      paymentTitle.textContent = "💳 Comment souhaitez-vous payer votre commande ?";
+
+      const cashButton = document.createElement("button");
+      cashButton.type = "button";
+      cashButton.className = "payment-choice cash-choice";
+      cashButton.textContent = "💵 Payer après livraison (Cash au vendeur)";
+
+      const electronicButton = document.createElement("button");
+      electronicButton.type = "button";
+      electronicButton.className = "payment-choice electronic-choice";
+      electronicButton.disabled = true;
+      electronicButton.textContent = "💳 Paiement électronique – Bientôt disponible";
+
+      const emailInfo = document.createElement("p");
+      emailInfo.className = "payment-info";
+      emailInfo.append(
+        document.createTextNode(
+          "Pour toute information concernant le paiement électronique, veuillez contacter Filscher Muanda au "
+        )
+      );
+
+      const emailLink = document.createElement("a");
+      emailLink.href = "mailto:" + PAYMENT_EMAIL;
+      emailLink.textContent = PAYMENT_EMAIL;
+      emailInfo.appendChild(emailLink);
+      emailInfo.append(document.createTextNode("."));
+
+      const cashConfirmation = document.createElement("div");
+      cashConfirmation.className = "cash-confirmation hidden";
+      cashConfirmation.textContent =
+        "✅ Vous avez choisi de payer en espèces après livraison. " +
+        "Veuillez remettre le montant au vendeur à la réception de votre commande.";
+
       const contactTitle = document.createElement("p");
-      contactTitle.className = "contact-title";
-      contactTitle.textContent = "📞 Besoin de contacter la boutique ?";
+      contactTitle.className = "contact-title hidden";
+      contactTitle.textContent = "📞 Vous pouvez contacter la boutique :";
 
       const whatsapp = document.createElement("a");
-      whatsapp.className = "contact-button whatsapp-button";
+      whatsapp.className = "contact-button whatsapp-button hidden";
       whatsapp.href =
         "https://wa.me/" + STORE_PHONE +
         "?text=" + encodeURIComponent(
@@ -243,16 +341,36 @@
           "Numéro de commande : " + orderNumber + "\n" +
           "Nom : " + customerName + "\n" +
           "Montant : " + formatPrice(totalAmount) + " FC.\n" +
-          "Je souhaite avoir des informations sur ma commande."
+          "J'ai choisi le paiement cash après livraison."
         );
       whatsapp.target = "_blank";
       whatsapp.rel = "noopener noreferrer";
       whatsapp.textContent = "🟢 Contacter la boutique sur WhatsApp";
 
       const call = document.createElement("a");
-      call.className = "contact-button call-button";
+      call.className = "contact-button call-button hidden";
       call.href = "tel:+" + STORE_PHONE;
       call.textContent = "📞 Appeler directement la boutique";
+
+      cashButton.addEventListener("click", () => {
+        cashButton.disabled = true;
+        cashButton.textContent = "✅ Paiement après livraison choisi";
+        cashConfirmation.classList.remove("hidden");
+        contactTitle.classList.remove("hidden");
+        whatsapp.classList.remove("hidden");
+        call.classList.remove("hidden");
+      });
+
+      paymentSection.append(
+        paymentTitle,
+        cashButton,
+        electronicButton,
+        emailInfo,
+        cashConfirmation,
+        contactTitle,
+        whatsapp,
+        call
+      );
 
       message.append(
         title,
@@ -260,16 +378,8 @@
         number,
         total,
         advice,
-        contactTitle,
-        whatsapp,
-        call
+        paymentSection
       );
-    }
-
-    function formatPrice(value) {
-      return new Intl.NumberFormat("fr-FR", {
-        maximumFractionDigits: 2
-      }).format(Number(value) || 0);
     }
 
     function loadCart() {
@@ -461,6 +571,5 @@
           cart.length === 0 || form.classList.contains("hidden");
       }
     });
-  </script>
-</body>
+  </script></body>
 </html>
