@@ -26,23 +26,117 @@ main{max-width:1500px;margin:15px auto;padding:0 18px}.top-layout{display:grid;g
 .product-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}.product-card{background:white;border:1px solid var(--border);border-radius:11px;padding:8px;min-width:0;transition:.2s;position:relative}.product-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px #14234412}.product-image{height:130px;border-radius:7px;overflow:hidden;background:#f4f6fa;position:relative}.product-image img{width:100%;height:100%;object-fit:cover}.sale-badge{position:absolute;top:7px;right:7px;background:#f32929;color:white;padding:4px 6px;font-size:10px;font-weight:bold;border-radius:5px}.favorite{position:absolute;left:8px;top:8px;border:0;border-radius:50%;background:white;width:29px;height:29px;font-size:17px;color:#69778d}.favorite.selected{color:#ef3048}.product-name{font-weight:600;font-size:11px;line-height:1.4;margin:8px 2px 5px;min-height:31px}.stars{color:#ffb900;font-size:12px;margin:4px 2px}.stars small{color:var(--muted)}.price{color:#dc1717;font-weight:800;font-size:14px;margin:6px 2px;white-space:nowrap}.old-price{color:#8993a4;text-decoration:line-through;font-size:10px;font-weight:normal;margin-left:4px}.buy-btn{width:100%;background:var(--yellow);border:0;border-radius:6px;padding:8px 4px;font-size:10px;font-weight:bold;margin-top:5px}
 .bottom-layout{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin:15px 0}.seller-banner{border-radius:11px;min-height:145px;padding:20px;position:relative;overflow:hidden;color:white;background:linear-gradient(100deg,#07101f,#132740)}.seller-banner h2{font-size:20px;line-height:1.3;margin:10px 0;max-width:65%}.seller-banner p{max-width:65%;color:#d9e1ed;font-size:12px}.seller-banner img{position:absolute;width:42%;height:100%;right:0;top:0;object-fit:cover;opacity:.78}.services{padding:15px}.services h3{margin:0 0 12px;font-size:17px}.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.service-card{border:1px solid var(--border);border-radius:10px;padding:10px 7px;display:flex;align-items:center;gap:8px;min-width:0;background:#f8faff}.service-card .service-icon{font-size:24px}.service-card strong{font-size:10px;display:block;margin-bottom:4px}.service-card small{color:var(--muted);font-size:9px}.service-note{margin:14px 0 0;color:var(--muted);font-size:11px}
 footer{background:var(--dark);color:white;padding:20px 3%;margin-top:20px}.footer-inner{max-width:1450px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:11px}.footer-links a:hover{color:var(--yellow)}.footer-copy{font-size:10px;color:#b8c2d3}.empty-message{grid-column:1/-1;background:white;border-radius:10px;padding:35px;text-align:center;color:var(--muted)}
-.status-note{grid-column:1/-1;background:#fff8db;border:1px solid #f1df9b;border-radius:9px;padding:12px;color:#725b13;font-size:12px}
 @media(max-width:1100px){.top-layout{grid-template-columns:200px minmax(0,1fr)}.right-column{display:none}.product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.header-main{gap:13px}.logo-name{font-size:21px}.category-row{grid-template-columns:repeat(3,minmax(0,1fr))}.category-card:nth-child(n+4){display:none}}
 @media(max-width:650px){.header-main{padding:12px;display:grid;grid-template-columns:1fr auto auto;gap:10px}.logo-symbol{font-size:35px}.logo-name{font-size:19px}.logo-tag{font-size:9px}.search{grid-column:1/-1;grid-row:2;max-width:none;height:42px}.header-action{font-size:10px}.header-action .icon{font-size:21px}.navbar{gap:20px;padding:0 12px}main{padding:0 10px;margin-top:10px}.top-layout{display:block}.left-column{display:none}.hero{min-height:245px;padding:18px}.hero-content{max-width:75%}.hero-logo{font-size:20px}.hero h1{font-size:24px}.hero p{font-size:11px}.hero-image{width:39%;height:70%;right:-3px}.discount-badge{width:55px;height:55px;top:12px;right:10px;font-size:9px}.discount-badge strong{font-size:18px}.category-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}.category-card:nth-child(n+4){display:block}.category-image{height:80px}.promos{grid-template-columns:1fr;gap:9px}.promo{min-height:115px}.promo img{width:38%}.section-heading{margin-top:20px}.tabs{gap:14px;max-width:100%}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.product-image{height:145px}.product-name{font-size:12px}.price{font-size:13px}.old-price{display:block;margin:4px 0 0}.bottom-layout{grid-template-columns:1fr}.seller-banner h2{font-size:18px}.service-grid{grid-template-columns:1fr}.service-card{padding:12px}.service-card strong{font-size:12px}.service-card small{font-size:11px}.footer-inner{justify-content:center;text-align:center}.footer-links{justify-content:center;gap:13px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* NEXUS 360 — direction visuelle premium inspirée de la maquette validée */
+:root{--dark:#06183b;--dark2:#082b68;--blue:#0759dc;--yellow:#ffc900;--text:#092653;--muted:#7185a3;--bg:#f0f6ff;--border:#e0eafb;--white:#fff;--radius:16px}
+body{background:linear-gradient(180deg,#f4f8ff 0%,#edf4ff 100%);color:var(--text)}
+.topbar{background:linear-gradient(100deg,#041633,#073b8c 70%,#0759dc);color:#eaf2ff}
+.header-main{min-height:82px;background:linear-gradient(105deg,#06183b,#073b8c 72%,#0759dc);padding:12px 2.5%;gap:22px}
+.logo-symbol{color:#0876f5;text-shadow:2px 2px var(--yellow);font-size:51px}
+.logo-name{font-size:29px;letter-spacing:-.7px}.logo-name span{color:var(--yellow)}
+.logo-tag{color:#d9e8ff}
+.search{height:48px;border:0;border-radius:25px;box-shadow:0 5px 16px #001c4a35}
+.search input{padding-left:20px}.search button{width:54px}
+.header-action{font-size:12px}.header-action .icon{font-size:25px}
+.navbar{background:#061b42;color:#fff;border-top:1px solid #ffffff20;min-height:46px;gap:30px}
+.navbar a{font-size:13px;padding:15px 0}.navbar a.active,.navbar a:hover{color:var(--yellow)}
+main{max-width:1540px;margin:18px auto;padding:0 20px}
+.top-layout{grid-template-columns:235px minmax(0,1fr) 220px;gap:17px}
+.panel{border:1px solid #e3edfb;border-radius:17px;box-shadow:0 8px 22px #123b720c}
+.side-menu{min-height:0;padding:10px 0}
+.side-menu-title{margin:0 10px 8px;padding:13px;background:linear-gradient(100deg,#ffdf48,#fff3b9);border-radius:11px;color:#092653}
+.side-link{padding:12px 13px;font-size:13px;border-radius:8px;margin:1px 7px}
+.side-link:hover{background:#edf5ff;color:#0759dc}
+.hero{min-height:285px;border-radius:17px;padding:30px;background:radial-gradient(ellipse at 78% 42%,#1678ef 0%,transparent 38%),linear-gradient(115deg,#061b4a,#0750b9 65%,#0878ee);box-shadow:0 12px 25px #0759dc25}
+.hero::after{width:300px;height:390px;right:55px;top:-55px;border-left:25px solid #ffffff12;border-right:45px solid #ffffff0c}
+.hero-content{max-width:65%}.hero-logo{font-size:27px;margin-bottom:18px}
+.hero h1{font-size:clamp(26px,2.8vw,39px);line-height:1.12;margin-bottom:16px}
+.hero h1 span{color:var(--yellow)}.hero p{font-size:14px;color:#edf5ff}
+.primary-btn{padding:14px 25px;border-radius:28px;background:linear-gradient(100deg,#ffdb24,#ffc000);box-shadow:0 5px 14px #001c4a30;color:#082653}
+.hero-image{right:3%;width:35%;height:95%;object-fit:contain}
+.discount-badge{width:86px;height:86px;right:20px;top:18px;box-shadow:0 6px 16px #001b4a30}
+.category-row{grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-top:17px}
+.category-card{background:#fff;border:1px solid #e1ebf9;border-radius:15px;padding:9px 9px 12px;font-size:13px;box-shadow:0 5px 16px #0b36700b;overflow:hidden}
+.category-image{height:112px;border-radius:11px;margin-bottom:10px;background:#edf4ff}
+.category-image img{transition:transform .3s}.category-card:hover{box-shadow:0 9px 22px #0759dc18;transform:translateY(-2px)}
+.account-card{border-radius:17px;background:linear-gradient(145deg,#fff2bd,#ffe17a);box-shadow:0 8px 20px #d7a50020}
+.benefits{border-radius:17px;overflow:hidden;background:#fff;border:1px solid var(--border)}
+.benefit{padding:16px 13px}.benefit-icon{width:42px;height:42px;border-radius:13px;background:#eaf3ff;color:#0759dc}
+.benefit strong{font-size:12px}.benefit small{font-size:11px}
+.promos{gap:13px;margin:20px 0}
+.promo{min-height:135px;border-radius:16px;padding:20px;box-shadow:0 8px 20px #0a2c641b}
+.promo h3{font-size:17px}.promo p{font-size:13px}.promo button{border-radius:20px;padding:9px 16px}
+.promo-blue{background:linear-gradient(110deg,#0877ef,#07358e)}
+.promo-red{background:linear-gradient(110deg,#f01845,#a90035)}
+.promo-purple{background:linear-gradient(110deg,#7428ed,#32118e)}
+.section-heading{margin:27px 0 14px}
+.tabs{gap:24px}.tab{font-size:13px;padding:10px 3px}.tab.active{color:#073b8c;border-bottom:3px solid var(--yellow)}
+.product-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+.product-card{border:1px solid #e1eafa;border-radius:16px;padding:10px;box-shadow:0 5px 18px #0926530a}
+.product-card:hover{transform:translateY(-4px);box-shadow:0 12px 26px #0759dc18}
+.product-image{height:180px;border-radius:11px;background:#f1f6fd}
+.product-name{font-size:13px;min-height:36px;color:#0a2d65}
+.stars{font-size:13px}.price{font-size:16px;color:#e12535}
+.favorite{width:33px;height:33px;box-shadow:0 2px 8px #09265320}
+.buy-btn{padding:11px 7px;border-radius:9px;font-size:12px;background:linear-gradient(100deg,#ffdb24,#ffc000);color:#102b54}
+.bottom-layout{gap:16px;margin:20px 0}
+.seller-banner{border-radius:17px;min-height:175px;padding:24px;background:linear-gradient(105deg,#06183b,#0759dc)}
+.seller-banner h2{font-size:23px}.seller-banner p{font-size:13px}
+.services{padding:20px;border-radius:17px}
+.services h3{font-size:19px}.service-grid{gap:10px}
+.service-card{border-radius:13px;padding:13px 9px;background:linear-gradient(145deg,#fff,#f3f7ff)}
+.service-card .service-icon{font-size:27px}.service-card strong{font-size:11px}
+.service-note{font-size:12px}
+footer{background:linear-gradient(100deg,#041633,#073b8c);padding:25px 3%;border-top:4px solid var(--yellow)}
+.footer-links a:hover{color:var(--yellow)}
+@media(max-width:1100px){
+ .top-layout{grid-template-columns:205px minmax(0,1fr)}
+ .right-column{display:none}
+ .product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .category-row{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .category-card:nth-child(n+4){display:block}
+}
+@media(max-width:650px){
+ .header-main{background:linear-gradient(105deg,#06183b,#0759dc)}
+ .logo-symbol{font-size:38px}.logo-name{font-size:21px}
+ .navbar{background:#061b42;gap:22px}
+ main{padding:0 11px;margin-top:12px}
+ .top-layout{display:block}.left-column{display:none}
+ .hero{min-height:255px;border-radius:15px;padding:18px}
+ .hero-content{max-width:76%}.hero-logo{font-size:21px}
+ .hero h1{font-size:25px}.hero p{font-size:11px}
+ .hero-image{width:39%;height:74%;right:-2px}
+ .discount-badge{width:59px;height:59px;top:10px;right:9px;font-size:9px}
+ .discount-badge strong{font-size:18px}
+ .category-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .category-card{font-size:12px;padding:7px 7px 10px}
+ .category-image{height:100px}
+ .promos{grid-template-columns:1fr;gap:10px;margin:15px 0}
+ .promo{min-height:112px}
+ .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .product-image{height:145px}.product-name{font-size:12px}
+ .bottom-layout{grid-template-columns:1fr}
+ .service-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .service-card{display:flex;flex-direction:column;text-align:center;gap:5px}
+ .footer-inner{justify-content:center;text-align:center}
+}
+
 </style>
 </head>
 <body>
 <header class="topbar">
   <div class="header-main">
-    <a href="./index.html" class="logo" aria-label="NEXUS 360 accueil"><div class="logo-symbol">N</div><div><div class="logo-name">NEXUS <span>360</span></div><div class="logo-tag">Tout un monde de services</div></div></a>
+    <a href="#" class="logo" aria-label="NEXUS 360 accueil"><div class="logo-symbol">N</div><div><div class="logo-name">NEXUS <span>360</span></div><div class="logo-tag">Tout un monde de services</div></div></a>
     <form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="Rechercher un produit, un véhicule, un service..." aria-label="Rechercher"><button type="submit" aria-label="Rechercher">⌕</button></form>
     <button class="header-action" id="loginTop"><span class="icon">♙</span><span id="loginTopLabel">Se connecter</span></button>
     <button class="header-action" id="favoritesTop"><span class="icon">♡</span>Favoris</button>
     <button class="header-action cart-button" id="cartTop"><span class="icon">🛒<span class="cart-count" id="cartCount">0</span></span>Panier</button>
   </div>
   <nav class="navbar">
-    <a href="#categories" class="all-categories">☰ &nbsp; Toutes les catégories</a><a href="./index.html" class="active">Accueil</a><a href="#promotions">Promotions</a><a href="#nexus-auto">NEXUS Auto</a><a href="#nexus-consigne">NEXUS Consigne</a><a href="#nexus-events">NEXUS Events</a><a href="#footer">Aide</a>
+    <a href="#categories" class="all-categories">☰ &nbsp; Toutes les catégories</a><a href="#" class="active">Accueil</a><a href="#promotions">Promotions</a><a href="#nexus-auto">NEXUS Auto</a><a href="#nexus-consigne">NEXUS Consigne</a><a href="#nexus-events">NEXUS Events</a><a href="#footer">Aide</a>
   </nav>
 </header>
 <main>
@@ -59,7 +153,7 @@ footer{background:var(--dark);color:white;padding:20px 3%;margin-top:20px}.foote
 <a href="#nexus-auto" class="side-link"><span class="left"><span class="emoji">🚗</span>NEXUS Auto</span><span class="arrow">›</span></a>
 <a href="#nexus-consigne" class="side-link"><span class="left"><span class="emoji">📦</span>NEXUS Consigne</span><span class="arrow">›</span></a>
 <a href="#nexus-events" class="side-link"><span class="left"><span class="emoji">🎉</span>NEXUS Events</span><span class="arrow">›</span></a>
-<a href="#products" class="side-link" data-category="Produits locaux"><span class="left"><span class="emoji">🏪</span>Produits locaux</span><span class="arrow">›</span></a>
+<a href="#products" class="side-link"><span class="left"><span class="emoji">🏪</span>Produits locaux</span><span class="arrow">›</span></a>
 <a href="#products" class="side-link"><span class="left"><span class="emoji">▣</span>Autres catégories</span><span class="arrow">›</span></a>
 </aside>
 <div class="center-column">
@@ -79,13 +173,20 @@ footer{background:var(--dark);color:white;padding:20px 3%;margin-top:20px}.foote
 </aside>
 </section>
 <section class="promos" id="promotions">
-<article class="promo promo-blue"><div class="promo-content"><h3>⚡ VENTES FLASH</h3><p>Découvrez les offres disponibles</p><button onclick="filterProducts('')">Voir les offres</button></div><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=350&q=80" alt="Casque audio"></article>
-<article class="promo promo-red"><div class="promo-content"><h3>NOUVEAUX ARRIVAGES</h3><p>Découvrez les dernières tendances</p><button onclick="showNewest()">Voir maintenant</button></div><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=350&q=80" alt="Sac tendance"></article>
-<article class="promo promo-purple" id="nexus-auto"><div class="promo-content"><h3>NEXUS AUTO</h3><p>Véhicules & pièces détachées</p><button onclick="window.location.href='./catalogue.html?categorie=Automobile'">Voir les véhicules</button></div><img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=350&q=80" alt="Automobile"></article>
+<article class="promo promo-blue"><div class="promo-content"><h3>⚡ VENTES FLASH</h3><p>Jusqu'à -50%</p><button onclick="filterProducts('')">Voir les offres</button></div><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=350&q=80" alt="Casque audio"></article>
+<article class="promo promo-red"><div class="promo-content"><h3>NOUVEAUX ARRIVAGES</h3><p>Découvrez les dernières tendances</p><button onclick="scrollToProducts()">Voir maintenant</button></div><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=350&q=80" alt="Sac tendance"></article>
+<article class="promo promo-purple" id="nexus-auto"><div class="promo-content"><h3>NEXUS AUTO</h3><p>Véhicules & pièces détachées</p><button onclick="alert('Le catalogue NEXUS AUTO sera disponible lors de la prochaine étape.')">Voir les véhicules</button></div><img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=350&q=80" alt="Automobile"></article>
 </section>
 <section id="products">
 <div class="section-heading"><div class="tabs"><button class="tab active" data-filter="popular">🔥 Populaires</button><button class="tab" data-filter="best">ϟ Meilleures ventes</button><button class="tab" data-filter="new">♧ Nouveautés</button><button class="tab" data-filter="sale">♡ Promotions</button></div><a href="#products" class="see-all" id="showAll">Voir tout →</a></div>
-<div class="product-grid" id="productGrid"><p class="status-note" id="loadingProducts">Chargement des produits…</p></div>
+<div class="product-grid" id="productGrid">
+<article class="product-card" data-category="Électronique" data-type="popular best sale"><div class="product-image"><img src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=450&q=85" alt="Smartphone"><span class="sale-badge">-15%</span><button class="favorite" aria-label="Ajouter aux favoris">♡</button></div><div class="product-name">Smartphone haut de gamme</div><div class="stars">★★★★★ <small>(124)</small></div><div class="price">899,00 $ <span class="old-price">1 060,00 $</span></div><button class="buy-btn">Ajouter au panier</button></article>
+<article class="product-card" data-category="Mode" data-type="popular best sale"><div class="product-image"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=450&q=85" alt="Chaussures de sport"><span class="sale-badge">-20%</span><button class="favorite" aria-label="Ajouter aux favoris">♡</button></div><div class="product-name">Chaussures de sport tendance</div><div class="stars">★★★★★ <small>(89)</small></div><div class="price">79,00 $ <span class="old-price">99,00 $</span></div><button class="buy-btn">Ajouter au panier</button></article>
+<article class="product-card" data-category="Électronique" data-type="popular new"><div class="product-image"><img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=450&q=85" alt="Ordinateur portable"><button class="favorite" aria-label="Ajouter aux favoris">♡</button></div><div class="product-name">Ordinateur portable performant</div><div class="stars">★★★★★ <small>(67)</small></div><div class="price">499,00 $ <span class="old-price">599,00 $</span></div><button class="buy-btn">Ajouter au panier</button></article>
+<article class="product-card" data-category="Mode" data-type="popular sale"><div class="product-image"><img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=450&q=85" alt="Vêtements"><span class="sale-badge">-25%</span><button class="favorite" aria-label="Ajouter aux favoris">♡</button></div><div class="product-name">Ensemble vestimentaire moderne</div><div class="stars">★★★★★ <small>(43)</small></div><div class="price">29,90 $ <span class="old-price">39,90 $</span></div><button class="buy-btn">Ajouter au panier</button></article>
+<article class="product-card" data-category="Maison" data-type="popular best"><div class="product-image"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=450&q=85" alt="Canapé"><span class="sale-badge">-30%</span><button class="favorite" aria-label="Ajouter aux favoris">♡</button></div><div class="product-name">Canapé moderne pour salon</div><div class="stars">★★★★★ <small>(28)</small></div><div class="price">349,00 $ <span class="old-price">499,00 $</span></div><button class="buy-btn">Ajouter au panier</button></article>
+<article class="product-card" data-category="Automobile" data-type="popular new"><div class="product-image"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=450&q=85" alt="Voiture"><button class="favorite" aria-label="Ajouter aux favoris">♡</button></div><div class="product-name">Véhicule disponible à découvrir</div><div class="stars">★★★★★ <small>(15)</small></div><div class="price">16 900,00 $</div><button class="buy-btn">Voir les détails</button></article>
+</div>
 <p id="noResults" class="empty-message" hidden>Aucun produit ne correspond à votre recherche.</p>
 </section>
 <section class="bottom-layout">
@@ -95,173 +196,32 @@ footer{background:var(--dark);color:white;padding:20px 3%;margin-top:20px}.foote
 <section class="panel services" id="nexus-consigne" style="margin-bottom:12px"><h3>📦 NEXUS CONSIGNE — Dépôt et transport de colis</h3><p style="color:#718096;line-height:1.7">Retrouvez prochainement les services de dépôt, d'expédition et de transport de colis proposés par les prestataires inscrits sur la plateforme.</p></section>
 <section class="panel services" id="nexus-events"><h3>🎉 NEXUS EVENTS — Préparez vos événements</h3><p style="color:#718096;line-height:1.7">Découvrez les prestataires événementiels : salles, chaises, tentes, décoration, photographie, DJ et restauration.</p></section>
 </main>
-<footer id="footer"><div class="footer-inner"><a href="./index.html" class="logo"><div class="logo-symbol" style="font-size:35px">N</div><div><div class="logo-name" style="font-size:19px">NEXUS <span>360</span></div><div class="logo-tag">Tout un monde de services</div></div></a><nav class="footer-links"><a href="#">À propos</a><a href="#">Conditions d'utilisation</a><a href="#">Confidentialité</a><a href="mailto:ngomafilscher@gmail.com">Contact</a></nav><div class="footer-copy">© <span id="year"></span> NEXUS 360. Tous droits réservés.</div></div></footer>
+<footer id="footer"><div class="footer-inner"><a href="#" class="logo"><div class="logo-symbol" style="font-size:35px">N</div><div><div class="logo-name" style="font-size:19px">NEXUS <span>360</span></div><div class="logo-tag">Tout un monde de services</div></div></a><nav class="footer-links"><a href="#">À propos</a><a href="#">Conditions d'utilisation</a><a href="#">Confidentialité</a><a href="#">Contact</a></nav><div class="footer-copy">© <span id="year"></span> NEXUS 360. Tous droits réservés.</div></div></footer>
 
 <script>
-const CART_KEY = "nexus360_cart_v1";
-const OLD_CART_KEY = "nexus360_cart";
-const FAVORITES_KEY = "nexus360_favorites";
-const searchInput = document.getElementById("searchInput");
-const productGrid = document.getElementById("productGrid");
-const noResults = document.getElementById("noResults");
-let products = [];
-let currentFilter = "popular";
-let currentQuery = "";
-let cart = readCart();
-let favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
-
-function readCart(){
-  try {
-    const current = JSON.parse(localStorage.getItem(CART_KEY) || "null");
-    if (Array.isArray(current)) return current;
-    const old = JSON.parse(localStorage.getItem(OLD_CART_KEY) || "[]");
-    if (!Array.isArray(old)) return [];
-    return old.map((item, index) => ({
-      id: item.id || item.product_id || `legacy-${index}-${Date.now()}`,
-      product_id: item.product_id || item.id || null,
-      name: item.name || item.product_name || "Article",
-      product_name: item.product_name || item.name || "Article",
-      price: Number(item.price) || 0,
-      quantity: Number(item.quantity) || 1,
-      image_url: item.image_url || ""
-    }));
-  } catch(e) { return []; }
-}
-function money(value){
-  const n = Number(value);
-  return Number.isFinite(n) ? new Intl.NumberFormat("fr-FR",{maximumFractionDigits:0}).format(n) + " FC" : "Prix à confirmer";
-}
-function safeText(value){return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function updateCart(){
-  const count = cart.reduce((sum,item)=>sum + (Number(item.quantity)||1),0);
-  document.getElementById("cartCount").textContent = count;
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-}
-function updateFavorites(){
-  document.querySelectorAll(".favorite").forEach(button=>{
-    const id = button.dataset.productId;
-    const selected = favorites.includes(id);
-    button.classList.toggle("selected", selected);
-    button.textContent = selected ? "♥" : "♡";
-  });
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-}
-function renderProducts(){
-  const cards = [...productGrid.querySelectorAll(".product-card")];
-  let visible = 0;
-  cards.forEach(card=>{
-    const name = (card.dataset.searchName || "").toLowerCase();
-    const category = (card.dataset.category || "").toLowerCase();
-    const queryMatch = !currentQuery || name.includes(currentQuery) || category.includes(currentQuery);
-    const filterMatch = !currentFilter || (card.dataset.type || "").split(" ").includes(currentFilter);
-    const show = queryMatch && filterMatch;
-    card.style.display = show ? "" : "none";
-    if(show) visible++;
-  });
-  noResults.hidden = visible > 0;
-}
-function filterProducts(category){
-  currentQuery = (category || "").toLowerCase();
-  searchInput.value = category || "";
-  currentFilter = "";
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  renderProducts();
-  document.getElementById("products").scrollIntoView({behavior:"smooth"});
-}
+const searchInput=document.getElementById("searchInput");
+const products=[...document.querySelectorAll(".product-card")];
+const noResults=document.getElementById("noResults");
+let currentFilter="popular",currentQuery="";
+let cart=JSON.parse(localStorage.getItem("nexus360_cart")||"[]");
+let favorites=JSON.parse(localStorage.getItem("nexus360_favorites")||"[]");
+document.getElementById("year").textContent=new Date().getFullYear();
+function renderProducts(){let visible=0;products.forEach(product=>{const name=product.querySelector(".product-name").textContent.toLowerCase(),category=(product.dataset.category||"").toLowerCase();const queryMatch=!currentQuery||name.includes(currentQuery)||category.includes(currentQuery);const filterMatch=!currentFilter||(product.dataset.type||"").split(" ").includes(currentFilter);const show=queryMatch&&filterMatch;product.style.display=show?"":"none";if(show)visible++;});noResults.hidden=visible>0;}
+function filterProducts(category){currentQuery=(category||"").toLowerCase();searchInput.value=category||"";currentFilter="";document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));renderProducts();document.getElementById("products").scrollIntoView({behavior:"smooth"});}
 function scrollToProducts(){document.getElementById("products").scrollIntoView({behavior:"smooth"});}
-function showNewest(){
-  document.querySelectorAll(".tab").forEach(t=>{t.classList.toggle("active",t.dataset.filter==="new");});
-  currentFilter="new";currentQuery="";searchInput.value="";renderProducts();scrollToProducts();
-}
-document.getElementById("year").textContent = new Date().getFullYear();
-document.getElementById("searchForm").addEventListener("submit",e=>{
-  e.preventDefault();currentQuery=searchInput.value.trim().toLowerCase();currentFilter="";document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));renderProducts();scrollToProducts();
-});
-searchInput.addEventListener("input",function(){currentQuery=this.value.trim().toLowerCase();currentFilter="";document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));renderProducts();});
+document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();currentQuery=searchInput.value.trim().toLowerCase();currentFilter="";renderProducts();document.getElementById("products").scrollIntoView({behavior:"smooth"});});
+searchInput.addEventListener("input",function(){currentQuery=this.value.trim().toLowerCase();currentFilter="";renderProducts();});
 document.querySelectorAll("[data-category]").forEach(link=>link.addEventListener("click",function(e){e.preventDefault();filterProducts(this.dataset.category);}));
-document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",function(){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));this.classList.add("active");
-  currentFilter=this.dataset.filter;currentQuery="";searchInput.value="";renderProducts();
-}));
-document.getElementById("showAll").addEventListener("click",e=>{
-  e.preventDefault();currentFilter="";currentQuery="";searchInput.value="";
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));renderProducts();
-});
-function addToCart(product){
-  const existing = cart.find(item => String(item.product_id || item.id) === String(product.id));
-  if(existing) existing.quantity = (Number(existing.quantity)||1)+1;
-  else cart.push({id:product.id,product_id:product.id,name:product.name,product_name:product.name,price:product.price,quantity:1,image_url:product.image_url});
-  updateCart();
-}
-function renderCard(p){
-  const id = String(p.id);
-  const name = p.product_name || p.name || "Produit";
-  const price = Number(p.price);
-  const image = p.image_url || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=450&q=80";
-  const category = p.category || p.category_name || p.product_category || "";
-  const type = p.is_active === false ? "" : (p.is_new ? "new " : "") + (p.is_best_seller ? "best " : "") + (p.is_on_sale ? "sale " : "popular");
-  const article = document.createElement("article");
-  article.className="product-card";
-  article.dataset.category=category;
-  article.dataset.type=type.trim() || "popular";
-  article.dataset.searchName=(name+" "+category+" "+(p.description||"")).toLowerCase();
-  article.innerHTML = `<div class="product-image"><img loading="lazy" src="${safeText(image)}" alt="${safeText(name)}" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=450&q=80'">${p.is_on_sale ? '<span class="sale-badge">Promo</span>' : ''}<button class="favorite" type="button" aria-label="Ajouter aux favoris" data-product-id="${safeText(id)}">♡</button></div><div class="product-name">${safeText(name)}</div><div class="stars">★★★★★ <small>Produit disponible</small></div><div class="price">${money(price)}</div><button class="buy-btn" type="button">Ajouter au panier</button>`;
-  article.querySelector(".buy-btn").addEventListener("click",function(){
-    if(!Number.isFinite(price) || price<=0){alert("Le prix de ce produit doit être vérifié par le vendeur.");return;}
-    addToCart({id,name,price,image_url:image});
-    const old=this.textContent;this.textContent="✓ Ajouté au panier";setTimeout(()=>this.textContent=old,1200);
-  });
-  article.querySelector(".favorite").addEventListener("click",function(){
-    const key=String(id);favorites=favorites.includes(key)?favorites.filter(x=>x!==key):[...favorites,key];updateFavorites();
-  });
-  return article;
-}
-async function loadProducts(){
-  try{
-    const module = await import("./supabase.js");
-    const supabase = module.supabase;
-    if(!supabase) throw new Error("L'instance Supabase n'est pas exportée par supabase.js.");
-    const {data,error} = await supabase.from("products")
-      .select("id, product_name, description, price, stock, image_url, is_active, store_id")
-      .eq("is_active",true)
-      .gt("stock",0)
-      .order("created_at",{ascending:false})
-      .limit(60);
-    if(error) throw error;
-    products = data || [];
-    productGrid.innerHTML="";
-    if(!products.length){
-      productGrid.innerHTML='<p class="empty-message">Aucun produit disponible pour le moment. Revenez bientôt découvrir les nouveautés NEXUS 360.</p>';
-      noResults.hidden=true;
-      return;
-    }
-    products.forEach(p=>productGrid.appendChild(renderCard(p)));
-    updateFavorites();renderProducts();
-  }catch(error){
-    console.error("Chargement Supabase impossible :",error);
-    productGrid.innerHTML='<p class="status-note">Les produits ne peuvent pas être chargés pour le moment. Vérifiez la connexion Supabase et les autorisations de lecture de la table products.</p>';
-    noResults.hidden=true;
-  }
-}
-function openAuth(mode){
-  if(typeof window.nexusOpenAuth==="function"){window.nexusOpenAuth(mode);return;}
-  alert("La connexion sera disponible lorsque le module d'authentification sera chargé.");
-}
-document.getElementById("loginTop").addEventListener("click",()=>openAuth("login"));
-document.getElementById("loginButton").addEventListener("click",()=>openAuth("login"));
-document.getElementById("registerButton").addEventListener("click",()=>openAuth("register"));
-document.getElementById("sellerButton").addEventListener("click",()=>openAuth("register"));
-document.getElementById("cartTop").addEventListener("click",()=>{
-  if(!cart.length){alert("Votre panier est vide.");return;}
-  window.location.href="./commande.html";
-});
-document.getElementById("favoritesTop").addEventListener("click",()=>{
-  if(!favorites.length){alert("Vous n'avez pas encore ajouté de produits aux favoris.");return;}
-  const names=[...productGrid.querySelectorAll(".product-card")].filter(card=>favorites.includes(card.querySelector(".favorite")?.dataset.productId)).map(card=>card.querySelector(".product-name").textContent);
-  alert("VOS FAVORIS\n\n"+(names.length?names.join("\n"):"Vos favoris enregistrés sont disponibles lorsque les produits sont chargés."));
-});
-updateCart();
-loadProducts();
+document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));this.classList.add("active");currentFilter=this.dataset.filter;currentQuery="";searchInput.value="";renderProducts();}));
+document.getElementById("showAll").addEventListener("click",e=>{e.preventDefault();currentFilter="";currentQuery="";searchInput.value="";document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));renderProducts();});
+function updateCart(){document.getElementById("cartCount").textContent=cart.length;localStorage.setItem("nexus360_cart",JSON.stringify(cart));}
+function updateFavorites(){document.querySelectorAll(".favorite").forEach(button=>{const name=button.closest(".product-card").querySelector(".product-name").textContent;const selected=favorites.includes(name);button.classList.toggle("selected",selected);button.textContent=selected?"♥":"♡";});localStorage.setItem("nexus360_favorites",JSON.stringify(favorites));}
+document.querySelectorAll(".buy-btn").forEach(button=>button.addEventListener("click",function(){const card=this.closest(".product-card");cart.push({name:card.querySelector(".product-name").textContent,price:card.querySelector(".price").textContent});updateCart();const original=this.textContent;this.textContent="✓ Ajouté au panier";setTimeout(()=>this.textContent=original,1200);}));
+document.querySelectorAll(".favorite").forEach(button=>button.addEventListener("click",function(){const name=this.closest(".product-card").querySelector(".product-name").textContent;favorites=favorites.includes(name)?favorites.filter(item=>item!==name):[...favorites,name];updateFavorites();}));
+document.getElementById("cartTop").addEventListener("click",()=>{if(!cart.length){alert("Votre panier est vide.");return;}alert("VOTRE PANIER\n\n"+cart.map((item,i)=>(i+1)+". "+item.name+" — "+item.price).join("\n")+"\n\nArticles : "+cart.length+"\n\nLe paiement sécurisé sera intégré dans une prochaine étape.");});
+document.getElementById("favoritesTop").addEventListener("click",()=>alert(favorites.length?"VOS FAVORIS\n\n"+favorites.join("\n"):"Vous n'avez pas encore ajouté de produits aux favoris."));
+document.getElementById("sellerButton").addEventListener("click",()=>{if(window.nexusOpenAuth)window.nexusOpenAuth("register");else alert("Le formulaire vendeur sera disponible dans une prochaine étape.");});
+updateCart();updateFavorites();renderProducts();
 </script>
 <script type="module" src="./firebase.js"></script>
 </body>
