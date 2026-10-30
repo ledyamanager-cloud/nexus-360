@@ -2,465 +2,722 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Passer commande - NEXUS 360</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalogue - NEXUS 360</title>
 
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 20px;
       font-family: Arial, sans-serif;
       background: #f4f6f9;
       color: #222;
     }
 
-    .container {
-      max-width: 650px;
-      margin: 20px auto;
-      padding: 24px;
-      background: white;
-      border-radius: 14px;
-      box-shadow: 0 4px 18px #00000010;
-    }
-
-    h1 { text-align: center; color: #123b72; }
-    h2 { margin-top: 25px; font-size: 19px; }
-
-    .item {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .item img {
-      width: 65px;
-      height: 65px;
-      object-fit: cover;
-      border-radius: 8px;
-      background: #eee;
-    }
-
-    .item-info { flex: 1; min-width: 0; }
-    .item-info p { margin: 5px 0; overflow-wrap: anywhere; }
-    .price { font-weight: bold; color: #123b72; }
-
-    label {
-      display: block;
-      margin-top: 16px;
-      font-weight: bold;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 7px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    textarea { min-height: 90px; resize: vertical; }
-
-    .total {
-      margin-top: 24px;
-      padding: 16px;
-      background: #edf4ff;
-      border-radius: 8px;
-      font-size: 21px;
-      font-weight: bold;
+    header {
+      background: #14213d;
+      color: white;
+      padding: 22px 15px;
       text-align: center;
+    }
+
+    header h1 {
+      color: #fca311;
+      margin: 0 0 8px;
+    }
+
+    nav {
+      background: white;
+      padding: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 5px 10px;
+      color: #14213d;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .search {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px #00000012;
+    }
+
+    .product-image,
+    .placeholder {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e9edf2;
+    }
+
+    .placeholder {
+      color: #666;
+      font-size: 45px;
+    }
+
+    .details { padding: 16px; }
+
+    .details h3 {
+      margin: 0 0 10px;
       overflow-wrap: anywhere;
+    }
+
+    .price {
+      color: #b36b00;
+      font-weight: bold;
+      font-size: 20px;
+      margin: 10px 0;
+    }
+
+    .description {
+      color: #555;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .store {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+      font-size: 13px;
+      color: #555;
     }
 
     button {
-      width: 100%;
-      margin-top: 20px;
-      padding: 15px;
+      cursor: pointer;
       border: none;
       border-radius: 8px;
-      background: #123b72;
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
+      padding: 11px 14px;
+      font-size: 15px;
     }
 
-    button:disabled { background: #888; cursor: not-allowed; }
+    button:focus-visible {
+      outline: 3px solid #fca311;
+      outline-offset: 2px;
+    }
 
-    .message {
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 8px;
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .add-button {
+      background: #14213d;
+      color: white;
+      width: 100%;
+      margin-top: 14px;
+      font-weight: bold;
+    }
+
+    .add-button:hover { background: #243b68; }
+
+    #status {
+      background: white;
+      padding: 18px;
+      border-radius: 10px;
+      margin-bottom: 20px;
       overflow-wrap: anywhere;
+    }
+
+    .hidden { display: none !important; }
+
+    .cart {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      margin: 25px 0;
+      box-shadow: 0 3px 12px #00000012;
+    }
+
+    .cart h2 { margin-top: 0; }
+
+    .cart-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cart-name {
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .cart-price {
+      font-size: 14px;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .quantity-controls button {
+      background: #e9edf2;
+      color: #14213d;
+      min-width: 36px;
+      font-weight: bold;
+    }
+
+    .remove-button {
+      background: #ffe8e8;
+      color: #a00000;
+      margin-top: 8px;
+      padding: 8px 10px;
+    }
+
+    .cart-total {
+      font-size: 22px;
+      font-weight: bold;
+      color: #b36b00;
+      margin: 20px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .cart-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .clear-button {
+      background: #eee;
+      color: #222;
+    }
+
+    .checkout-button {
+      background: #16a34a;
+      color: white;
+      font-weight: bold;
+    }
+
+    .checkout-button:hover { background: #15803d; }
+
+    .cart-note {
+      font-size: 13px;
+      color: #666;
       line-height: 1.5;
     }
 
-    .success { background: #e3f8e8; color: #176b2c; }
-    .error { background: #ffe8e8; color: #a00000; }
-    .hidden { display: none !important; }
-
-    .order-number {
-      display: block;
-      margin: 10px 0;
-      font-size: 25px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    .contact-button {
-      display: block;
-      width: 100%;
-      margin-top: 12px;
-      padding: 15px;
-      border-radius: 8px;
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #14213d;
       color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px #0003;
+      z-index: 9999;
+      width: max-content;
+      max-width: 90%;
       text-align: center;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: bold;
+      font-size: 15px;
     }
 
-    .whatsapp-button { background: #16a34a; }
-    .call-button { background: #123b72; }
-
-    .contact-title {
-      margin-top: 20px;
-      font-weight: bold;
-      color: #123b72;
-    }
-
-    .back {
-      display: block;
-      margin-top: 20px;
+    footer {
       text-align: center;
-      color: #123b72;
+      padding: 25px;
+      color: #666;
     }
 
     @media (max-width: 480px) {
-      body { padding: 10px; }
-      .container { margin: 10px auto; padding: 18px; }
+      .container { padding: 14px; }
+      .cart-actions { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
+  <header>
+    <h1>NEXUS 360</h1>
+    <p>Découvrez les produits de nos vendeurs</p>
+  </header>
+
+  <nav>
+    <a href="./index.html">Accueil</a>
+    <a href="./boutique.html">Ma boutique</a>
+    <a href="./ajouter-produit.html">Ajouter un produit</a>
+    <a href="./gestion-produits.html">Gérer mes produits</a>
+  </nav>
+
   <main class="container">
-    <h1>🛒 Finaliser ma commande</h1>
+    <h2>🛍️ Notre catalogue</h2>
 
-    <p>
-      Complétez vos coordonnées pour recevoir votre commande.
-      Aucun compte client n'est nécessaire.
-    </p>
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="Rechercher un produit..."
+      aria-label="Rechercher un produit"
+    >
 
-    <h2>Votre panier</h2>
-    <div id="cartItems"></div>
-
-    <div class="total">
-      Total : <span id="total">0 FC</span>
+    <div id="status" role="status" aria-live="polite">
+      Chargement des produits...
     </div>
 
-    <h2>Informations de livraison</h2>
+    <section id="products" class="products"></section>
 
-    <form id="orderForm">
-      <label for="customerName">Nom complet</label>
-      <input id="customerName" type="text" minlength="2" maxlength="150"
-        autocomplete="name" required>
+    <section class="cart" id="cart">
+      <h2>🛒 Mon panier (<span id="cart-count">0</span>)</h2>
 
-      <label for="customerPhone">Numéro de téléphone</label>
-      <input id="customerPhone" type="tel" minlength="6" maxlength="30"
-        autocomplete="tel" required>
+      <div id="cart-items"></div>
+      <p id="empty-cart">Ton panier est vide pour le moment.</p>
 
-      <label for="deliveryAddress">Adresse de livraison</label>
-      <textarea id="deliveryAddress" minlength="5" maxlength="500"
-        autocomplete="street-address"
-        placeholder="Commune, quartier, avenue, numéro..." required></textarea>
+      <div class="cart-total">
+        Total : <span id="cart-total">0 CDF</span>
+      </div>
 
-      <button id="submitButton" type="submit">Confirmer ma commande</button>
-    </form>
+      <div class="cart-actions">
+        <button id="clear-cart" class="clear-button" type="button">
+          Vider le panier
+        </button>
 
-    <div id="message" class="message hidden" role="status" aria-live="polite"></div>
+        <button id="checkout-button" class="checkout-button" type="button">
+          ✅ Passer commande
+        </button>
+      </div>
 
-    <a class="back" href="./catalogue.html">← Retour au catalogue</a>
+      <p class="cart-note">
+        Le panier est conservé sur cet appareil. La commande et la livraison
+        ne sont confirmées qu'après validation sur la page de commande.
+      </p>
+    </section>
   </main>
+
+  <footer>© 2026 NEXUS 360</footer>
+
+  <div id="toast" class="hidden" role="status" aria-live="polite"></div>
 
   <script type="module">
     import { supabase } from "./supabase.js";
 
+    const status = document.getElementById("status");
+    const productsContainer = document.getElementById("products");
+    const searchInput = document.getElementById("search");
+    const cartItemsContainer = document.getElementById("cart-items");
+    const cartCount = document.getElementById("cart-count");
+    const cartTotal = document.getElementById("cart-total");
+    const emptyCart = document.getElementById("empty-cart");
+    const clearCartButton = document.getElementById("clear-cart");
+    const checkoutButton = document.getElementById("checkout-button");
+    const toast = document.getElementById("toast");
+
     const CART_KEY = "nexus360_cart_v1";
-    const CUSTOMER_KEY = "nexus360_customer_details_v1";
 
-    const STORE_PHONE = "243966557344";
+    let allProducts = [];
+    let toastTimer;
+    let cart = loadCart();
 
-    const cartItems = document.getElementById("cartItems");
-    const totalElement = document.getElementById("total");
-    const form = document.getElementById("orderForm");
-    const submitButton = document.getElementById("submitButton");
-    const message = document.getElementById("message");
-
-    let cart = [];
-    let isSubmitting = false;
-
-    function showMessage(text, type) {
-      message.replaceChildren();
-      message.className = "message " + type;
-      message.textContent = text;
+    function showStatus(message) {
+      status.textContent = message;
+      status.classList.remove("hidden");
     }
 
-    function showSuccess(orderNumber, totalAmount, customerName) {
-      message.replaceChildren();
-      message.className = "message success";
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.remove("hidden");
+      clearTimeout(toastTimer);
 
-      const title = document.createElement("strong");
-      title.textContent = "✅ Votre commande a bien été enregistrée !";
-
-      const numberLabel = document.createElement("div");
-      numberLabel.textContent = "Numéro de commande :";
-
-      const number = document.createElement("span");
-      number.className = "order-number";
-      number.textContent = orderNumber;
-
-      const total = document.createElement("p");
-      total.textContent = "Total confirmé : " + formatPrice(totalAmount) + " FC.";
-
-      const advice = document.createElement("p");
-      advice.textContent = "Conservez ce numéro pour suivre votre commande.";
-
-      const contactTitle = document.createElement("p");
-      contactTitle.className = "contact-title";
-      contactTitle.textContent = "📞 Besoin de contacter la boutique ?";
-
-      const whatsapp = document.createElement("a");
-      whatsapp.className = "contact-button whatsapp-button";
-      whatsapp.href =
-        "https://wa.me/" + STORE_PHONE +
-        "?text=" + encodeURIComponent(
-          "Bonjour NEXUS 360, je viens de confirmer ma commande.\n" +
-          "Numéro de commande : " + orderNumber + "\n" +
-          "Nom : " + customerName + "\n" +
-          "Montant : " + formatPrice(totalAmount) + " FC.\n" +
-          "Je souhaite avoir des informations sur ma commande."
-        );
-      whatsapp.target = "_blank";
-      whatsapp.rel = "noopener noreferrer";
-      whatsapp.textContent = "🟢 Contacter la boutique sur WhatsApp";
-
-      const call = document.createElement("a");
-      call.className = "contact-button call-button";
-      call.href = "tel:+" + STORE_PHONE;
-      call.textContent = "📞 Appeler directement la boutique";
-
-      message.append(
-        title,
-        numberLabel,
-        number,
-        total,
-        advice,
-        contactTitle,
-        whatsapp,
-        call
-      );
+      toastTimer = setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 2800);
     }
 
-    function formatPrice(value) {
+    function formatPrice(price) {
       return new Intl.NumberFormat("fr-FR", {
         maximumFractionDigits: 2
-      }).format(Number(value) || 0);
+      }).format(Number(price) || 0) + " CDF";
+    }
+
+    function createElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
     }
 
     function loadCart() {
       try {
         const saved = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-        cart = Array.isArray(saved)
-          ? saved.filter(item =>
-              item &&
-              typeof item.id === "string" &&
-              Number.isInteger(Number(item.quantity)) &&
-              Number(item.quantity) > 0 &&
-              Number.isFinite(Number(item.price)) &&
-              Number(item.price) >= 0
-            ).map(item => ({
-              ...item,
-              quantity: Number(item.quantity),
-              price: Number(item.price)
-            }))
-          : [];
-      } catch {
-        cart = [];
+
+        if (!Array.isArray(saved)) return [];
+
+        return saved.filter(item =>
+          item &&
+          typeof item.id === "string" &&
+          Number.isInteger(item.quantity) &&
+          item.quantity > 0
+        );
+      } catch (error) {
+        console.warn("Erreur de lecture du panier :", error);
+        return [];
       }
     }
 
-    function displayCart() {
-      cartItems.replaceChildren();
+    function saveCart() {
+      try {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        return true;
+      } catch (error) {
+        console.error("Erreur d'enregistrement du panier :", error);
+        showToast("Impossible d'enregistrer le panier sur cet appareil.");
+        return false;
+      }
+    }
 
-      if (cart.length === 0) {
-        cartItems.textContent = "Votre panier est vide.";
-        totalElement.textContent = "0 FC";
-        submitButton.disabled = true;
+    function getCartQuantity() {
+      return cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    function getCartTotal() {
+      return cart.reduce(
+        (sum, item) => sum + Number(item.price) * item.quantity,
+        0
+      );
+    }
+
+    function addToCart(product) {
+      const price = Number(product.price);
+      const stock = product.stock == null ? NaN : Number(product.stock);
+
+      if (!Number.isFinite(price) || price < 0) {
+        showToast("Le prix de ce produit est invalide.");
         return;
       }
 
-      let total = 0;
+      if (Number.isFinite(stock) && stock <= 0) {
+        showToast("Ce produit n'est plus disponible.");
+        return;
+      }
+
+      const existing = cart.find(item => item.id === product.id);
+
+      if (existing) {
+        if (Number.isFinite(stock) && existing.quantity >= stock) {
+          showToast("La quantité dépasse le stock disponible.");
+          return;
+        }
+        existing.quantity += 1;
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.product_name || "Produit",
+          price,
+          image_url: product.image_url || "",
+          quantity: 1
+        });
+      }
+
+      saveCart();
+      renderCart();
+      showToast("✅ Produit ajouté au panier !");
+    }
+
+    function changeQuantity(productId, change) {
+      const item = cart.find(item => item.id === productId);
+      if (!item) return;
+
+      const product = allProducts.find(p => p.id === productId);
+      const stock = product && product.stock != null
+        ? Number(product.stock)
+        : NaN;
+
+      const newQuantity = item.quantity + change;
+
+      if (newQuantity <= 0) {
+        removeFromCart(productId);
+        return;
+      }
+
+      if (Number.isFinite(stock) && newQuantity > stock) {
+        showToast("La quantité dépasse le stock disponible.");
+        return;
+      }
+
+      item.quantity = newQuantity;
+      saveCart();
+      renderCart();
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.id !== productId);
+      saveCart();
+      renderCart();
+      showToast("Article retiré du panier.");
+    }
+
+    function renderCart() {
+      cartItemsContainer.replaceChildren();
+
+      cartCount.textContent = String(getCartQuantity());
+      cartTotal.textContent = formatPrice(getCartTotal());
+      emptyCart.classList.toggle("hidden", cart.length > 0);
+      checkoutButton.disabled = cart.length === 0;
 
       cart.forEach(item => {
-        const quantity = Number(item.quantity);
-        const price = Number(item.price);
-        const lineTotal = price * quantity;
-        total += lineTotal;
+        const row = createElement("div", "cart-item");
+        const info = createElement("div", "cart-info");
 
-        const row = document.createElement("div");
-        row.className = "item";
+        info.appendChild(createElement("div", "cart-name", item.name));
+        info.appendChild(createElement(
+          "div",
+          "cart-price",
+          formatPrice(item.price) + " × " + item.quantity
+        ));
 
-        if (item.image_url) {
-          const img = document.createElement("img");
-          img.src = item.image_url;
-          img.alt = "";
-          img.loading = "lazy";
-          img.onerror = () => img.remove();
-          row.appendChild(img);
-        }
+        const controls = createElement("div", "quantity-controls");
 
-        const info = document.createElement("div");
-        info.className = "item-info";
+        const minus = createElement("button", "", "−");
+        minus.type = "button";
+        minus.setAttribute("aria-label", "Diminuer la quantité");
+        minus.addEventListener("click", () => changeQuantity(item.id, -1));
 
-        const name = document.createElement("p");
-        name.textContent = item.name || "Produit";
+        const quantity = createElement("span", "", String(item.quantity));
 
-        const quantityText = document.createElement("p");
-        quantityText.textContent = "Quantité : " + quantity;
+        const plus = createElement("button", "", "+");
+        plus.type = "button";
+        plus.setAttribute("aria-label", "Augmenter la quantité");
+        plus.addEventListener("click", () => changeQuantity(item.id, 1));
 
-        const priceText = document.createElement("p");
-        priceText.className = "price";
-        priceText.textContent = formatPrice(lineTotal) + " FC";
+        controls.append(minus, quantity, plus);
+        info.appendChild(controls);
 
-        info.append(name, quantityText, priceText);
+        const remove = createElement("button", "remove-button", "Retirer");
+        remove.type = "button";
+        remove.addEventListener("click", () => removeFromCart(item.id));
+
+        info.appendChild(remove);
         row.appendChild(info);
-        cartItems.appendChild(row);
+        cartItemsContainer.appendChild(row);
+      });
+    }
+
+    function renderProducts() {
+      const query = searchInput.value.trim().toLocaleLowerCase("fr");
+
+      const filtered = allProducts.filter(product => {
+        const text = [
+          product.product_name,
+          product.description,
+          product.stores?.store_name,
+          product.stores?.city
+        ].filter(Boolean).join(" ").toLocaleLowerCase("fr");
+
+        return text.includes(query);
       });
 
-      totalElement.textContent = formatPrice(total) + " FC";
-      submitButton.disabled = false;
-    }
+      productsContainer.replaceChildren();
 
-    function loadCustomerDetails() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(CUSTOMER_KEY) || "{}");
-        document.getElementById("customerName").value = saved.name || "";
-        document.getElementById("customerPhone").value = saved.phone || "";
-        document.getElementById("deliveryAddress").value = saved.address || "";
-      } catch {
-        // Le formulaire reste utilisable.
-      }
-    }
-
-    loadCart();
-    displayCart();
-    loadCustomerDetails();
-
-    form.addEventListener("submit", async event => {
-      event.preventDefault();
-
-      if (isSubmitting) return;
-
-      if (cart.length === 0) {
-        showMessage("Votre panier est vide.", "error");
+      if (filtered.length === 0) {
+        showStatus(
+          allProducts.length === 0
+            ? "Aucun produit actif n'est disponible pour le moment."
+            : "Aucun produit ne correspond à ta recherche."
+        );
         return;
       }
 
-      const customerName = document.getElementById("customerName").value.trim();
-      const customerPhone = document.getElementById("customerPhone").value.trim();
-      const deliveryAddress = document.getElementById("deliveryAddress").value.trim();
+      status.classList.add("hidden");
 
-      if (customerName.length < 2 || customerPhone.length < 6 || deliveryAddress.length < 5) {
-        showMessage("Vérifiez votre nom, votre téléphone et votre adresse.", "error");
-        return;
-      }
+      filtered.forEach(product => {
+        const card = createElement("article", "card");
 
-      const items = cart.map(item => ({
-        product_id: item.id,
-        quantity: Number(item.quantity)
-      }));
+        if (product.image_url) {
+          const image = createElement("img", "product-image");
+          image.src = product.image_url;
+          image.alt = product.product_name || "Produit";
+          image.loading = "lazy";
 
-      if (items.some(item =>
-        !Number.isInteger(item.quantity) ||
-        item.quantity < 1 ||
-        item.quantity > 100
-      )) {
-        showMessage("Une quantité du panier est invalide.", "error");
-        return;
-      }
+          image.onerror = () => {
+            image.replaceWith(createElement("div", "placeholder", "📦"));
+          };
 
-      isSubmitting = true;
-      submitButton.disabled = true;
-      submitButton.textContent = "Envoi en cours...";
-      message.className = "message hidden";
-
-      try {
-        const { data, error } = await supabase.rpc("create_guest_order", {
-          p_customer_name: customerName,
-          p_customer_phone: customerPhone,
-          p_delivery_address: deliveryAddress,
-          p_items: items
-        });
-
-        if (error) throw error;
-
-        if (!data || data.success !== true) {
-          throw new Error("Le serveur n'a pas confirmé la commande.");
+          card.appendChild(image);
+        } else {
+          card.appendChild(createElement("div", "placeholder", "📦"));
         }
 
-        const orderNumber = data.order_number == null
-          ? ""
-          : String(data.order_number).trim();
+        const details = createElement("div", "details");
+        details.appendChild(
+          createElement("h3", "", product.product_name || "Produit")
+        );
+        details.appendChild(
+          createElement("p", "price", formatPrice(product.price))
+        );
 
-        if (!orderNumber) {
-          throw new Error(
-            "La commande semble avoir été traitée, mais son numéro n'a pas été renvoyé. " +
-            "Ne validez pas une deuxième fois. Contactez l'administrateur."
+        if (product.description) {
+          details.appendChild(
+            createElement("p", "description", product.description)
           );
         }
 
-        const confirmedTotal = Number(data.total_amount);
+        const store = product.stores;
+        const storeName = store?.store_name || "Boutique NEXUS 360";
+        const city = store?.city || "";
 
-        try {
-          localStorage.setItem(CUSTOMER_KEY, JSON.stringify({
-            name: customerName,
-            phone: customerPhone,
-            address: deliveryAddress
-          }));
-        } catch {}
+        details.appendChild(createElement(
+          "div",
+          "store",
+          "🏪 " + storeName + (city ? " — " + city : "")
+        ));
 
-        try {
-          localStorage.removeItem(CART_KEY);
-        } catch {}
-
-        cart = [];
-        displayCart();
-        form.classList.add("hidden");
-
-        showSuccess(
-          orderNumber,
-          Number.isFinite(confirmedTotal) ? confirmedTotal : 0,
-          customerName
+        const addButton = createElement(
+          "button",
+          "add-button",
+          "🛒 Ajouter au panier"
         );
 
+        addButton.type = "button";
+        addButton.addEventListener("click", () => addToCart(product));
+
+        details.appendChild(addButton);
+        card.appendChild(details);
+        productsContainer.appendChild(card);
+      });
+    }
+
+    async function loadProducts() {
+      showStatus("Chargement des produits...");
+
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select(`
+            id,
+            product_name,
+            description,
+            price,
+            stock,
+            image_url,
+            is_active,
+            stores (
+              store_name,
+              city
+            )
+          `)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        allProducts = data || [];
+
+        // Garder uniquement les articles qui existent encore dans le catalogue.
+        cart = cart.map(item => {
+          const product = allProducts.find(p => p.id === item.id);
+          if (!product) return null;
+
+          return {
+            id: product.id,
+            name: product.product_name || "Produit",
+            price: Number(product.price),
+            image_url: product.image_url || "",
+            quantity: item.quantity
+          };
+        }).filter(Boolean);
+
+        saveCart();
+        renderProducts();
+        renderCart();
       } catch (error) {
-        console.error("Erreur de commande :", error);
-        showMessage(
-          error.message || "Impossible de confirmer la commande.",
-          "error"
+        console.error("Erreur catalogue :", error);
+        showStatus(
+          "Impossible de charger les produits. Vérifie ta connexion Internet " +
+          "puis actualise la page. Détail : " +
+          (error.message || "Erreur inconnue")
         );
-      } finally {
-        isSubmitting = false;
-        submitButton.textContent = "Confirmer ma commande";
-        submitButton.disabled =
-          cart.length === 0 || form.classList.contains("hidden");
+      }
+    }
+
+    searchInput.addEventListener("input", renderProducts);
+
+    clearCartButton.addEventListener("click", () => {
+      if (cart.length === 0) {
+        showToast("Le panier est déjà vide.");
+        return;
+      }
+
+      if (confirm("Veux-tu vraiment vider tout le panier ?")) {
+        cart = [];
+        saveCart();
+        renderCart();
+        showToast("Panier vidé.");
       }
     });
+
+    // OUVRIR LA PAGE DE COMMANDE AVEC LE PANIER ENREGISTRÉ
+    checkoutButton.addEventListener("click", () => {
+      if (cart.length === 0) {
+        showToast("Ton panier est vide. Ajoute d'abord un produit.");
+        return;
+      }
+
+      const invalidProduct = cart.find(item => {
+        const product = allProducts.find(p => p.id === item.id);
+        return !product ||
+          !Number.isFinite(Number(product.price)) ||
+          Number(product.price) < 0;
+      });
+
+      if (invalidProduct) {
+        showToast(
+          "Un produit n'est plus disponible. Actualise le catalogue."
+        );
+        return;
+      }
+
+      if (!saveCart()) return;
+
+      window.location.href = "./commande.html";
+    });
+
+    renderCart();
+    loadProducts();
   </script>
 </body>
 </html>
