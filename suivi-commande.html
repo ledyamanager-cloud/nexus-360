@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suivi de commande - NEXUS 360</title>
-
-  <style>
+  <title>Suivi de commande - NEXUS 360</title>  <style>
     * { box-sizing: border-box; }
 
     body {
@@ -109,17 +106,6 @@
       line-height: 1.5;
       overflow-wrap: anywhere;
     }
-
-    .status {
-      display: inline-block;
-      padding: 8px 13px;
-      border-radius: 20px;
-      background: #dbeafe;
-      color: #1e40af;
-      font-weight: bold;
-    }
-
-    /* Frise chronologique */
 
     .timeline {
       margin-top: 25px;
@@ -236,6 +222,13 @@
       border-bottom: none;
     }
 
+    .refresh-info {
+      text-align: center;
+      color: #64748b;
+      font-size: 13px;
+      margin-top: 15px;
+    }
+
     .back {
       display: block;
       text-align: center;
@@ -251,80 +244,77 @@
         margin: 10px auto;
       }
     }
-  </style>
-</head>
+  </style></head><body>
+  <main class="container"><h1>📦 Suivi de commande</h1>
 
-<body>
-  <main class="container">
+<p class="intro">
+  Suivez votre colis étape par étape grâce à NEXUS 360.
+</p>
 
-    <h1>📦 Suivi de commande</h1>
+<form id="trackingForm">
 
-    <p class="intro">
-      Suivez votre colis étape par étape grâce à NEXUS 360.
+  <label for="orderNumber">Numéro de commande</label>
+  <input
+    type="text"
+    id="orderNumber"
+    placeholder="Ex : 20261030-001B-6"
+    required
+  >
+
+  <label for="phone">Téléphone utilisé lors de l'achat</label>
+  <input
+    type="tel"
+    id="phone"
+    placeholder="Ex : +243..."
+    required
+  >
+
+  <button type="submit" id="searchButton">
+    Rechercher ma commande
+  </button>
+
+</form>
+
+<div id="message"></div>
+
+<section id="result">
+
+  <h2>📋 Informations de la commande</h2>
+
+  <div class="card" id="orderInfo"></div>
+
+  <div class="card">
+    <h2>🚚 Progression de la livraison</h2>
+
+    <p>
+      Les étapes se mettent à jour automatiquement
+      selon l'avancement réel de votre colis.
     </p>
 
-    <form id="trackingForm">
+    <div class="timeline" id="timeline"></div>
 
-      <label for="orderNumber">Numéro de commande</label>
-      <input
-        type="text"
-        id="orderNumber"
-        placeholder="Ex : 20261030-001B-6"
-        required
-      >
+    <p class="refresh-info">
+      🔄 Actualisation automatique toutes les 5 secondes.
+    </p>
+  </div>
 
-      <label for="phone">Téléphone utilisé lors de l'achat</label>
-      <input
-        type="tel"
-        id="phone"
-        placeholder="Ex : +243..."
-        required
-      >
+  <div class="card">
+    <h2>💰 État du paiement</h2>
+    <div id="paymentInfo"></div>
+  </div>
 
-      <button type="submit" id="searchButton">
-        Rechercher ma commande
-      </button>
+  <div class="card">
+    <h2>🛍️ Produits commandés</h2>
+    <div id="itemsList"></div>
+  </div>
 
-    </form>
+</section>
 
-    <div id="message"></div>
+<a href="index.html" class="back">
+  ← Retour à l'accueil
+</a>
 
-    <section id="result">
-
-      <h2>📋 Informations de la commande</h2>
-
-      <div class="card" id="orderInfo"></div>
-
-      <div class="card">
-        <h2>🚚 Progression de la livraison</h2>
-
-        <p>
-          Les étapes se mettent à jour selon l'avancement réel
-          de votre colis.
-        </p>
-
-        <div class="timeline" id="timeline"></div>
-      </div>
-
-      <div class="card">
-        <h2>💰 État du paiement</h2>
-        <div id="paymentInfo"></div>
-      </div>
-
-      <div class="card">
-        <h2>🛍️ Produits commandés</h2>
-        <div id="itemsList"></div>
-      </div>
-
-    </section>
-
-    <a href="index.html" class="back">
-      ← Retour à l'accueil
-    </a>
-
-  </main>
-
-  <script type="module">
+  </main>  <script type="module">
     import { supabase } from "./supabase.js";
 
     const form = document.getElementById("trackingForm");
@@ -335,6 +325,14 @@
     const itemsList = document.getElementById("itemsList");
     const timeline = document.getElementById("timeline");
     const paymentInfo = document.getElementById("paymentInfo");
+
+    const orderInput = document.getElementById("orderNumber");
+    const phoneInput = document.getElementById("phone");
+
+    const STORAGE_KEY = "nexus360_tracking_v1";
+
+    let isSearching = false;
+    let lastSuccessfulSearch = false;
 
     function showMessage(text, type) {
       message.textContent = text;
@@ -363,10 +361,31 @@
         preparing: "En préparation",
         shipped: "Expédiée",
         delivered: "Livrée",
+        in_transit: "En transit",
+        arrived: "Arrivée à destination",
         cancelled: "Annulée"
       };
 
       return labels[status] || status || "En attente";
+    }
+
+    function saveTrackingDetails(orderNumber, phone) {
+      try {
+        sessionStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ orderNumber, phone })
+        );
+      } catch (error) {
+        console.warn("Impossible de mémoriser le suivi.", error);
+      }
+    }
+
+    function clearTrackingDetails() {
+      try {
+        sessionStorage.removeItem(STORAGE_KEY);
+      } catch (error) {
+        console.warn("Impossible d'effacer les informations.", error);
+      }
     }
 
     function buildTimeline(data) {
@@ -375,29 +394,25 @@
           title: "Colis en attente",
           description: "Votre commande est enregistrée et attend sa préparation.",
           icon: "📦",
-          date: data.pending_at || data.created_at,
-          states: ["pending"]
+          date: data.pending_at || data.created_at
         },
         {
           title: "Colis en route",
           description: "Votre colis a été remis au livreur.",
           icon: "🚚",
-          date: data.in_transit_at,
-          states: ["in_transit"]
+          date: data.in_transit_at
         },
         {
           title: "Colis arrivé",
           description: "Votre colis est arrivé à destination.",
           icon: "📍",
-          date: data.arrived_at,
-          states: ["arrived"]
+          date: data.arrived_at
         },
         {
           title: "Colis livré",
           description: "Votre colis a été remis au client.",
           icon: "✅",
-          date: data.delivered_at,
-          states: ["delivered"]
+          date: data.delivered_at
         }
       ];
 
@@ -479,23 +494,20 @@
       paymentInfo.appendChild(box);
     }
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    async function searchOrder(orderNumber, phone, automatic = false) {
+      if (isSearching) return;
 
-      result.style.display = "none";
-      message.className = "";
-      message.style.display = "none";
+      isSearching = true;
 
-      button.disabled = true;
-      button.textContent = "Recherche en cours...";
+      if (!automatic) {
+        result.style.display = "none";
+        message.className = "";
+        message.style.display = "none";
+        button.disabled = true;
+        button.textContent = "Recherche en cours...";
+      }
 
       try {
-        const orderNumber =
-          document.getElementById("orderNumber").value.trim();
-
-        const phone =
-          document.getElementById("phone").value.trim();
-
         const { data, error } = await supabase.rpc(
           "get_guest_order_tracking",
           {
@@ -507,12 +519,19 @@
         if (error) throw error;
 
         if (!data) {
+          lastSuccessfulSearch = false;
+          clearTrackingDetails();
+          result.style.display = "none";
+
           showMessage(
             "Aucune commande trouvée. Vérifiez votre numéro de commande et votre téléphone.",
             "error"
           );
           return;
         }
+
+        lastSuccessfulSearch = true;
+        saveTrackingDetails(orderNumber, phone);
 
         orderInfo.replaceChildren();
 
@@ -564,24 +583,75 @@
 
         result.style.display = "block";
 
-        showMessage(
-          "Commande retrouvée avec succès !",
-          "success"
-        );
+        if (!automatic) {
+          showMessage(
+            "Commande retrouvée avec succès !",
+            "success"
+          );
+        }
 
       } catch (error) {
         console.error(error);
 
-        showMessage(
-          "Une erreur est survenue pendant la recherche. Réessayez.",
-          "error"
-        );
+        if (!automatic) {
+          showMessage(
+            "Une erreur est survenue pendant la recherche. Réessayez.",
+            "error"
+          );
+        }
 
       } finally {
-        button.disabled = false;
-        button.textContent = "Rechercher ma commande";
+        isSearching = false;
+
+        if (!automatic) {
+          button.disabled = false;
+          button.textContent = "Rechercher ma commande";
+        }
       }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const orderNumber = orderInput.value.trim();
+      const phone = phoneInput.value.trim();
+
+      if (!orderNumber || !phone) return;
+
+      await searchOrder(orderNumber, phone);
     });
-  </script>
-</body>
+
+    // Restaurer automatiquement la commande après actualisation.
+    const saved = (() => {
+      try {
+        return JSON.parse(sessionStorage.getItem(STORAGE_KEY));
+      } catch {
+        return null;
+      }
+    })();
+
+    if (saved && saved.orderNumber && saved.phone) {
+      orderInput.value = saved.orderNumber;
+      phoneInput.value = saved.phone;
+
+      searchOrder(saved.orderNumber, saved.phone);
+    }
+
+    // Actualiser les informations toutes les 5 secondes.
+    setInterval(() => {
+      if (
+        lastSuccessfulSearch &&
+        !isSearching &&
+        document.visibilityState === "visible"
+      ) {
+        const orderNumber = orderInput.value.trim();
+        const phone = phoneInput.value.trim();
+
+        if (orderNumber && phone) {
+          searchOrder(orderNumber, phone, true);
+        }
+      }
+    }, 5000);
+
+  </script></body>
 </html>
