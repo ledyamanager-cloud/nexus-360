@@ -1,65 +1,287 @@
-<!DOCTYPE html><html lang="fr">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Espace Livreur | NEXUS 360</title><style>
+<title>Espace Livreur | NEXUS 360</title>
+
+<style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
-header{background:#14213d;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f5f9;
+  color:#172033
+}
+
+header{
+  background:#14213d;
+  color:white;
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap
+}
+
 header h1{margin:0;font-size:21px}
+
 main{max-width:900px;margin:25px auto;padding:0 15px}
-.card{background:white;border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 3px 12px #0000000c}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 3px 12px #0000000c
+}
+
 h2{margin-top:0;color:#14213d}
-input,button{width:100%;padding:13px;border-radius:9px;font-size:15px;margin-top:10px}
+
+input,button{
+  width:100%;
+  padding:13px;
+  border-radius:9px;
+  font-size:15px;
+  margin-top:10px
+}
+
 input{border:1px solid #cbd5e1}
-button{border:0;background:#1769aa;color:white;font-weight:bold;cursor:pointer}
+
+button{
+  border:0;
+  background:#1769aa;
+  color:white;
+  font-weight:bold;
+  cursor:pointer
+}
+
 button:disabled{opacity:.5;cursor:not-allowed}
+
 .logout{width:auto;background:#dc3545;margin:0}
 .green{background:#16834a}
 .orange{background:#e68a00}
 .gray{background:#64748b}
-.hidden{display:none}
-.message{padding:12px;border-radius:8px;margin-top:12px;overflow-wrap:anywhere}
+.hidden{display:none!important}
+
+.message{
+  padding:12px;
+  border-radius:8px;
+  margin-top:12px;
+  overflow-wrap:anywhere
+}
+
 .error{background:#fee2e2;color:#991b1b}
 .success{background:#dcfce7;color:#166534}
-.order{border:1px solid #dbe3ed;border-radius:12px;padding:16px;margin-top:14px;background:white;transition:.2s}
-.order h3{margin-top:0;color:#1769aa;overflow-wrap:anywhere}
-.order.active-order{border:2px solid #16834a;background:#f0fdf4}
-.order.muted-order{background:#e9edf2;border-color:#cbd5e1;opacity:.75}
+
+.order{
+  border:1px solid #dbe3ed;
+  border-radius:12px;
+  padding:16px;
+  margin-top:14px;
+  background:white;
+  transition:.2s
+}
+
+.order h3{
+  margin-top:0;
+  color:#1769aa;
+  overflow-wrap:anywhere
+}
+
+.order.active-order{
+  border:2px solid #16834a;
+  background:#f0fdf4
+}
+
+.order.muted-order{
+  background:#e9edf2;
+  border-color:#cbd5e1;
+  opacity:.75
+}
+
 .order.muted-order h3{color:#64748b}
-.badge{display:inline-block;background:#e2e8f0;padding:6px 10px;border-radius:20px;font-size:13px;margin:5px 0}
+
+.badge{
+  display:inline-block;
+  background:#e2e8f0;
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:13px;
+  margin:5px 0
+}
+
 .steps{display:grid;gap:8px;margin-top:14px}
 .step{padding:10px;border-radius:8px;background:#f1f5f9}
 .step.done{background:#dcfce7;color:#166534}
 .step.current{background:#dbeafe;color:#1d4ed8}
+
 .small{color:#64748b;font-size:13px}
 .order button{margin-top:10px}
-.tour-summary{background:#dcfce7;color:#166534;padding:13px;border-radius:9px;margin:12px 0;font-weight:bold}
-@media(max-width:500px){header h1{font-size:18px}}
-</style></head><body><header>
-<h1>🚚 NEXUS 360 — Espace Livreur</h1>
-<button id="logoutBtn" class="logout hidden">Déconnexion</button>
-</header><main><section id="loginSection" class="card">
-<h2>Connexion livreur</h2>
-<p>Connectez-vous avec votre compte personnel.</p><form id="loginForm">
-<input type="email" id="email" placeholder="Adresse e-mail" required>
-<input type="password" id="password" placeholder="Mot de passe" required>
-<button type="submit">Se connecter</button>
-</form><div id="loginMessage"></div>
-</section><section id="dashboard" class="hidden"><div class="card">
-<h2>Bienvenue <span id="courierName">Livreur</span> 👋</h2>
-<p>Boutique : <strong id="storeName">Chargement...</strong></p>
-<p class="small">Vous voyez uniquement les commandes de votre boutique.</p><div id="tourSummary" class="tour-summary hidden"></div><button id="refreshBtn" class="gray">🔄 Actualiser les commandes</button>
 
-<div id="mainMessage"></div>
-</div><div class="card">
-<h2>📦 Mes commandes et commandes disponibles</h2>
-<p class="small">
-Les commandes grisées sont disponibles pour être ajoutées à votre tournée.
-Vous pouvez en prendre plusieurs si elles sont sur votre chemin.
-</p><div id="ordersList">Chargement des commandes...</div>
-</div></section>
-</main><script type="module">
+.tour-summary{
+  background:#dcfce7;
+  color:#166534;
+  padding:13px;
+  border-radius:9px;
+  margin:12px 0;
+  font-weight:bold
+}
+
+/* FENÊTRE PERSONNALISÉE NEXUS 360 */
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.72);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  z-index:9999
+}
+
+.modal-box{
+  width:100%;
+  max-width:390px;
+  background:white;
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 15px 50px #00000040;
+  animation:modalAppear .2s ease
+}
+
+@keyframes modalAppear{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.modal-logo{
+  width:55px;
+  height:55px;
+  background:#e0f2fe;
+  color:#075985;
+  border-radius:15px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:27px;
+  margin-bottom:15px
+}
+
+.modal-box h2{
+  margin:0 0 12px;
+  font-size:21px
+}
+
+.modal-box p{
+  color:#475569;
+  line-height:1.6;
+  overflow-wrap:anywhere
+}
+
+.modal-actions{
+  display:flex;
+  gap:10px;
+  margin-top:22px
+}
+
+.modal-actions button{
+  flex:1;
+  margin:0
+}
+
+.modal-cancel{background:#64748b}
+.modal-confirm{background:#16834a}
+
+body.modal-open{overflow:hidden}
+
+@media(max-width:500px){
+  header h1{font-size:18px}
+  .modal-actions{flex-direction:column}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🚚 NEXUS 360 — Espace Livreur</h1>
+  <button id="logoutBtn" class="logout hidden">Déconnexion</button>
+</header>
+
+<main>
+
+<section id="loginSection" class="card">
+  <h2>Connexion livreur</h2>
+  <p>Connectez-vous avec votre compte personnel.</p>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Identifiant @nexus.com" required>
+    <input type="password" id="password" placeholder="Mot de passe" required>
+    <button type="submit">Se connecter</button>
+  </form>
+
+  <div id="loginMessage"></div>
+</section>
+
+<section id="dashboard" class="hidden">
+
+  <div class="card">
+    <h2>Bienvenue <span id="courierName">Livreur</span> 👋</h2>
+    <p>Boutique : <strong id="storeName">Chargement...</strong></p>
+    <p class="small">Vous voyez uniquement les commandes de votre boutique.</p>
+
+    <div id="tourSummary" class="tour-summary hidden"></div>
+
+    <button id="refreshBtn" class="gray">
+      🔄 Actualiser les commandes
+    </button>
+
+    <div id="mainMessage"></div>
+  </div>
+
+  <div class="card">
+    <h2>📦 Mes commandes et commandes disponibles</h2>
+    <p class="small">
+      Les commandes grisées sont disponibles pour être ajoutées à votre tournée.
+      Vous pouvez en prendre plusieurs si elles sont sur votre chemin.
+    </p>
+
+    <div id="ordersList">Chargement des commandes...</div>
+  </div>
+
+</section>
+</main>
+
+<!-- FENÊTRE DE CONFIRMATION NEXUS 360 -->
+
+<div id="confirmModal" class="modal-overlay hidden">
+  <div class="modal-box" role="dialog" aria-modal="true"
+       aria-labelledby="modalTitle">
+
+    <div class="modal-logo">🚚</div>
+
+    <h2 id="modalTitle">NEXUS 360 — Confirmation</h2>
+
+    <p id="modalMessage"></p>
+
+    <div class="modal-actions">
+      <button type="button" id="modalCancel" class="modal-cancel">
+        Annuler
+      </button>
+
+      <button type="button" id="modalConfirm" class="modal-confirm">
+        Confirmer
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
 
 import { supabase } from "./supabase.js";
 
@@ -72,465 +294,591 @@ const ordersList=document.getElementById("ordersList");
 const logoutBtn=document.getElementById("logoutBtn");
 const tourSummary=document.getElementById("tourSummary");
 
+const confirmModal=document.getElementById("confirmModal");
+const modalMessage=document.getElementById("modalMessage");
+const modalConfirm=document.getElementById("modalConfirm");
+const modalCancel=document.getElementById("modalCancel");
+
 let currentUser=null;
 let isLoading=false;
+let modalResolver=null;
+
+/* CONFIRMATION PERSONNALISÉE */
+
+function askConfirmation(text,confirmLabel="Confirmer"){
+
+  return new Promise(resolve=>{
+
+    modalResolver=resolve;
+
+    modalMessage.textContent=text;
+    modalConfirm.textContent=confirmLabel;
+
+    confirmModal.classList.remove("hidden");
+    document.body.classList.add("modal-open");
+
+    modalConfirm.focus();
+
+  });
+
+}
+
+function closeConfirmation(result){
+
+  confirmModal.classList.add("hidden");
+  document.body.classList.remove("modal-open");
+
+  if(modalResolver){
+    const resolve=modalResolver;
+    modalResolver=null;
+    resolve(result);
+  }
+
+}
+
+modalCancel.addEventListener("click",()=>{
+  closeConfirmation(false);
+});
+
+modalConfirm.addEventListener("click",()=>{
+  closeConfirmation(true);
+});
+
+confirmModal.addEventListener("click",event=>{
+
+  if(event.target===confirmModal){
+    closeConfirmation(false);
+  }
+
+});
+
+document.addEventListener("keydown",event=>{
+
+  if(event.key==="Escape"&&!confirmModal.classList.contains("hidden")){
+    closeConfirmation(false);
+  }
+
+});
+
+/* UTILITAIRES */
 
 function showMessage(target,message,type="error"){
-target.innerHTML=`<div class="message ${type}">${message}</div>`;
+
+  const box=document.createElement("div");
+  box.className="message "+type;
+  box.textContent=message;
+
+  target.replaceChildren(box);
+
 }
 
 function escapeHTML(value){
-return String(value??"").replace(/[&<>"']/g,char=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#039;"
-})[char]);
+
+  return String(value??"").replace(/[&<>"']/g,char=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
+
 }
 
 function money(value){
-return Number(value||0).toLocaleString("fr-FR")+" FC";
+
+  return Number(value||0).toLocaleString("fr-FR")+" FC";
+
 }
 
 function statusLabel(status){
-return {
-pending:"En attente de prise en charge",
-in_transit:"En transit",
-arrived:"Arrivé à destination",
-delivered:"Livré"
-}[status]||status;
+
+  return {
+    pending:"En attente de prise en charge",
+    in_transit:"En transit",
+    arrived:"Arrivé à destination",
+    delivered:"Livré"
+  }[status]||status;
+
 }
 
 function showLogin(){
-loginSection.classList.remove("hidden");
-dashboard.classList.add("hidden");
-logoutBtn.classList.add("hidden");
+
+  loginSection.classList.remove("hidden");
+  dashboard.classList.add("hidden");
+  logoutBtn.classList.add("hidden");
+
 }
+
+/* VÉRIFICATION DU COMPTE */
 
 async function verifyCourier(){
 
-const {data:sessionData,error:sessionError}=await supabase.auth.getSession();
+  const {data:sessionData,error:sessionError}=
+    await supabase.auth.getSession();
 
-if(sessionError)throw sessionError;
+  if(sessionError)throw sessionError;
 
-const user=sessionData.session?.user;
+  const user=sessionData.session?.user;
 
-if(!user){
-currentUser=null;
-showLogin();
-return false;
+  if(!user){
+
+    currentUser=null;
+    showLogin();
+    return false;
+
+  }
+
+  const {data:context,error}=await supabase.rpc(
+    "get_courier_profile_context"
+  );
+
+  if(error)throw error;
+
+  if(!context||context.role!=="livreur"){
+
+    await supabase.auth.signOut();
+
+    throw new Error(
+      "Ce compte n'est pas autorisé à accéder à l'espace livreur."
+    );
+
+  }
+
+  currentUser=user;
+
+  document.getElementById("courierName").textContent=
+    context.full_name||user.email;
+
+  document.getElementById("storeName").textContent=
+    context.store_name||"Ma boutique";
+
+  loginSection.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+  logoutBtn.classList.remove("hidden");
+
+  await loadOrders();
+
+  return true;
+
 }
 
-const {data:context,error}=await supabase.rpc(
-"get_courier_profile_context"
-);
-
-if(error)throw error;
-
-if(!context||context.role!=="livreur"){
-await supabase.auth.signOut();
-throw new Error("Ce compte n'est pas autorisé à accéder à l'espace livreur.");
-}
-
-currentUser=user;
-
-document.getElementById("courierName").textContent=
-context.full_name||user.email;
-
-document.getElementById("storeName").textContent=
-context.store_name||"Ma boutique";
-
-loginSection.classList.add("hidden");
-dashboard.classList.remove("hidden");
-logoutBtn.classList.remove("hidden");
-
-await loadOrders();
-
-return true;
-}
+/* CONNEXION */
 
 loginForm.addEventListener("submit",async event=>{
 
-event.preventDefault();
-loginMessage.innerHTML="";
+  event.preventDefault();
+  loginMessage.replaceChildren();
 
-const email=document.getElementById("email").value.trim();
-const password=document.getElementById("password").value;
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
 
-const button=loginForm.querySelector("button");
-button.disabled=true;
-button.textContent="Connexion...";
+  const button=loginForm.querySelector("button");
 
-try{
+  button.disabled=true;
+  button.textContent="Connexion...";
 
-const {error}=await supabase.auth.signInWithPassword({
-email,
-password
+  try{
+
+    const {error}=await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if(error)throw error;
+
+    await verifyCourier();
+
+  }catch(error){
+
+    showMessage(loginMessage,error.message);
+
+  }finally{
+
+    button.disabled=false;
+    button.textContent="Se connecter";
+
+  }
+
 });
 
-if(error)throw error;
-
-await verifyCourier();
-
-}catch(error){
-
-showMessage(loginMessage,escapeHTML(error.message));
-
-}finally{
-
-button.disabled=false;
-button.textContent="Se connecter";
-
-}
-
-});
+/* CHARGEMENT DES COMMANDES */
 
 async function loadOrders(){
 
-if(isLoading||!currentUser)return;
+  if(isLoading||!currentUser)return;
 
-isLoading=true;
-ordersList.textContent="Chargement des commandes...";
+  isLoading=true;
+  ordersList.textContent="Chargement des commandes...";
 
-try{
+  try{
 
-const {data,error}=await supabase.rpc(
-"get_courier_available_orders"
-);
+    const {data,error}=await supabase.rpc(
+      "get_courier_available_orders"
+    );
 
-if(error)throw error;
+    if(error)throw error;
 
-const orders=Array.isArray(data)?data:[];
+    const orders=Array.isArray(data)?data:[];
 
-// Nombre de commandes actuellement attribuées à ce livreur.
-const myOrders=orders.filter(order=>
-order.courier_id===currentUser.id
-);
+    const myOrders=orders.filter(order=>
+      order.courier_id===currentUser.id
+    );
 
-const activeCount=myOrders.length;
+    const activeCount=myOrders.length;
 
-if(activeCount>0){
+    if(activeCount>0){
 
-tourSummary.classList.remove("hidden");
-tourSummary.innerHTML=
-`🚚 Votre tournée contient ${activeCount} commande(s) en cours. Vous pouvez encore en ajouter.`;
+      tourSummary.classList.remove("hidden");
 
-}else{
+      tourSummary.textContent=
+        "🚚 Votre tournée contient "+activeCount+
+        " commande(s) en cours. Vous pouvez encore en ajouter.";
 
-tourSummary.classList.add("hidden");
-tourSummary.innerHTML="";
+    }else{
+
+      tourSummary.classList.add("hidden");
+      tourSummary.textContent="";
+
+    }
+
+    if(!orders.length){
+
+      ordersList.innerHTML=
+        "<p>🎉 Aucune commande à livrer pour le moment. Revenez plus tard.</p>";
+
+      return;
+
+    }
+
+    orders.sort((a,b)=>{
+
+      const aMine=a.courier_id===currentUser.id;
+      const bMine=b.courier_id===currentUser.id;
+
+      if(aMine&&!bMine)return -1;
+      if(!aMine&&bMine)return 1;
+
+      return new Date(a.created_at)-new Date(b.created_at);
+
+    });
+
+    ordersList.innerHTML=orders.map(order=>
+      renderOrder(order,activeCount)
+    ).join("");
+
+    ordersList.querySelectorAll("[data-claim]").forEach(button=>{
+
+      button.addEventListener("click",()=>{
+        claimOrder(button.dataset.claim,button);
+      });
+
+    });
+
+    ordersList.querySelectorAll("[data-progress]").forEach(button=>{
+
+      button.addEventListener("click",()=>{
+        updateProgress(
+          button.dataset.number,
+          button.dataset.progress,
+          button
+        );
+      });
+
+    });
+
+  }catch(error){
+
+    ordersList.replaceChildren();
+    showMessage(ordersList,error.message);
+
+  }finally{
+
+    isLoading=false;
+
+  }
 
 }
 
-if(!orders.length){
-
-ordersList.innerHTML=
-"<p>🎉 Aucune commande à livrer pour le moment. Revenez plus tard.</p>";
-
-return;
-
-}
-
-// Les commandes du livreur apparaissent en premier.
-orders.sort((a,b)=>{
-
-const aMine=a.courier_id===currentUser.id;
-const bMine=b.courier_id===currentUser.id;
-
-if(aMine&&!bMine)return -1;
-if(!aMine&&bMine)return 1;
-
-return new Date(a.created_at)-new Date(b.created_at);
-
-});
-
-ordersList.innerHTML=orders.map(order=>
-renderOrder(order,activeCount)
-).join("");
-
-ordersList.querySelectorAll("[data-claim]").forEach(button=>{
-button.addEventListener("click",()=>{
-claimOrder(button.dataset.claim,button);
-});
-});
-
-ordersList.querySelectorAll("[data-progress]").forEach(button=>{
-button.addEventListener("click",()=>{
-updateProgress(
-button.dataset.number,
-button.dataset.progress,
-button
-);
-});
-});
-
-}catch(error){
-
-ordersList.innerHTML="";
-showMessage(ordersList,escapeHTML(error.message));
-
-}finally{
-
-isLoading=false;
-
-}
-
-}
+/* AFFICHAGE D'UNE COMMANDE */
 
 function renderOrder(order,activeCount){
 
-const status=order.delivery_status||"pending";
+  const status=order.delivery_status||"pending";
+  const assignedToMe=order.courier_id===currentUser.id;
+  const available=!order.courier_id&&status==="pending";
 
-const assignedToMe=order.courier_id===currentUser.id;
+  const muted=available&&activeCount>0;
 
-const available=!order.courier_id&&status==="pending";
+  const cardClass=assignedToMe
+    ?"active-order"
+    :muted
+    ?"muted-order"
+    :"";
 
-// Les commandes disponibles deviennent grises lorsqu'une tournée est active.
-const muted=available&&activeCount>0;
+  const steps=[
+    ["pending","Commande en attente"],
+    ["in_transit","Colis en transit"],
+    ["arrived","Arrivé à destination"],
+    ["delivered","Livré au client"]
+  ];
 
-const cardClass=assignedToMe
-?"active-order"
-:muted
-?"muted-order"
-:"";
+  const progress=["pending","in_transit","arrived","delivered"];
+  const currentIndex=progress.indexOf(status);
 
-const steps=[
-["pending","Commande en attente"],
-["in_transit","Colis en transit"],
-["arrived","Arrivé à destination"],
-["delivered","Livré au client"]
-];
+  const timeline=steps.map(([key,label],index)=>{
 
-const progress=["pending","in_transit","arrived","delivered"];
-const currentIndex=progress.indexOf(status);
+    let className="";
 
-const timeline=steps.map(([key,label],index)=>{
+    if(index<currentIndex)className="done";
+    if(index===currentIndex)className="current";
 
-let className="";
+    return `<div class="step ${className}">
+      ${index<currentIndex?"✅":index===currentIndex?"🔵":"⚪"}
+      ${label}
+    </div>`;
 
-if(index<currentIndex)className="done";
-if(index===currentIndex)className="current";
+  }).join("");
 
-return `<div class="step ${className}">
-${index<currentIndex?"✅":index===currentIndex?"🔵":"⚪"} ${label}
-</div>`;
+  let action="";
 
-}).join("");
+  if(available){
 
-let action="";
+    const buttonLabel=activeCount>0
+      ?"➕ Ajouter à ma tournée"
+      :"Prendre cette commande";
 
-if(available){
+    action=`
+      <button class="green" data-claim="${escapeHTML(order.order_number)}">
+        ${buttonLabel}
+      </button>`;
 
-const buttonLabel=activeCount>0
-?"➕ Ajouter à ma tournée"
-:"Prendre cette commande";
+  }else if(assignedToMe&&status==="pending"){
 
-action=`
-<button class="green" data-claim="${escapeHTML(order.order_number)}">
-${buttonLabel}
-</button>`;
+    action=`
+      <button class="orange" data-progress="in_transit"
+        data-number="${escapeHTML(order.order_number)}">
+        Démarrer la livraison
+      </button>`;
 
-}else if(assignedToMe&&status==="pending"){
+  }else if(assignedToMe&&status==="in_transit"){
 
-action=`
-<button class="orange" data-progress="in_transit"
-data-number="${escapeHTML(order.order_number)}">
-Démarrer la livraison
-</button>`;
+    action=`
+      <button class="orange" data-progress="arrived"
+        data-number="${escapeHTML(order.order_number)}">
+        Confirmer l'arrivée
+      </button>`;
 
-}else if(assignedToMe&&status==="in_transit"){
+  }else if(assignedToMe&&status==="arrived"){
 
-action=`
-<button class="orange" data-progress="arrived"
-data-number="${escapeHTML(order.order_number)}">
-Confirmer l'arrivée
-</button>`;
+    action=`
+      <button class="green" data-progress="delivered"
+        data-number="${escapeHTML(order.order_number)}">
+        Confirmer la livraison
+      </button>`;
 
-}else if(assignedToMe&&status==="arrived"){
+  }else{
 
-action=`
-<button class="green" data-progress="delivered"
-data-number="${escapeHTML(order.order_number)}">
-Confirmer la livraison
-</button>`;
+    return "";
 
-}else{
+  }
 
-return "";
+  const date=order.created_at
+    ?new Date(order.created_at).toLocaleString("fr-FR")
+    :"";
 
-}
+  return `
+    <article class="order ${cardClass}">
 
-const date=order.created_at
-?new Date(order.created_at).toLocaleString("fr-FR")
-:"";
+      <h3>
+        ${assignedToMe?"🚚 Ma tournée — ":"📦 "}
+        Commande ${escapeHTML(order.order_number)}
+      </h3>
 
-return `
-<article class="order ${cardClass}">
+      <span class="badge">${escapeHTML(statusLabel(status))}</span>
 
-<h3>
-${assignedToMe?"🚚 Ma tournée — ":"📦 "}
-Commande ${escapeHTML(order.order_number)}
-</h3>
+      <p><strong>Client :</strong> ${escapeHTML(order.customer_name)}</p>
+      <p><strong>Téléphone :</strong> ${escapeHTML(order.customer_phone)}</p>
+      <p><strong>Adresse :</strong> ${escapeHTML(order.delivery_address)}</p>
+      <p><strong>Total :</strong> ${money(order.total_amount)}</p>
 
-<span class="badge">${escapeHTML(statusLabel(status))}</span>
+      <p class="small">Date : ${escapeHTML(date)}</p>
 
-<p><strong>Client :</strong> ${escapeHTML(order.customer_name)}</p>
+      <div class="steps">${timeline}</div>
 
-<p><strong>Téléphone :</strong> ${escapeHTML(order.customer_phone)}</p>
+      ${action}
 
-<p><strong>Adresse :</strong> ${escapeHTML(order.delivery_address)}</p>
-
-<p><strong>Total :</strong> ${money(order.total_amount)}</p>
-
-<p class="small">Date : ${escapeHTML(date)}</p>
-
-<div class="steps">${timeline}</div>
-
-${action}
-
-</article>
-`;
+    </article>
+  `;
 
 }
+
+/* PRENDRE UNE COMMANDE */
 
 async function claimOrder(orderNumber,button){
 
-if(!confirm(
-"Voulez-vous ajouter la commande "+orderNumber+" à votre tournée ?"
-))return;
+  const confirmed=await askConfirmation(
+    "Voulez-vous ajouter la commande "+orderNumber+
+    " à votre tournée ?",
+    "Ajouter à ma tournée"
+  );
 
-button.disabled=true;
-button.textContent="Attribution...";
+  if(!confirmed)return;
 
-try{
+  button.disabled=true;
+  button.textContent="Attribution...";
 
-const {data,error}=await supabase.rpc(
-"claim_courier_order",
-{
-p_order_number:orderNumber
+  try{
+
+    const {data,error}=await supabase.rpc(
+      "claim_courier_order",
+      {p_order_number:orderNumber}
+    );
+
+    if(error)throw error;
+
+    if(data&&data.success===false){
+      throw new Error(
+        data.message||"Impossible de prendre cette commande."
+      );
+    }
+
+    showMessage(
+      mainMessage,
+      "✅ Commande ajoutée à votre tournée avec succès !",
+      "success"
+    );
+
+    await loadOrders();
+
+  }catch(error){
+
+    showMessage(mainMessage,error.message);
+    await loadOrders();
+
+  }
+
 }
-);
 
-if(error)throw error;
-
-if(data&&data.success===false){
-throw new Error(data.message||"Impossible de prendre cette commande.");
-}
-
-showMessage(
-mainMessage,
-"✅ Commande ajoutée à votre tournée avec succès !",
-"success"
-);
-
-await loadOrders();
-
-}catch(error){
-
-showMessage(mainMessage,escapeHTML(error.message));
-await loadOrders();
-
-}
-
-}
+/* MISE À JOUR DE LA LIVRAISON */
 
 async function updateProgress(orderNumber,nextStatus,button){
 
-const labels={
-in_transit:"démarrer la livraison",
-arrived:"confirmer l'arrivée à destination",
-delivered:"confirmer que le colis est livré"
-};
+  const labels={
+    in_transit:"démarrer la livraison",
+    arrived:"confirmer l'arrivée à destination",
+    delivered:"confirmer que le colis est livré"
+  };
 
-if(!confirm(
-"Voulez-vous "+labels[nextStatus]+" pour la commande "+orderNumber+" ?"
-))return;
+  const confirmed=await askConfirmation(
+    "Voulez-vous "+labels[nextStatus]+
+    " pour la commande "+orderNumber+" ?",
+    "Confirmer"
+  );
 
-button.disabled=true;
-button.textContent="Mise à jour...";
+  if(!confirmed)return;
 
-try{
+  button.disabled=true;
+  button.textContent="Mise à jour...";
 
-const {error}=await supabase.rpc(
-"update_courier_delivery_progress",
-{
-p_order_number:orderNumber,
-p_delivery_status:nextStatus
+  try{
+
+    const {error}=await supabase.rpc(
+      "update_courier_delivery_progress",
+      {
+        p_order_number:orderNumber,
+        p_delivery_status:nextStatus
+      }
+    );
+
+    if(error)throw error;
+
+    if(nextStatus==="delivered"){
+
+      showMessage(
+        mainMessage,
+        "🎉 Commande livrée ! Elle a été retirée de votre tournée.",
+        "success"
+      );
+
+    }else{
+
+      showMessage(
+        mainMessage,
+        "✅ Étape de livraison mise à jour !",
+        "success"
+      );
+
+    }
+
+    await loadOrders();
+
+  }catch(error){
+
+    showMessage(mainMessage,error.message);
+    await loadOrders();
+
+  }
+
 }
-);
 
-if(error)throw error;
-
-if(nextStatus==="delivered"){
-
-showMessage(
-mainMessage,
-"🎉 Commande livrée ! Elle a été retirée de votre tournée.",
-"success"
-);
-
-}else{
-
-showMessage(
-mainMessage,
-"✅ Étape de livraison mise à jour !",
-"success"
-);
-
-}
-
-await loadOrders();
-
-}catch(error){
-
-showMessage(mainMessage,escapeHTML(error.message));
-await loadOrders();
-
-}
-
-}
+/* DÉCONNEXION */
 
 logoutBtn.addEventListener("click",async()=>{
 
-await supabase.auth.signOut();
+  const confirmed=await askConfirmation(
+    "Voulez-vous vraiment vous déconnecter de votre espace livreur ?",
+    "Se déconnecter"
+  );
 
-currentUser=null;
-showLogin();
+  if(!confirmed)return;
+
+  await supabase.auth.signOut();
+
+  currentUser=null;
+  showLogin();
 
 });
 
-document.getElementById("refreshBtn").addEventListener("click",loadOrders);
+document.getElementById("refreshBtn").addEventListener(
+  "click",
+  loadOrders
+);
 
 supabase.auth.onAuthStateChange((event,session)=>{
 
-if(event==="SIGNED_OUT"){
+  if(event==="SIGNED_OUT"){
 
-currentUser=null;
-showLogin();
+    currentUser=null;
+    showLogin();
 
-}
+  }
 
 });
 
+/* INITIALISATION */
+
 try{
 
-await verifyCourier();
+  await verifyCourier();
 
 }catch(error){
 
-showLogin();
-showMessage(loginMessage,escapeHTML(error.message));
+  showLogin();
+  showMessage(loginMessage,error.message);
 
 }
+
+/* ACTUALISATION AUTOMATIQUE */
 
 setInterval(()=>{
 
-if(currentUser&&!document.hidden){
-loadOrders();
-}
+  if(currentUser&&!document.hidden){
+    loadOrders();
+  }
 
 },10000);
 
-</script></body>
-</html>
+</script>
+
+</body>
+  </html>
