@@ -1,657 +1,800 @@
-<!DOCTYPE html><html lang="fr">  <head>  
-  <meta charset="UTF-8">  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-  <title>Passer commande - NEXUS 360</title>  <style>  
-    * { box-sizing: border-box; }  body {  
-  margin: 0;  
-  padding: 20px;  
-  font-family: Arial, sans-serif;  
-  background: #f4f6f9;  
-  color: #222;  
-}  
-
-.container {  
-  max-width: 650px;  
-  margin: 20px auto;  
-  padding: 24px;  
-  background: white;  
-  border-radius: 14px;  
-  box-shadow: 0 4px 18px #00000010;  
-}  
-
-h1 { text-align: center; color: #123b72; }  
-h2 { margin-top: 25px; font-size: 19px; }  
-
-.item {  
-  display: flex;  
-  gap: 12px;  
-  align-items: center;  
-  padding: 12px 0;  
-  border-bottom: 1px solid #eee;  
-}  
-
-.item img {  
-  width: 65px;  
-  height: 65px;  
-  object-fit: cover;  
-  border-radius: 8px;  
-  background: #eee;  
-}  
-
-.item-info { flex: 1; min-width: 0; }  
-.item-info p { margin: 5px 0; overflow-wrap: anywhere; }  
-.price { font-weight: bold; color: #123b72; }  
-
-label {  
-  display: block;  
-  margin-top: 16px;  
-  font-weight: bold;  
-}  
-
-input, textarea {  
-  width: 100%;  
-  padding: 12px;  
-  margin-top: 7px;  
-  border: 1px solid #ccc;  
-  border-radius: 8px;  
-  font-size: 16px;  
-}  
-
-textarea { min-height: 90px; resize: vertical; }  
-
-.total {  
-  margin-top: 24px;  
-  padding: 16px;  
-  background: #edf4ff;  
-  border-radius: 8px;  
-  font-size: 21px;  
-  font-weight: bold;  
-  text-align: center;  
-  overflow-wrap: anywhere;  
-}  
-
-button {  
-  width: 100%;  
-  margin-top: 20px;  
-  padding: 15px;  
-  border: none;  
-  border-radius: 8px;  
-  background: #123b72;  
-  color: white;  
-  font-size: 17px;  
-  font-weight: bold;  
-  cursor: pointer;  
-}  
-
-button:disabled {  
-  background: #888;  
-  cursor: not-allowed;  
-}  
-
-.message {  
-  margin-top: 18px;  
-  padding: 14px;  
-  border-radius: 8px;  
-  overflow-wrap: anywhere;  
-  line-height: 1.5;  
-}  
-
-.success { background: #e3f8e8; color: #176b2c; }  
-.error { background: #ffe8e8; color: #a00000; }  
-.hidden { display: none !important; }  
-
-.order-number {  
-  display: block;  
-  margin: 10px 0;  
-  font-size: 25px;  
-  font-weight: bold;  
-  letter-spacing: 1px;  
-  overflow-wrap: anywhere;  
-}  
-
-.payment-section {  
-  margin-top: 22px;  
-  padding: 16px;  
-  border: 1px solid #dbe3ef;  
-  border-radius: 10px;  
-  background: #fff;  
-  color: #222;  
-}  
-
-.payment-section h3 {  
-  margin-top: 0;  
-  color: #123b72;  
-}  
-
-.payment-choice {  
-  display: block;  
-  width: 100%;  
-  margin-top: 12px;  
-  padding: 15px;  
-  border-radius: 8px;  
-  text-align: center;  
-  font-size: 16px;  
-  font-weight: bold;  
-}  
-
-.cash-choice {  
-  background: #15803d;  
-  color: white;  
-}  
-
-.electronic-choice {  
-  background: #d1d5db;  
-  color: #555;  
-  cursor: not-allowed;  
-  opacity: 0.85;  
-}  
-
-.payment-info {  
-  margin-top: 10px;  
-  font-size: 14px;  
-  line-height: 1.5;  
-  color: #555;  
-}  
-
-.payment-info a {  
-  color: #123b72;  
-  font-weight: bold;  
-  overflow-wrap: anywhere;  
-}  
-
-.contact-button {  
-  display: block;  
-  width: 100%;  
-  margin-top: 12px;  
-  padding: 15px;  
-  border-radius: 8px;  
-  color: white;  
-  text-align: center;  
-  text-decoration: none;  
-  font-size: 16px;  
-  font-weight: bold;  
-}  
-
-.whatsapp-button { background: #16a34a; }  
-.call-button { background: #123b72; }  
-
-.contact-title {  
-  margin-top: 20px;  
-  font-weight: bold;  
-  color: #123b72;  
-}  
-
-.cash-confirmation {  
-  margin-top: 14px;  
-  padding: 12px;  
-  background: #e3f8e8;  
-  border-radius: 8px;  
-  color: #176b2c;  
-  line-height: 1.5;  
-}  
-
-.back {  
-  display: block;  
-  margin-top: 20px;  
-  text-align: center;  
-  color: #123b72;  
-}  
-
-@media (max-width: 480px) {  
-  body { padding: 10px; }  
-  .container { margin: 10px auto; padding: 18px; }  
-}
-
-</style></head><body>
-
-  <main class="container">  
-    <h1>🛒 Finaliser ma commande</h1><p>  
-  Complétez vos coordonnées pour recevoir votre commande.  
-  Aucun compte client n'est nécessaire.  
-</p>  <h2>Votre panier</h2>  
-<div id="cartItems"></div>  <div class="total">  
-  Total : <span id="total">0 FC</span>  
-</div>  <h2>Informations de livraison</h2>  <form id="orderForm">  
-  <label for="customerName">Nom complet</label>  
-  <input id="customerName" type="text" minlength="2" maxlength="150"  
-    autocomplete="name" required>  <label for="customerPhone">Numéro de téléphone</label>
-<input id="customerPhone" type="tel" minlength="6" maxlength="30"  
-autocomplete="tel" required>
-
-<label for="deliveryAddress">Adresse de livraison</label>
-
-  <textarea id="deliveryAddress" minlength="5" maxlength="500"  
-    autocomplete="street-address"  
-    placeholder="Commune, quartier, avenue, numéro..." required></textarea>    <button id="submitButton" type="submit">  
-    Confirmer ma commande  
-  </button>  
-</form>  <div id="message" class="message hidden"  
-  role="status" aria-live="polite"></div>  <a class="back" href="./catalogue.html">← Retour au catalogue</a>
-
-  </main>  <script type="module">  
-    import { supabase } from "./supabase.js";  const CART_KEY = "nexus360_cart_v1";  
-const CUSTOMER_KEY = "nexus360_customer_details_v1";  
-
-const STORE_PHONE = "243966557344";  
-const PAYMENT_EMAIL = "ngomafilscher@gmail.com";  
-
-const cartItems = document.getElementById("cartItems");  
-const totalElement = document.getElementById("total");  
-const form = document.getElementById("orderForm");  
-const submitButton = document.getElementById("submitButton");  
-const message = document.getElementById("message");  
-
-let cart = [];  
-let isSubmitting = false;  
-
-function showMessage(text, type) {  
-  message.replaceChildren();  
-  message.className = "message " + type;  
-  message.textContent = text;  
-}  
-
-function formatPrice(value) {  
-  return new Intl.NumberFormat("fr-FR", {  
-    maximumFractionDigits: 2  
-  }).format(Number(value) || 0);  
-}  
-
-async function getStoreName(items) {  
-  const productIds = [...new Set(items.map(item => item.product_id))];  
-
-  const { data: products, error: productsError } = await supabase  
-    .from("products")  
-    .select("id, store_id")  
-    .in("id", productIds);  
-
-  if (productsError) throw productsError;  
-
-  if (!products || products.length !== productIds.length) {  
-    throw new Error("Impossible de retrouver tous les produits de la commande.");  
-  }  
-
-  const storeIds = [...new Set(products.map(product => product.store_id))];  
-
-  if (storeIds.length !== 1 || !storeIds[0]) {  
-    throw new Error("Les produits doivent appartenir à une seule boutique.");  
-  }  
-
-  const { data: store, error: storeError } = await supabase  
-    .from("stores")  
-    .select("store_name")  
-    .eq("id", storeIds[0])  
-    .single();  
-
-  if (storeError) throw storeError;  
-
-  if (!store || !store.store_name) {  
-    throw new Error("Impossible de retrouver le nom de la boutique.");  
-  }  
-
-  return store.store_name;  
-}  
-
-function showSuccess(orderNumber, totalAmount, customerName, storeName) {  
-  message.replaceChildren();  
-  message.className = "message success";  
-
-  const title = document.createElement("strong");  
-  title.textContent = "✅ Votre commande a bien été enregistrée !";  
-
-  const numberLabel = document.createElement("div");  
-  numberLabel.textContent = "Numéro de commande :";  
-
-  const number = document.createElement("span");  
-  number.className = "order-number";  
-  number.textContent = orderNumber;  
-
-  const total = document.createElement("p");  
-  total.textContent =  
-    "Total confirmé : " + formatPrice(totalAmount) + " FC.";  
-
-  const advice = document.createElement("p");  
-  advice.textContent =  
-    "Conservez ce numéro pour suivre votre commande.";  
-
-  const paymentSection = document.createElement("section");  
-  paymentSection.className = "payment-section";  
-
-  const paymentTitle = document.createElement("h3");  
-  paymentTitle.textContent =  
-    "💳 Comment souhaitez-vous payer votre commande ?";  
-
-  const cashButton = document.createElement("button");  
-  cashButton.type = "button";  
-  cashButton.className = "payment-choice cash-choice";  
-  cashButton.textContent =  
-    "💵 Payer après livraison (Cash au vendeur)";  
-
-  const electronicButton = document.createElement("button");  
-  electronicButton.type = "button";  
-  electronicButton.className =  
-    "payment-choice electronic-choice";  
-  electronicButton.disabled = true;  
-  electronicButton.textContent =  
-    "💳 Paiement électronique – Bientôt disponible";  
-
-  const emailInfo = document.createElement("p");  
-  emailInfo.className = "payment-info";  
-  emailInfo.append(  
-    document.createTextNode(  
-      "Pour toute information concernant le paiement électronique, veuillez contacter Filscher Muanda au "  
-    )  
-  );  
-
-  const emailLink = document.createElement("a");  
-  emailLink.href = "mailto:" + PAYMENT_EMAIL;  
-  emailLink.textContent = PAYMENT_EMAIL;  
-
-  emailInfo.appendChild(emailLink);  
-  emailInfo.append(document.createTextNode("."));  
-
-  const cashConfirmation = document.createElement("div");  
-  cashConfirmation.className = "cash-confirmation hidden";  
-  cashConfirmation.textContent =  
-    "✅ Vous avez choisi de payer en espèces après livraison. " +  
-    "Veuillez remettre le montant au vendeur à la réception de votre commande.";  
-
-  const contactTitle = document.createElement("p");  
-  contactTitle.className = "contact-title hidden";  
-  contactTitle.textContent =  
-    "📞 Vous pouvez contacter la boutique " + storeName + " :";  
-
-  const whatsapp = document.createElement("a");  
-  whatsapp.className =  
-    "contact-button whatsapp-button hidden";  
-
-  const whatsappMessage =  
-    "Bonjour cher(e) " + storeName + " !\n\n" +  
-    "Je me nomme " + customerName + ". " +  
-    "Je viens de passer une commande sur NEXUS 360.\n\n" +  
-    "Voici les détails de ma commande :\n\n" +  
-    "Numéro de commande : " + orderNumber + "\n" +  
-    "Montant total : " + formatPrice(totalAmount) + " FC\n" +  
-    "Mode de paiement : Cash après livraison.\n\n" +  
-    "Je souhaiterais avoir des informations concernant " +  
-    "la livraison et le suivi de ma commande.\n\n" +  
-    "Merci beaucoup pour votre disponibilité !";  
-
-  whatsapp.href =  
-    "https://wa.me/" + STORE_PHONE +  
-    "?text=" + encodeURIComponent(whatsappMessage);  
-
-  whatsapp.target = "_blank";  
-  whatsapp.rel = "noopener noreferrer";  
-  whatsapp.textContent =  
-    "🟢 Contacter la boutique sur WhatsApp";  
-
-  const call = document.createElement("a");  
-  call.className = "contact-button call-button hidden";  
-  call.href = "tel:+" + STORE_PHONE;  
-  call.textContent = "📞 Appeler directement la boutique";  
-
-  cashButton.addEventListener("click", () => {  
-    cashButton.disabled = true;  
-    cashButton.textContent =  
-      "✅ Paiement après livraison choisi";  
-
-    cashConfirmation.classList.remove("hidden");  
-    contactTitle.classList.remove("hidden");  
-    whatsapp.classList.remove("hidden");  
-    call.classList.remove("hidden");  
-  });  
-
-  paymentSection.append(  
-    paymentTitle,  
-    cashButton,  
-    electronicButton,  
-    emailInfo,  
-    cashConfirmation,  
-    contactTitle,  
-    whatsapp,  
-    call  
-  );  
-
-  message.append(  
-    title,  
-    numberLabel,  
-    number,  
-    total,  
-    advice,  
-    paymentSection  
-  );  
-}  
-
-function loadCart() {  
-  try {  
-    const saved = JSON.parse(  
-      localStorage.getItem(CART_KEY) || "[]"  
-    );  
-
-    cart = Array.isArray(saved)  
-      ? saved.filter(item =>  
-          item &&  
-          typeof item.id === "string" &&  
-          Number.isInteger(Number(item.quantity)) &&  
-          Number(item.quantity) > 0 &&  
-          Number.isFinite(Number(item.price)) &&  
-          Number(item.price) >= 0  
-        ).map(item => ({  
-          ...item,  
-          quantity: Number(item.quantity),  
-          price: Number(item.price)  
-        }))  
-      : [];  
-  } catch {  
-    cart = [];  
-  }  
-}  
-
-function displayCart() {  
-  cartItems.replaceChildren();  
-
-  if (cart.length === 0) {  
-    cartItems.textContent = "Votre panier est vide.";  
-    totalElement.textContent = "0 FC";  
-    submitButton.disabled = true;  
-    return;  
-  }  
-
-  let total = 0;  
-
-  cart.forEach(item => {  
-    const quantity = Number(item.quantity);  
-    const price = Number(item.price);  
-    const lineTotal = price * quantity;  
-    total += lineTotal;  
-
-    const row = document.createElement("div");  
-    row.className = "item";  
-
-    if (item.image_url) {  
-      const img = document.createElement("img");  
-      img.src = item.image_url;  
-      img.alt = "";  
-      img.loading = "lazy";  
-      img.onerror = () => img.remove();  
-      row.appendChild(img);  
-    }  
-
-    const info = document.createElement("div");  
-    info.className = "item-info";  
-
-    const name = document.createElement("p");  
-    name.textContent = item.name || "Produit";  
-
-    const quantityText = document.createElement("p");  
-    quantityText.textContent = "Quantité : " + quantity;  
-
-    const priceText = document.createElement("p");  
-    priceText.className = "price";  
-    priceText.textContent = formatPrice(lineTotal) + " FC";  
-
-    info.append(name, quantityText, priceText);  
-    row.appendChild(info);  
-    cartItems.appendChild(row);  
-  });  
-
-  totalElement.textContent = formatPrice(total) + " FC";  
-  submitButton.disabled = false;  
-}  
-
-function loadCustomerDetails() {  
-  try {  
-    const saved = JSON.parse(  
-      localStorage.getItem(CUSTOMER_KEY) || "{}"  
-    );  
-
-    document.getElementById("customerName").value =  
-      saved.name || "";  
-
-    document.getElementById("customerPhone").value =  
-      saved.phone || "";  
-
-    document.getElementById("deliveryAddress").value =  
-      saved.address || "";  
-  } catch {  
-    // Le formulaire reste utilisable.  
-  }  
-}  
-
-loadCart();  
-displayCart();  
-loadCustomerDetails();  
-
-form.addEventListener("submit", async event => {  
-  event.preventDefault();  
-
-  if (isSubmitting) return;  
-
-  if (cart.length === 0) {  
-    showMessage("Votre panier est vide.", "error");  
-    return;  
-  }  
-
-  const customerName =  
-    document.getElementById("customerName").value.trim();  
-
-  const customerPhone =  
-    document.getElementById("customerPhone").value.trim();  
-
-  const deliveryAddress =  
-    document.getElementById("deliveryAddress").value.trim();  
-
-  if (  
-    customerName.length < 2 ||  
-    customerPhone.length < 6 ||  
-    deliveryAddress.length < 5  
-  ) {  
-    showMessage(  
-      "Vérifiez votre nom, votre téléphone et votre adresse.",  
-      "error"  
-    );  
-    return;  
-  }  
-
-  const items = cart.map(item => ({  
-    product_id: item.id,  
-    quantity: Number(item.quantity)  
-  }));  
-
-  if (items.some(item =>  
-    !Number.isInteger(item.quantity) ||  
-    item.quantity < 1 ||  
-    item.quantity > 100  
-  )) {  
-    showMessage("Une quantité du panier est invalide.", "error");  
-    return;  
-  }  
-
-  isSubmitting = true;  
-  submitButton.disabled = true;  
-  submitButton.textContent = "Vérification en cours...";  
-  message.className = "message hidden";  
-
-  try {  
-    // Récupérer le nom de la boutique avant de créer la commande.  
-    const storeName = await getStoreName(items);  
-
-    submitButton.textContent = "Envoi de la commande...";  
-
-    const { data, error } = await supabase.rpc(  
-      "create_guest_order",  
-      {  
-        p_customer_name: customerName,  
-        p_customer_phone: customerPhone,  
-        p_delivery_address: deliveryAddress,  
-        p_items: items  
-      }  
-    );  
-
-    if (error) throw error;  
-
-    if (!data || data.success !== true) {  
-      throw new Error(  
-        "Le serveur n'a pas confirmé la commande."  
-      );  
-    }  
-
-    const orderNumber = data.order_number == null  
-      ? ""  
-      : String(data.order_number).trim();  
-
-    if (!orderNumber) {  
-      throw new Error(  
-        "La commande semble avoir été traitée, mais son numéro " +  
-        "n'a pas été renvoyé. Ne validez pas une deuxième fois. " +  
-        "Contactez l'administrateur."  
-      );  
-    }  
-
-    const confirmedTotal = Number(data.total_amount);  
-
-    try {  
-      localStorage.setItem(  
-        CUSTOMER_KEY,  
-        JSON.stringify({  
-          name: customerName,  
-          phone: customerPhone,  
-          address: deliveryAddress  
-        })  
-      );  
-    } catch {}  
-
-    try {  
-      localStorage.removeItem(CART_KEY);  
-    } catch {}  
-
-    cart = [];  
-    displayCart();  
-    form.classList.add("hidden");  
-
-    showSuccess(  
-      orderNumber,  
-      Number.isFinite(confirmedTotal) ? confirmedTotal : 0,  
-      customerName,  
-      storeName  
-    );  
-
-  } catch (error) {  
-    console.error("Erreur de commande :", error);  
-
-    showMessage(  
-      error.message || "Impossible de confirmer la commande.",  
-      "error"  
-    );  
-
-  } finally {  
-    isSubmitting = false;  
-    submitButton.textContent = "Confirmer ma commande";  
-    submitButton.disabled =  
-      cart.length === 0 || form.classList.contains("hidden");  
-  }  
-});
-
-</script></body>
-
-</html>  
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passer commande - NEXUS 360</title>  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      color: #222;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 20px auto;
+      padding: 24px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px #00000010;
+    }
+
+    h1 { text-align: center; color: #123b72; }
+    h2 { margin-top: 25px; font-size: 19px; }
+
+    .item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .item img {
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
+    }
+
+    .item-info { flex: 1; min-width: 0; }
+    .item-info p { margin: 5px 0; overflow-wrap: anywhere; }
+    .price { font-weight: bold; color: #123b72; }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 7px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    .total {
+      margin-top: 24px;
+      padding: 16px;
+      background: #edf4ff;
+      border-radius: 8px;
+      font-size: 21px;
+      font-weight: bold;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #123b72;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #888;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 8px;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
+
+    .success { background: #e3f8e8; color: #176b2c; }
+    .error { background: #ffe8e8; color: #a00000; }
+    .hidden { display: none !important; }
+
+    .order-number {
+      display: block;
+      margin: 10px 0;
+      font-size: 25px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      overflow-wrap: anywhere;
+    }
+
+    /* Confirmation de commande très visible */
+    .order-alert {
+      margin-top: 20px;
+      padding: 20px;
+      border: 4px solid #b00000;
+      border-radius: 12px;
+      background: #fff0f0;
+      color: #a00000;
+      text-align: center;
+      animation: alertBlink 1s infinite;
+    }
+
+    .order-alert h2 {
+      margin-top: 0;
+      color: #b00000;
+      font-size: 23px;
+    }
+
+    .order-alert .order-number {
+      color: #b00000;
+      font-size: 26px;
+    }
+
+    .order-alert .confirmed-total {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    @keyframes alertBlink {
+      0%, 100% {
+        border-color: #b00000;
+        background: #fff0f0;
+      }
+      50% {
+        border-color: #ff0000;
+        background: #ffdada;
+      }
+    }
+
+    .copy-button { background: #b00000; }
+    .tracking-button { background: #0759dc; }
+
+    .payment-section {
+      margin-top: 22px;
+      padding: 16px;
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      background: #fff;
+      color: #222;
+    }
+
+    .payment-section h3 {
+      margin-top: 0;
+      color: #123b72;
+    }
+
+    .payment-choice {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .cash-choice {
+      background: #15803d;
+      color: white;
+    }
+
+    .electronic-choice {
+      background: #d1d5db;
+      color: #555;
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    .payment-info {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .payment-info a {
+      color: #123b72;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .contact-button {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 15px;
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .whatsapp-button { background: #16a34a; }
+    .call-button { background: #123b72; }
+
+    .contact-title {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #123b72;
+    }
+
+    .cash-confirmation {
+      margin-top: 14px;
+      padding: 12px;
+      background: #e3f8e8;
+      border-radius: 8px;
+      color: #176b2c;
+      line-height: 1.5;
+    }
+
+    .back {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      color: #123b72;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      .container { margin: 10px auto; padding: 18px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .order-alert { animation: none; }
+    }
+  </style></head><body>
+  <main class="container">
+    <h1>🛒 Finaliser ma commande</h1><p>
+  Complétez vos coordonnées pour recevoir votre commande.
+  Aucun compte client n'est nécessaire.
+</p>
+
+<h2>Votre panier</h2>
+<div id="cartItems"></div>
+
+<div class="total">
+  Total : <span id="total">0 FC</span>
+</div>
+
+<h2>Informations de livraison</h2>
+
+<form id="orderForm">
+  <label for="customerName">Nom complet</label>
+  <input id="customerName" type="text" minlength="2" maxlength="150"
+    autocomplete="name" required>
+
+  <label for="customerPhone">Numéro de téléphone</label>
+  <input id="customerPhone" type="tel" minlength="6" maxlength="30"
+    autocomplete="tel" required>
+
+  <label for="deliveryAddress">Adresse de livraison</label>
+  <textarea id="deliveryAddress" minlength="5" maxlength="500"
+    autocomplete="street-address"
+    placeholder="Commune, quartier, avenue, numéro..." required></textarea>
+
+  <button id="submitButton" type="submit">
+    Confirmer ma commande
+  </button>
+</form>
+
+<div id="message" class="message hidden"
+  role="status" aria-live="polite"></div>
+
+<a class="back" href="./catalogue.html">← Retour au catalogue</a>
+
+  </main>  <script type="module">
+    import { supabase } from "./supabase.js";
+
+    const CART_KEY = "nexus360_cart_v1";
+    const CUSTOMER_KEY = "nexus360_customer_details_v1";
+
+    const STORE_PHONE = "243966557344";
+    const PAYMENT_EMAIL = "ngomafilscher@gmail.com";
+
+    const cartItems = document.getElementById("cartItems");
+    const totalElement = document.getElementById("total");
+    const form = document.getElementById("orderForm");
+    const submitButton = document.getElementById("submitButton");
+    const message = document.getElementById("message");
+
+    let cart = [];
+    let isSubmitting = false;
+
+    function showMessage(text, type) {
+      message.replaceChildren();
+      message.className = "message " + type;
+      message.textContent = text;
+    }
+
+    function formatPrice(value) {
+      return new Intl.NumberFormat("fr-FR", {
+        maximumFractionDigits: 2
+      }).format(Number(value) || 0);
+    }
+
+    async function getStoreName(items) {
+      const productIds = [...new Set(items.map(item => item.product_id))];
+
+      const { data: products, error: productsError } = await supabase
+        .from("products")
+        .select("id, store_id")
+        .in("id", productIds);
+
+      if (productsError) throw productsError;
+
+      if (!products || products.length !== productIds.length) {
+        throw new Error("Impossible de retrouver tous les produits de la commande.");
+      }
+
+      const storeIds = [...new Set(products.map(product => product.store_id))];
+
+      if (storeIds.length !== 1 || !storeIds[0]) {
+        throw new Error("Les produits doivent appartenir à une seule boutique.");
+      }
+
+      const { data: store, error: storeError } = await supabase
+        .from("stores")
+        .select("store_name")
+        .eq("id", storeIds[0])
+        .single();
+
+      if (storeError) throw storeError;
+
+      if (!store || !store.store_name) {
+        throw new Error("Impossible de retrouver le nom de la boutique.");
+      }
+
+      return store.store_name;
+    }
+
+    async function copyOrderDetails(details, button) {
+      const originalText = button.textContent;
+
+      try {
+        await navigator.clipboard.writeText(details);
+        button.textContent = "✅ Détails copiés !";
+      } catch (error) {
+        // Solution de secours pour les navigateurs mobiles.
+        const textarea = document.createElement("textarea");
+        textarea.value = details;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        let copied = false;
+
+        try {
+          copied = document.execCommand("copy");
+        } catch {}
+
+        textarea.remove();
+
+        button.textContent = copied
+          ? "✅ Détails copiés !"
+          : "Copie impossible : sélectionnez les détails affichés.";
+
+      }
+
+      setTimeout(() => {
+        button.textContent = originalText;
+      }, 3000);
+    }
+
+    function showSuccess(
+      orderNumber,
+      totalAmount,
+      customerName,
+      customerPhone,
+      customerAddress,
+      storeName
+    ) {
+      message.replaceChildren();
+      message.className = "message success";
+
+      const alertBox = document.createElement("section");
+      alertBox.className = "order-alert";
+
+      const alertTitle = document.createElement("h2");
+      alertTitle.textContent = "🚨 COMMANDE CONFIRMÉE !";
+
+      const alertText = document.createElement("p");
+      alertText.textContent =
+        "Votre commande a bien été enregistrée sur NEXUS 360.";
+
+      const numberLabel = document.createElement("div");
+      numberLabel.textContent = "VOTRE NUMÉRO DE COMMANDE :";
+
+      const number = document.createElement("span");
+      number.className = "order-number";
+      number.textContent = orderNumber;
+
+      const total = document.createElement("p");
+      total.className = "confirmed-total";
+      total.textContent =
+        "Montant total confirmé : " + formatPrice(totalAmount) + " FC";
+
+      const advice = document.createElement("p");
+      advice.textContent =
+        "⚠️ Conservez ces informations pour suivre votre colis.";
+
+      alertBox.append(
+        alertTitle,
+        alertText,
+        numberLabel,
+        number,
+        total,
+        advice
+      );
+
+      const details =
+        "COMMANDE NEXUS 360\n" +
+        "Numéro de commande : " + orderNumber + "\n" +
+        "Montant total : " + formatPrice(totalAmount) + " FC\n" +
+        "Nom du client : " + customerName + "\n" +
+        "Téléphone : " + customerPhone + "\n" +
+        "Adresse de livraison : " + customerAddress + "\n" +
+        "Boutique : " + storeName + "\n" +
+        "Mode de paiement : Paiement après livraison.";
+
+      const copyButton = document.createElement("button");
+      copyButton.type = "button";
+      copyButton.className = "copy-button";
+      copyButton.textContent = "📋 Copier les détails de ma commande";
+
+      copyButton.addEventListener("click", () => {
+        copyOrderDetails(details, copyButton);
+      });
+
+      const trackingButton = document.createElement("button");
+      trackingButton.type = "button";
+      trackingButton.className = "tracking-button";
+      trackingButton.textContent = "📦 Suivre mon colis";
+
+      trackingButton.addEventListener("click", () => {
+        window.location.href = "./suivi-commande.html";
+      });
+
+      const paymentSection = document.createElement("section");
+      paymentSection.className = "payment-section";
+
+      const paymentTitle = document.createElement("h3");
+      paymentTitle.textContent =
+        "💳 Comment souhaitez-vous payer votre commande ?";
+
+      const cashButton = document.createElement("button");
+      cashButton.type = "button";
+      cashButton.className = "payment-choice cash-choice";
+      cashButton.textContent =
+        "💵 Payer après livraison (Cash au vendeur)";
+
+      const electronicButton = document.createElement("button");
+      electronicButton.type = "button";
+      electronicButton.className = "payment-choice electronic-choice";
+      electronicButton.disabled = true;
+      electronicButton.textContent =
+        "💳 Paiement électronique – Bientôt disponible";
+
+      const emailInfo = document.createElement("p");
+      emailInfo.className = "payment-info";
+      emailInfo.append(
+        document.createTextNode(
+          "Pour toute information concernant le paiement électronique, veuillez contacter Filscher Muanda au "
+        )
+      );
+
+      const emailLink = document.createElement("a");
+      emailLink.href = "mailto:" + PAYMENT_EMAIL;
+      emailLink.textContent = PAYMENT_EMAIL;
+
+      emailInfo.appendChild(emailLink);
+      emailInfo.append(document.createTextNode("."));
+
+      const cashConfirmation = document.createElement("div");
+      cashConfirmation.className = "cash-confirmation hidden";
+      cashConfirmation.textContent =
+        "✅ Vous avez choisi de payer en espèces après livraison. " +
+        "Veuillez remettre le montant au vendeur à la réception de votre commande.";
+
+      const contactTitle = document.createElement("p");
+      contactTitle.className = "contact-title hidden";
+      contactTitle.textContent =
+        "📞 Vous pouvez contacter la boutique " + storeName + " :";
+
+      const whatsapp = document.createElement("a");
+      whatsapp.className = "contact-button whatsapp-button hidden";
+
+      const whatsappMessage =
+        "Bonjour cher(e) " + storeName + " !\n\n" +
+        "Je me nomme " + customerName + ". " +
+        "Je viens de passer une commande sur NEXUS 360.\n\n" +
+        "Voici les détails de ma commande :\n\n" +
+        "Numéro de commande : " + orderNumber + "\n" +
+        "Montant total : " + formatPrice(totalAmount) + " FC\n" +
+        "Mode de paiement : Cash après livraison.\n\n" +
+        "Je souhaiterais avoir des informations concernant " +
+        "la livraison et le suivi de ma commande.\n\n" +
+        "Merci beaucoup pour votre disponibilité !";
+
+      whatsapp.href =
+        "https://wa.me/" + STORE_PHONE +
+        "?text=" + encodeURIComponent(whatsappMessage);
+
+      whatsapp.target = "_blank";
+      whatsapp.rel = "noopener noreferrer";
+      whatsapp.textContent = "🟢 Contacter la boutique sur WhatsApp";
+
+      const call = document.createElement("a");
+      call.className = "contact-button call-button hidden";
+      call.href = "tel:+" + STORE_PHONE;
+      call.textContent = "📞 Appeler directement la boutique";
+
+      cashButton.addEventListener("click", () => {
+        cashButton.disabled = true;
+        cashButton.textContent = "✅ Paiement après livraison choisi";
+
+        cashConfirmation.classList.remove("hidden");
+        contactTitle.classList.remove("hidden");
+        whatsapp.classList.remove("hidden");
+        call.classList.remove("hidden");
+      });
+
+      paymentSection.append(
+        paymentTitle,
+        cashButton,
+        electronicButton,
+        emailInfo,
+        cashConfirmation,
+        contactTitle,
+        whatsapp,
+        call
+      );
+
+      message.append(
+        alertBox,
+        copyButton,
+        trackingButton,
+        paymentSection
+      );
+    }
+
+    function loadCart() {
+      try {
+        const saved = JSON.parse(
+          localStorage.getItem(CART_KEY) || "[]"
+        );
+
+        cart = Array.isArray(saved)
+          ? saved.filter(item =>
+              item &&
+              typeof item.id === "string" &&
+              Number.isInteger(Number(item.quantity)) &&
+              Number(item.quantity) > 0 &&
+              Number.isFinite(Number(item.price)) &&
+              Number(item.price) >= 0
+            ).map(item => ({
+              ...item,
+              quantity: Number(item.quantity),
+              price: Number(item.price)
+            }))
+          : [];
+      } catch {
+        cart = [];
+      }
+    }
+
+    function displayCart() {
+      cartItems.replaceChildren();
+
+      if (cart.length === 0) {
+        cartItems.textContent = "Votre panier est vide.";
+        totalElement.textContent = "0 FC";
+        submitButton.disabled = true;
+        return;
+      }
+
+      let total = 0;
+
+      cart.forEach(item => {
+        const quantity = Number(item.quantity);
+        const price = Number(item.price);
+        const lineTotal = price * quantity;
+        total += lineTotal;
+
+        const row = document.createElement("div");
+        row.className = "item";
+
+        if (item.image_url) {
+          const img = document.createElement("img");
+          img.src = item.image_url;
+          img.alt = "";
+          img.loading = "lazy";
+          img.onerror = () => img.remove();
+          row.appendChild(img);
+        }
+
+        const info = document.createElement("div");
+        info.className = "item-info";
+
+        const name = document.createElement("p");
+        name.textContent = item.name || "Produit";
+
+        const quantityText = document.createElement("p");
+        quantityText.textContent = "Quantité : " + quantity;
+
+        const priceText = document.createElement("p");
+        priceText.className = "price";
+        priceText.textContent = formatPrice(lineTotal) + " FC";
+
+        info.append(name, quantityText, priceText);
+        row.appendChild(info);
+        cartItems.appendChild(row);
+      });
+
+      totalElement.textContent = formatPrice(total) + " FC";
+      submitButton.disabled = false;
+    }
+
+    function loadCustomerDetails() {
+      try {
+        const saved = JSON.parse(
+          localStorage.getItem(CUSTOMER_KEY) || "{}"
+        );
+
+        document.getElementById("customerName").value =
+          saved.name || "";
+
+        document.getElementById("customerPhone").value =
+          saved.phone || "";
+
+        document.getElementById("deliveryAddress").value =
+          saved.address || "";
+      } catch {
+        // Le formulaire reste utilisable.
+      }
+    }
+
+    loadCart();
+    displayCart();
+    loadCustomerDetails();
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (isSubmitting) return;
+
+      if (cart.length === 0) {
+        showMessage("Votre panier est vide.", "error");
+        return;
+      }
+
+      const customerName =
+        document.getElementById("customerName").value.trim();
+
+      const customerPhone =
+        document.getElementById("customerPhone").value.trim();
+
+      const deliveryAddress =
+        document.getElementById("deliveryAddress").value.trim();
+
+      if (
+        customerName.length < 2 ||
+        customerPhone.length < 6 ||
+        deliveryAddress.length < 5
+      ) {
+        showMessage(
+          "Vérifiez votre nom, votre téléphone et votre adresse.",
+          "error"
+        );
+        return;
+      }
+
+      const items = cart.map(item => ({
+        product_id: item.id,
+        quantity: Number(item.quantity)
+      }));
+
+      if (items.some(item =>
+        !Number.isInteger(item.quantity) ||
+        item.quantity < 1 ||
+        item.quantity > 100
+      )) {
+        showMessage("Une quantité du panier est invalide.", "error");
+        return;
+      }
+
+      isSubmitting = true;
+      submitButton.disabled = true;
+      submitButton.textContent = "Vérification en cours...";
+      message.className = "message hidden";
+
+      try {
+        const storeName = await getStoreName(items);
+
+        submitButton.textContent = "Envoi de la commande...";
+
+        const { data, error } = await supabase.rpc(
+          "create_guest_order",
+          {
+            p_customer_name: customerName,
+            p_customer_phone: customerPhone,
+            p_delivery_address: deliveryAddress,
+            p_items: items
+          }
+        );
+
+        if (error) throw error;
+
+        if (!data || data.success !== true) {
+          throw new Error(
+            "Le serveur n'a pas confirmé la commande."
+          );
+        }
+
+        const orderNumber = data.order_number == null
+          ? ""
+          : String(data.order_number).trim();
+
+        if (!orderNumber) {
+          throw new Error(
+            "La commande semble avoir été traitée, mais son numéro " +
+            "n'a pas été renvoyé. Ne validez pas une deuxième fois. " +
+            "Contactez l'administrateur."
+          );
+        }
+
+        const confirmedTotal = Number(data.total_amount);
+
+        try {
+          localStorage.setItem(
+            CUSTOMER_KEY,
+            JSON.stringify({
+              name: customerName,
+              phone: customerPhone,
+              address: deliveryAddress
+            })
+          );
+        } catch {}
+
+        try {
+          localStorage.removeItem(CART_KEY);
+        } catch {}
+
+        cart = [];
+        displayCart();
+        form.classList.add("hidden");
+
+        showSuccess(
+          orderNumber,
+          Number.isFinite(confirmedTotal) ? confirmedTotal : 0,
+          customerName,
+          customerPhone,
+          deliveryAddress,
+          storeName
+        );
+
+      } catch (error) {
+        console.error("Erreur de commande :", error);
+
+        showMessage(
+          error.message || "Impossible de confirmer la commande.",
+          "error"
+        );
+
+      } finally {
+        isSubmitting = false;
+        submitButton.textContent = "Confirmer ma commande";
+        submitButton.disabled =
+          cart.length === 0 || form.classList.contains("hidden");
+      }
+    });
+  </script></body>
+  </html>
