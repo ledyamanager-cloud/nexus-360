@@ -150,6 +150,7 @@
 </head>
 
 <body>
+
 <header>
   <h1>NEXUS 360</h1>
   <div>Espace vendeur</div>
@@ -218,6 +219,7 @@
         <label class="section-label" for="courierName">
           Nom complet du livreur
         </label>
+
         <input
           id="courierName"
           type="text"
@@ -228,6 +230,7 @@
         <label class="section-label" for="courierPhone">
           Téléphone
         </label>
+
         <input
           id="courierPhone"
           type="tel"
@@ -238,6 +241,7 @@
         <label class="section-label" for="courierUsername">
           Identifiant du livreur
         </label>
+
         <input
           id="courierUsername"
           type="text"
@@ -249,6 +253,7 @@
         <label class="section-label" for="courierPassword">
           Mot de passe provisoire
         </label>
+
         <input
           id="courierPassword"
           type="password"
@@ -261,6 +266,7 @@
         <button id="createCourierButton" type="submit">
           Créer le compte livreur
         </button>
+
       </form>
 
       <p id="couriersMessage" role="status" aria-live="polite"></p>
@@ -278,8 +284,10 @@
       </div>
     </div>
 
+    <!-- COMMANDES -->
     <div class="card">
       <h2>📦 Mes commandes</h2>
+
       <p class="muted">
         Consulte les commandes de ta boutique et actualise leur progression.
       </p>
@@ -304,715 +312,868 @@
 </main>
 
 <script type="module">
-  import { supabase } from "./supabase.js";
 
-  const loginCard = document.getElementById("loginCard");
-  const dashboard = document.getElementById("dashboard");
-  const message = document.getElementById("message");
-  const ordersMessage = document.getElementById("ordersMessage");
-  const ordersList = document.getElementById("ordersList");
+import { supabase } from "./supabase.js";
 
-  const loginForm = document.getElementById("loginForm");
-  const loginButton = document.getElementById("loginButton");
-  const logoutButton = document.getElementById("logoutButton");
-  const refreshOrdersButton = document.getElementById("refreshOrdersButton");
+const loginCard = document.getElementById("loginCard");
+const dashboard = document.getElementById("dashboard");
+const message = document.getElementById("message");
+const ordersMessage = document.getElementById("ordersMessage");
+const ordersList = document.getElementById("ordersList");
 
-  const courierForm = document.getElementById("courierForm");
-  const courierName = document.getElementById("courierName");
-  const courierPhone = document.getElementById("courierPhone");
-  const courierUsername = document.getElementById("courierUsername");
-  const courierPassword = document.getElementById("courierPassword");
-  const createCourierButton = document.getElementById("createCourierButton");
-  const refreshCouriersButton = document.getElementById("refreshCouriersButton");
-  const couriersMessage = document.getElementById("couriersMessage");
-  const couriersList = document.getElementById("couriersList");
+const loginForm = document.getElementById("loginForm");
+const loginButton = document.getElementById("loginButton");
+const logoutButton = document.getElementById("logoutButton");
+const refreshOrdersButton = document.getElementById("refreshOrdersButton");
 
-  let currentStoreId = null;
-  let loadingDashboard = false;
-  let loadingOrders = false;
-  let loadingCouriers = false;
+const courierForm = document.getElementById("courierForm");
+const courierName = document.getElementById("courierName");
+const courierPhone = document.getElementById("courierPhone");
+const courierUsername = document.getElementById("courierUsername");
+const courierPassword = document.getElementById("courierPassword");
+const createCourierButton = document.getElementById("createCourierButton");
+const refreshCouriersButton = document.getElementById("refreshCouriersButton");
+const couriersMessage = document.getElementById("couriersMessage");
+const couriersList = document.getElementById("couriersList");
 
-  function showMessage(text, isError = false) {
-    message.textContent = text;
-    message.className = isError ? "error-text" : "success-text";
-  }
+let currentStoreId = null;
+let loadingDashboard = false;
+let loadingOrders = false;
+let loadingCouriers = false;
 
-  function formatMoney(value) {
-    if (value == null || !Number.isFinite(Number(value))) return "—";
-    return Number(value).toLocaleString("fr-FR") + " FC";
-  }
+function showMessage(text, isError = false) {
+  message.textContent = text;
+  message.className = isError ? "error-text" : "success-text";
+}
 
-  function formatDate(value) {
-    if (!value) return "—";
+function formatMoney(value) {
+  if (value == null || !Number.isFinite(Number(value))) return "—";
+  return Number(value).toLocaleString("fr-FR") + " FC";
+}
 
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "—";
+function formatDate(value) {
+  if (!value) return "—";
 
-    return date.toLocaleString("fr-FR", {
-      timeZone: "Africa/Kinshasa",
-      dateStyle: "short",
-      timeStyle: "short"
-    });
-  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
 
-  function deliveryLabel(status) {
-    const labels = {
-      pending: "En attente",
-      in_transit: "En route",
-      arrived: "Arrivée",
-      delivered: "Livrée"
-    };
-
-    return labels[status] || "En attente";
-  }
-
-  function paymentLabel(status) {
-    return status === "paid" ? "Payée" : "Non payée";
-  }
-
-  // Normalisation automatique des identifiants internes.
-  function normalizeCourierUsername(value) {
-    const original = value.trim().toLowerCase();
-    const localPart = original.split("@")[0];
-
-    const cleanLocalPart = localPart.replace(/[^a-z0-9._-]/g, "");
-
-    if (!cleanLocalPart) return "";
-
-    return cleanLocalPart + "@nexus.com";
-  }
-
-  courierUsername.addEventListener("change", () => {
-    const original = courierUsername.value.trim().toLowerCase();
-    const normalized = normalizeCourierUsername(original);
-
-    if (!normalized) return;
-
-    if (original !== normalized) {
-      courierUsername.value = normalized;
-
-      alert(
-        "Identifiant corrigé automatiquement.\n\n" +
-        "Le nouvel identifiant est : " + normalized
-      );
-    }
+  return date.toLocaleString("fr-FR", {
+    timeZone: "Africa/Kinshasa",
+    dateStyle: "short",
+    timeStyle: "short"
   });
+}
 
-  async function callCourierFunction(body) {
-    const { data, error } = await supabase.functions.invoke(
-      "manage-store-couriers",
-      { body }
+function deliveryLabel(status) {
+  const labels = {
+    pending: "En attente",
+    in_transit: "En route",
+    arrived: "Arrivée",
+    delivered: "Livrée"
+  };
+
+  return labels[status] || "En attente";
+}
+
+function paymentLabel(status) {
+  return status === "paid" ? "Payée" : "Non payée";
+}
+
+// Normalisation des identifiants des livreurs
+function normalizeCourierUsername(value) {
+  const original = value.trim().toLowerCase();
+  const localPart = original.split("@")[0];
+
+  const cleanLocalPart = localPart.replace(/[^a-z0-9._-]/g, "");
+
+  if (!cleanLocalPart) return "";
+
+  return cleanLocalPart + "@nexus.com";
+}
+
+courierUsername.addEventListener("change", () => {
+  const original = courierUsername.value.trim().toLowerCase();
+  const normalized = normalizeCourierUsername(original);
+
+  if (!normalized) return;
+
+  if (original !== normalized) {
+    courierUsername.value = normalized;
+
+    alert(
+      "Identifiant corrigé automatiquement.\n\n" +
+      "Le nouvel identifiant est : " + normalized
     );
+  }
+});
 
-    if (error) {
-      throw new Error(
-        error.message || "Impossible de contacter le service des livreurs."
-      );
-    }
+// Appel sécurisé de l'Edge Function
+async function callCourierFunction(body) {
+  const { data, error } = await supabase.functions.invoke(
+    "manage-store-couriers",
+    { body }
+  );
 
-    if (data?.success === false) {
-      throw new Error(data.message || data.error || "Opération impossible.");
-    }
+  if (error) {
+    let details = error.message;
 
-    if (data?.error) {
-      throw new Error(data.error);
-    }
+    try {
+      const response = await error.context?.json();
+      if (response?.error) details = response.error;
+    } catch (_) {}
 
-    return data;
+    throw new Error(
+      details || "Impossible de contacter le service des livreurs."
+    );
   }
 
-  async function loadCouriers() {
-    if (loadingCouriers) return;
+  if (data?.success === false) {
+    throw new Error(data.message || data.error || "Opération impossible.");
+  }
 
-    if (!currentStoreId) {
-      couriersList.textContent = "Aucune boutique associée à ce compte.";
+  if (data?.error) {
+    throw new Error(data.error);
+  }
+
+  return data;
+}
+
+// Afficher les livreurs
+async function loadCouriers() {
+  if (loadingCouriers) return;
+
+  if (!currentStoreId) {
+    couriersList.textContent = "Aucune boutique associée à ce compte.";
+    return;
+  }
+
+  loadingCouriers = true;
+  refreshCouriersButton.disabled = true;
+  couriersList.textContent = "Chargement des livreurs...";
+  couriersMessage.textContent = "";
+
+  try {
+    const data = await callCourierFunction({ action: "list" });
+
+    const couriers =
+      Array.isArray(data) ? data :
+      Array.isArray(data.couriers) ? data.couriers :
+      Array.isArray(data.data) ? data.data :
+      Array.isArray(data.livreurs) ? data.livreurs : [];
+
+    couriersList.replaceChildren();
+
+    if (couriers.length === 0) {
+      couriersList.textContent =
+        "Aucun livreur enregistré pour cette boutique.";
       return;
     }
 
-    loadingCouriers = true;
-    refreshCouriersButton.disabled = true;
-    couriersList.textContent = "Chargement des livreurs...";
-    couriersMessage.textContent = "";
+    for (const courier of couriers) {
 
-    try {
-      const data = await callCourierFunction({ action: "list" });
+      const card = document.createElement("div");
+      card.className = "courier-card";
 
-      const couriers =
-        Array.isArray(data) ? data :
-        Array.isArray(data.couriers) ? data.couriers :
-        Array.isArray(data.data) ? data.data :
-        Array.isArray(data.livreurs) ? data.livreurs : [];
+      const name = document.createElement("h3");
+      name.textContent = courier.full_name || "Livreur sans nom";
 
-      couriersList.replaceChildren();
+      const username = document.createElement("p");
+      username.textContent =
+        "Identifiant : " +
+        (courier.email || courier.username || courier.user_email || "Non disponible");
 
-      if (couriers.length === 0) {
-        couriersList.textContent = "Aucun livreur enregistré pour cette boutique.";
-        return;
-      }
+      const phone = document.createElement("p");
+      phone.textContent =
+        "Téléphone : " + (courier.phone || "Non renseigné");
 
-      for (const courier of couriers) {
-        const card = document.createElement("div");
-        card.className = "courier-card";
+      const courierId =
+        courier.user_id || courier.id || courier.courier_id;
 
-        const name = document.createElement("h3");
-        name.textContent = courier.full_name || "Livreur sans nom";
+      // NOUVEAU BOUTON : MODIFIER L'IDENTIFIANT
+      const editButton = document.createElement("button");
+      editButton.className = "orange";
+      editButton.textContent = "Modifier l'identifiant";
 
-        const username = document.createElement("p");
-        username.textContent =
-          "Identifiant : " +
-          (courier.email || courier.username || courier.user_email || "Non disponible");
+      editButton.addEventListener("click", async () => {
 
-        const phone = document.createElement("p");
-        phone.textContent = "Téléphone : " + (courier.phone || "Non renseigné");
+        if (!courierId) {
+          alert("Identifiant du livreur introuvable.");
+          return;
+        }
 
-        const button = document.createElement("button");
-        button.className = "red";
-        button.textContent = "Retirer ce livreur";
+        const currentUsername =
+          courier.email || courier.username || courier.user_email || "";
 
-        const courierId =
-          courier.user_id || courier.id || courier.courier_id;
+        const newUsername = prompt(
+          "Saisis le nouvel identifiant du livreur :",
+          currentUsername
+        );
 
-        button.addEventListener("click", async () => {
-          if (!courierId) {
-            alert("Identifiant du livreur introuvable.");
-            return;
-          }
+        if (newUsername === null) return;
 
-          const confirmed = confirm(
-            "Veux-tu vraiment retirer " +
-            (courier.full_name || "ce livreur") +
-            " de ta boutique ?"
-          );
+        const normalizedUsername =
+          normalizeCourierUsername(newUsername);
 
-          if (!confirmed) return;
+        if (!normalizedUsername) {
+          alert("Identifiant invalide.");
+          return;
+        }
 
-          button.disabled = true;
-          button.textContent = "Suppression...";
+        if (
+          normalizedUsername === currentUsername.trim().toLowerCase()
+        ) {
+          alert("Cet identifiant est déjà utilisé par ce livreur.");
+          return;
+        }
 
-          try {
-            await callCourierFunction({
-              action: "remove",
-              courier_id: courierId
-            });
+        const confirmed = confirm(
+          "Le nouvel identifiant sera : " +
+          normalizedUsername +
+          "\n\nConfirmer la modification ?"
+        );
 
-            couriersMessage.textContent =
-              "Le livreur a été retiré de ta boutique.";
+        if (!confirmed) return;
 
-            await loadCouriers();
+        editButton.disabled = true;
+        editButton.textContent = "Modification...";
 
-          } catch (error) {
-            console.error(error);
-            couriersMessage.textContent =
-              "Erreur : " + error.message;
-            button.disabled = false;
-            button.textContent = "Retirer ce livreur";
-          }
-        });
+        try {
+          await callCourierFunction({
+            action: "change_username",
+            courier_id: courierId,
+            new_username: normalizedUsername
+          });
 
-        card.append(name, username, phone, button);
-        couriersList.appendChild(card);
-      }
+          couriersMessage.textContent =
+            "Identifiant modifié avec succès : " + normalizedUsername;
 
-      couriersMessage.textContent =
-        couriers.length + " livreur(s) enregistré(s).";
+          await loadCouriers();
 
-    } catch (error) {
-      console.error("Erreur de chargement des livreurs :", error);
-      couriersList.textContent = "Impossible de charger les livreurs.";
-      couriersMessage.textContent = "Erreur : " + error.message;
+        } catch (error) {
+          console.error(error);
 
-    } finally {
-      loadingCouriers = false;
-      refreshCouriersButton.disabled = false;
+          couriersMessage.textContent =
+            "Erreur : " + error.message;
+
+          editButton.disabled = false;
+          editButton.textContent = "Modifier l'identifiant";
+        }
+
+      });
+
+      // BOUTON : RETIRER LE LIVREUR
+      const button = document.createElement("button");
+      button.className = "red";
+      button.textContent = "Retirer ce livreur";
+
+      button.addEventListener("click", async () => {
+
+        if (!courierId) {
+          alert("Identifiant du livreur introuvable.");
+          return;
+        }
+
+        const confirmed = confirm(
+          "Veux-tu vraiment retirer " +
+          (courier.full_name || "ce livreur") +
+          " de ta boutique ?"
+        );
+
+        if (!confirmed) return;
+
+        button.disabled = true;
+        button.textContent = "Suppression...";
+
+        try {
+          await callCourierFunction({
+            action: "remove",
+            courier_id: courierId
+          });
+
+          couriersMessage.textContent =
+            "Le livreur a été retiré de ta boutique.";
+
+          await loadCouriers();
+
+        } catch (error) {
+          console.error(error);
+
+          couriersMessage.textContent =
+            "Erreur : " + error.message;
+
+          button.disabled = false;
+          button.textContent = "Retirer ce livreur";
+        }
+
+      });
+
+      // Affichage des deux boutons
+      card.append(
+        name,
+        username,
+        phone,
+        editButton,
+        button
+      );
+
+      couriersList.appendChild(card);
     }
+
+    couriersMessage.textContent =
+      couriers.length + " livreur(s) enregistré(s).";
+
+  } catch (error) {
+    console.error("Erreur de chargement des livreurs :", error);
+
+    couriersList.textContent =
+      "Impossible de charger les livreurs.";
+
+    couriersMessage.textContent =
+      "Erreur : " + error.message;
+
+  } finally {
+    loadingCouriers = false;
+    refreshCouriersButton.disabled = false;
+  }
+}
+
+// Créer un livreur
+courierForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!currentStoreId) {
+    couriersMessage.textContent =
+      "Aucune boutique associée à ce compte.";
+    return;
   }
 
-  courierForm.addEventListener("submit", async event => {
-    event.preventDefault();
+  const username =
+    normalizeCourierUsername(courierUsername.value);
 
+  if (!username) {
+    couriersMessage.textContent = "Identifiant invalide.";
+    return;
+  }
+
+  if (
+    courierUsername.value.trim().toLowerCase() !== username
+  ) {
+    courierUsername.value = username;
+
+    alert(
+      "Identifiant corrigé automatiquement :\n" + username
+    );
+  }
+
+  createCourierButton.disabled = true;
+  createCourierButton.textContent = "Création du compte...";
+
+  couriersMessage.textContent =
+    "Création du compte livreur en cours...";
+
+  try {
+    const data = await callCourierFunction({
+      action: "create",
+      full_name: courierName.value.trim(),
+      phone: courierPhone.value.trim(),
+      username,
+      password: courierPassword.value
+    });
+
+    couriersMessage.textContent =
+      data.message || "Compte livreur créé avec succès.";
+
+    courierForm.reset();
+
+    await loadCouriers();
+
+  } catch (error) {
+    console.error("Erreur création livreur :", error);
+
+    couriersMessage.textContent =
+      "Erreur : " + error.message;
+
+  } finally {
+    createCourierButton.disabled = false;
+    createCourierButton.textContent = "Créer le compte livreur";
+  }
+});
+
+refreshCouriersButton.addEventListener("click", loadCouriers);
+
+// Charger les produits
+async function loadProducts(storeId) {
+  const productsInfo = document.getElementById("productsInfo");
+  productsInfo.textContent = "Chargement des produits...";
+
+  const { data: products, error } = await supabase
+    .from("products")
+    .select("id, product_name, price, stock, is_active")
+    .eq("store_id", storeId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  productsInfo.replaceChildren();
+
+  if (!products || products.length === 0) {
+    productsInfo.textContent =
+      "Aucun produit trouvé dans ta boutique.";
+    return;
+  }
+
+  for (const product of products) {
+
+    const item = document.createElement("div");
+    item.className = "item";
+
+    const name = document.createElement("strong");
+    name.textContent = product.product_name || "Produit sans nom";
+
+    const details = document.createElement("p");
+    details.textContent =
+      "Prix : " + formatMoney(product.price) +
+      " — Stock : " + (product.stock ?? 0) +
+      " — " + (product.is_active ? "Actif" : "Inactif");
+
+    item.append(name, details);
+    productsInfo.appendChild(item);
+  }
+}
+
+// Mise à jour des commandes
+async function updateOrder(orderNumber, field, value, button) {
+  if (!orderNumber || !value) return;
+
+  button.disabled = true;
+  button.textContent = "Enregistrement...";
+
+  try {
+    const params = {
+      p_order_number: orderNumber,
+      p_delivery_status: field === "delivery" ? value : null,
+      p_payment_status: field === "payment" ? value : null
+    };
+
+    const { data, error } = await supabase.rpc(
+      "update_seller_order_progress",
+      params
+    );
+
+    if (error) throw error;
+
+    if (data && data.success === false) {
+      throw new Error(
+        "La modification n'a pas été enregistrée."
+      );
+    }
+
+    ordersMessage.textContent = "Modification enregistrée.";
+    await loadOrders();
+
+  } catch (error) {
+    console.error("Erreur de mise à jour :", error);
+
+    ordersMessage.textContent =
+      "Erreur : " +
+      (error.message || "Impossible de modifier la commande.");
+
+  } finally {
+    button.disabled = false;
+  }
+}
+
+// Construire une carte de commande
+function createOrderCard(order) {
+
+  const card = document.createElement("article");
+  card.className = "order-card";
+
+  const title = document.createElement("h3");
+  title.textContent = "Commande " + (order.order_number || "—");
+  card.appendChild(title);
+
+  const details = [
+    ["Client", order.customer_name || "—"],
+    ["Téléphone", order.customer_phone || "—"],
+    ["Adresse", order.delivery_address || "—"],
+    ["Montant", formatMoney(order.total_amount)],
+    ["Date de commande", formatDate(order.created_at)]
+  ];
+
+  for (const [label, value] of details) {
+    const p = document.createElement("p");
+
+    const strong = document.createElement("strong");
+    strong.textContent = label + " : ";
+
+    p.append(strong, document.createTextNode(value));
+    card.appendChild(p);
+  }
+
+  const deliveryBadge = document.createElement("p");
+  deliveryBadge.className = "badge";
+  deliveryBadge.textContent =
+    "Livraison : " + deliveryLabel(order.delivery_status);
+
+  card.appendChild(deliveryBadge);
+
+  const paymentBadge = document.createElement("p");
+  paymentBadge.className = "badge";
+  paymentBadge.textContent =
+    "Paiement : " + paymentLabel(order.payment_status);
+
+  card.appendChild(paymentBadge);
+
+  const dates = document.createElement("p");
+  dates.className = "date-info";
+
+  dates.textContent =
+    "En attente : " + formatDate(order.pending_at) +
+    "\nEn route : " + formatDate(order.in_transit_at) +
+    "\nArrivée : " + formatDate(order.arrived_at) +
+    "\nLivrée : " + formatDate(order.delivered_at) +
+    "\nPaiement confirmé : " + formatDate(order.paid_at);
+
+  card.appendChild(dates);
+
+  const actions = document.createElement("div");
+  actions.className = "order-actions";
+
+  // Livraison
+  const deliveryBox = document.createElement("div");
+
+  const deliveryLabelElement = document.createElement("label");
+  deliveryLabelElement.className = "section-label";
+  deliveryLabelElement.textContent =
+    "Progression de la livraison";
+
+  const deliverySelect = document.createElement("select");
+
+  const deliveryOptions = [
+    ["pending", "En attente"],
+    ["in_transit", "En route"],
+    ["arrived", "Arrivée"],
+    ["delivered", "Livrée"]
+  ];
+
+  for (const [value, label] of deliveryOptions) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    deliverySelect.appendChild(option);
+  }
+
+  deliverySelect.value = order.delivery_status || "pending";
+
+  const deliveryButton = document.createElement("button");
+  deliveryButton.textContent = "Mettre à jour la livraison";
+
+  deliveryButton.addEventListener("click", () => {
+    updateOrder(
+      order.order_number,
+      "delivery",
+      deliverySelect.value,
+      deliveryButton
+    );
+  });
+
+  deliveryBox.append(
+    deliveryLabelElement,
+    deliverySelect,
+    deliveryButton
+  );
+
+  // Paiement
+  const paymentBox = document.createElement("div");
+
+  const paymentLabelElement = document.createElement("label");
+  paymentLabelElement.className = "section-label";
+  paymentLabelElement.textContent = "État du paiement";
+
+  const paymentSelect = document.createElement("select");
+
+  const unpaidOption = document.createElement("option");
+  unpaidOption.value = "unpaid";
+  unpaidOption.textContent = "Non payé";
+
+  const paidOption = document.createElement("option");
+  paidOption.value = "paid";
+  paidOption.textContent = "Payé";
+
+  paymentSelect.append(unpaidOption, paidOption);
+  paymentSelect.value = order.payment_status || "unpaid";
+
+  const paymentButton = document.createElement("button");
+  paymentButton.className = "green";
+  paymentButton.textContent = "Enregistrer le paiement";
+
+  paymentButton.addEventListener("click", () => {
+    updateOrder(
+      order.order_number,
+      "payment",
+      paymentSelect.value,
+      paymentButton
+    );
+  });
+
+  paymentBox.append(
+    paymentLabelElement,
+    paymentSelect,
+    paymentButton
+  );
+
+  actions.append(deliveryBox, paymentBox);
+  card.appendChild(actions);
+
+  return card;
+}
+
+// Charger les commandes
+async function loadOrders() {
+  if (loadingOrders) return;
+
+  loadingOrders = true;
+  refreshOrdersButton.disabled = true;
+  ordersList.replaceChildren();
+
+  try {
     if (!currentStoreId) {
-      couriersMessage.textContent =
+      ordersMessage.textContent =
         "Aucune boutique associée à ce compte.";
       return;
     }
 
-    const username = normalizeCourierUsername(courierUsername.value);
+    ordersMessage.textContent = "Chargement des commandes...";
 
-    if (!username) {
-      couriersMessage.textContent = "Identifiant invalide.";
-      return;
-    }
-
-    if (courierUsername.value.trim().toLowerCase() !== username) {
-      courierUsername.value = username;
-
-      alert(
-        "Identifiant corrigé automatiquement :\n" + username
-      );
-    }
-
-    createCourierButton.disabled = true;
-    createCourierButton.textContent = "Création du compte...";
-
-    couriersMessage.textContent = "Création du compte livreur en cours...";
-
-    try {
-      const data = await callCourierFunction({
-        action: "create",
-        full_name: courierName.value.trim(),
-        phone: courierPhone.value.trim(),
-        username,
-        password: courierPassword.value
-      });
-
-      couriersMessage.textContent =
-        data.message || "Compte livreur créé avec succès.";
-
-      courierForm.reset();
-
-      await loadCouriers();
-
-    } catch (error) {
-      console.error("Erreur création livreur :", error);
-
-      couriersMessage.textContent =
-        "Erreur : " + error.message;
-
-    } finally {
-      createCourierButton.disabled = false;
-      createCourierButton.textContent = "Créer le compte livreur";
-    }
-  });
-
-  refreshCouriersButton.addEventListener("click", loadCouriers);
-
-  async function loadProducts(storeId) {
-    const productsInfo = document.getElementById("productsInfo");
-    productsInfo.textContent = "Chargement des produits...";
-
-    const { data: products, error } = await supabase
-      .from("products")
-      .select("id, product_name, price, stock, is_active")
-      .eq("store_id", storeId)
-      .order("created_at", { ascending: false });
+    const { data: orders, error } = await supabase.rpc(
+      "get_seller_order_management"
+    );
 
     if (error) throw error;
 
-    productsInfo.replaceChildren();
-
-    if (!products || products.length === 0) {
-      productsInfo.textContent = "Aucun produit trouvé dans ta boutique.";
+    if (!orders || orders.length === 0) {
+      ordersMessage.textContent =
+        "Aucune commande trouvée pour cette boutique.";
       return;
     }
 
-    for (const product of products) {
-      const item = document.createElement("div");
-      item.className = "item";
-
-      const name = document.createElement("strong");
-      name.textContent = product.product_name || "Produit sans nom";
-
-      const details = document.createElement("p");
-      details.textContent =
-        "Prix : " + formatMoney(product.price) +
-        " — Stock : " + (product.stock ?? 0) +
-        " — " + (product.is_active ? "Actif" : "Inactif");
-
-      item.append(name, details);
-      productsInfo.appendChild(item);
+    for (const order of orders) {
+      ordersList.appendChild(createOrderCard(order));
     }
+
+    ordersMessage.textContent =
+      orders.length + " commande(s) trouvée(s) pour ta boutique.";
+
+  } catch (error) {
+    console.error("Erreur de chargement des commandes :", error);
+
+    ordersMessage.textContent =
+      "Erreur lors du chargement des commandes : " +
+      (error.message || "Erreur inconnue.");
+
+  } finally {
+    loadingOrders = false;
+    refreshOrdersButton.disabled = false;
   }
+}
 
-  async function updateOrder(orderNumber, field, value, button) {
-    if (!orderNumber || !value) return;
+// Charger le tableau vendeur
+async function loadDashboard() {
+  if (loadingDashboard) return;
 
-    button.disabled = true;
-    button.textContent = "Enregistrement...";
+  loadingDashboard = true;
 
-    try {
-      const params = {
-        p_order_number: orderNumber,
-        p_delivery_status: field === "delivery" ? value : null,
-        p_payment_status: field === "payment" ? value : null
-      };
+  try {
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
 
-      const { data, error } = await supabase.rpc(
-        "update_seller_order_progress",
-        params
-      );
+    if (sessionError) throw sessionError;
 
-      if (error) throw error;
+    const user = sessionData.session?.user;
 
-      if (data && data.success === false) {
-        throw new Error("La modification n'a pas été enregistrée.");
-      }
-
-      ordersMessage.textContent = "Modification enregistrée.";
-      await loadOrders();
-
-    } catch (error) {
-      console.error("Erreur de mise à jour :", error);
-      ordersMessage.textContent =
-        "Erreur : " + (error.message || "Impossible de modifier la commande.");
-
-    } finally {
-      button.disabled = false;
-    }
-  }
-
-  function createOrderCard(order) {
-    const card = document.createElement("article");
-    card.className = "order-card";
-
-    const title = document.createElement("h3");
-    title.textContent = "Commande " + (order.order_number || "—");
-    card.appendChild(title);
-
-    const details = [
-      ["Client", order.customer_name || "—"],
-      ["Téléphone", order.customer_phone || "—"],
-      ["Adresse", order.delivery_address || "—"],
-      ["Montant", formatMoney(order.total_amount)],
-      ["Date de commande", formatDate(order.created_at)]
-    ];
-
-    for (const [label, value] of details) {
-      const p = document.createElement("p");
-      const strong = document.createElement("strong");
-      strong.textContent = label + " : ";
-      p.append(strong, document.createTextNode(value));
-      card.appendChild(p);
+    if (!user) {
+      currentStoreId = null;
+      loginCard.classList.remove("hidden");
+      dashboard.classList.add("hidden");
+      return;
     }
 
-    const deliveryBadge = document.createElement("p");
-    deliveryBadge.className = "badge";
-    deliveryBadge.textContent =
-      "Livraison : " + deliveryLabel(order.delivery_status);
-    card.appendChild(deliveryBadge);
-
-    const paymentBadge = document.createElement("p");
-    paymentBadge.className = "badge";
-    paymentBadge.textContent =
-      "Paiement : " + paymentLabel(order.payment_status);
-    card.appendChild(paymentBadge);
-
-    const dates = document.createElement("p");
-    dates.className = "date-info";
-    dates.textContent =
-      "En attente : " + formatDate(order.pending_at) +
-      "\nEn route : " + formatDate(order.in_transit_at) +
-      "\nArrivée : " + formatDate(order.arrived_at) +
-      "\nLivrée : " + formatDate(order.delivered_at) +
-      "\nPaiement confirmé : " + formatDate(order.paid_at);
-    card.appendChild(dates);
-
-    const actions = document.createElement("div");
-    actions.className = "order-actions";
-
-    const deliveryBox = document.createElement("div");
-
-    const deliveryLabelElement = document.createElement("label");
-    deliveryLabelElement.className = "section-label";
-    deliveryLabelElement.textContent = "Progression de la livraison";
-
-    const deliverySelect = document.createElement("select");
-
-    const deliveryOptions = [
-      ["pending", "En attente"],
-      ["in_transit", "En route"],
-      ["arrived", "Arrivée"],
-      ["delivered", "Livrée"]
-    ];
-
-    for (const [value, label] of deliveryOptions) {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = label;
-      deliverySelect.appendChild(option);
-    }
-
-    deliverySelect.value = order.delivery_status || "pending";
-
-    const deliveryButton = document.createElement("button");
-    deliveryButton.textContent = "Mettre à jour la livraison";
-    deliveryButton.addEventListener("click", () => {
-      updateOrder(
-        order.order_number,
-        "delivery",
-        deliverySelect.value,
-        deliveryButton
-      );
-    });
-
-    deliveryBox.append(
-      deliveryLabelElement,
-      deliverySelect,
-      deliveryButton
-    );
-
-    const paymentBox = document.createElement("div");
-
-    const paymentLabelElement = document.createElement("label");
-    paymentLabelElement.className = "section-label";
-    paymentLabelElement.textContent = "État du paiement";
-
-    const paymentSelect = document.createElement("select");
-
-    const unpaidOption = document.createElement("option");
-    unpaidOption.value = "unpaid";
-    unpaidOption.textContent = "Non payé";
-
-    const paidOption = document.createElement("option");
-    paidOption.value = "paid";
-    paidOption.textContent = "Payé";
-
-    paymentSelect.append(unpaidOption, paidOption);
-    paymentSelect.value = order.payment_status || "unpaid";
-
-    const paymentButton = document.createElement("button");
-    paymentButton.className = "green";
-    paymentButton.textContent = "Enregistrer le paiement";
-    paymentButton.addEventListener("click", () => {
-      updateOrder(
-        order.order_number,
-        "payment",
-        paymentSelect.value,
-        paymentButton
-      );
-    });
-
-    paymentBox.append(
-      paymentLabelElement,
-      paymentSelect,
-      paymentButton
-    );
-
-    actions.append(deliveryBox, paymentBox);
-    card.appendChild(actions);
-
-    return card;
-  }
-
-  async function loadOrders() {
-    if (loadingOrders) return;
-
-    loadingOrders = true;
-    refreshOrdersButton.disabled = true;
-    ordersList.replaceChildren();
-
-    try {
-      if (!currentStoreId) {
-        ordersMessage.textContent = "Aucune boutique associée à ce compte.";
-        return;
-      }
-
-      ordersMessage.textContent = "Chargement des commandes...";
-
-      const { data: orders, error } = await supabase.rpc(
-        "get_seller_order_management"
-      );
-
-      if (error) throw error;
-
-      if (!orders || orders.length === 0) {
-        ordersMessage.textContent = "Aucune commande trouvée pour cette boutique.";
-        return;
-      }
-
-      for (const order of orders) {
-        ordersList.appendChild(createOrderCard(order));
-      }
-
-      ordersMessage.textContent =
-        orders.length + " commande(s) trouvée(s) pour ta boutique.";
-
-    } catch (error) {
-      console.error("Erreur de chargement des commandes :", error);
-
-      ordersMessage.textContent =
-        "Erreur lors du chargement des commandes : " +
-        (error.message || "Erreur inconnue.");
-
-    } finally {
-      loadingOrders = false;
-      refreshOrdersButton.disabled = false;
-    }
-  }
-
-  async function loadDashboard() {
-    if (loadingDashboard) return;
-
-    loadingDashboard = true;
-
-    try {
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
-
-      if (sessionError) throw sessionError;
-
-      const user = sessionData.session?.user;
-
-      if (!user) {
-        currentStoreId = null;
-        loginCard.classList.remove("hidden");
-        dashboard.classList.add("hidden");
-        return;
-      }
-
-      const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } =
+      await supabase
         .from("profiles")
         .select("role, full_name")
         .eq("id", user.id)
         .maybeSingle();
 
-      if (profileError) throw profileError;
+    if (profileError) throw profileError;
 
-      if (!profile || profile.role !== "vendeur") {
-        await supabase.auth.signOut();
-
-        currentStoreId = null;
-        loginCard.classList.remove("hidden");
-        dashboard.classList.add("hidden");
-
-        showMessage("Accès réservé aux comptes ayant le rôle vendeur.", true);
-        return;
-      }
-
-      loginCard.classList.add("hidden");
-      dashboard.classList.remove("hidden");
-
-      document.getElementById("accountInfo").textContent =
-        (profile.full_name || user.email) + " — rôle vendeur";
-
-      const storeInfo = document.getElementById("storeInfo");
-      storeInfo.textContent = "Chargement de la boutique...";
-
-      const { data: store, error: storeError } = await supabase
-        .from("stores")
-        .select("id, store_name, city, description")
-        .eq("owner_id", user.id)
-        .maybeSingle();
-
-      if (storeError) throw storeError;
-
-      if (!store) {
-        currentStoreId = null;
-
-        storeInfo.textContent = "Aucune boutique trouvée pour ce compte.";
-        document.getElementById("productsInfo").textContent =
-          "Les produits apparaîtront ici après la création de ta boutique.";
-
-        ordersList.replaceChildren();
-        ordersMessage.textContent =
-          "Crée ta boutique pour commencer à gérer tes commandes.";
-
-        couriersList.textContent =
-          "Crée ou associe une boutique pour gérer tes livreurs.";
-
-        return;
-      }
-
-      currentStoreId = store.id;
-      storeInfo.replaceChildren();
-
-      const title = document.createElement("h3");
-      title.textContent = store.store_name || "Ma boutique";
-
-      const city = document.createElement("p");
-      city.textContent = store.city || "Ville non renseignée";
-
-      const description = document.createElement("p");
-      description.textContent =
-        store.description || "Aucune description renseignée.";
-
-      storeInfo.append(title, city, description);
-
-      await loadProducts(store.id);
-      await loadOrders();
-      await loadCouriers();
-
-    } catch (error) {
-      console.error("Erreur du tableau vendeur :", error);
-      showMessage(
-        error.message || "Erreur de chargement du tableau vendeur.",
-        true
-      );
-
-    } finally {
-      loadingDashboard = false;
-    }
-  }
-
-  loginForm.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    loginButton.disabled = true;
-    showMessage("Connexion en cours...");
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) throw error;
-
-      await loadDashboard();
-      showMessage("Connexion vérifiée.");
-
-    } catch (error) {
-      console.error("Erreur de connexion :", error);
-      showMessage(error.message || "Impossible de se connecter.", true);
-
-    } finally {
-      loginButton.disabled = false;
-    }
-  });
-
-  refreshOrdersButton.addEventListener("click", loadOrders);
-
-  logoutButton.addEventListener("click", async () => {
-    logoutButton.disabled = true;
-
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+    if (!profile || profile.role !== "vendeur") {
+      await supabase.auth.signOut();
 
       currentStoreId = null;
-      dashboard.classList.add("hidden");
       loginCard.classList.remove("hidden");
-      ordersList.replaceChildren();
-      couriersList.replaceChildren();
+      dashboard.classList.add("hidden");
 
-      ordersMessage.textContent =
-        "Connecte-toi pour consulter tes commandes.";
-
-      couriersMessage.textContent = "";
-      couriersList.textContent =
-        "Connecte-toi pour consulter tes livreurs.";
-
-      showMessage("Tu es déconnecté.");
-
-    } catch (error) {
       showMessage(
-        error.message || "Erreur lors de la déconnexion.",
+        "Accès réservé aux comptes ayant le rôle vendeur.",
         true
       );
 
-    } finally {
-      logoutButton.disabled = false;
+      return;
     }
-  });
 
-  supabase.auth.onAuthStateChange(() => {
-    setTimeout(loadDashboard, 0);
-  });
+    loginCard.classList.add("hidden");
+    dashboard.classList.remove("hidden");
 
-  loadDashboard();
+    document.getElementById("accountInfo").textContent =
+      (profile.full_name || user.email) + " — rôle vendeur";
+
+    const storeInfo = document.getElementById("storeInfo");
+    storeInfo.textContent = "Chargement de la boutique...";
+
+    const { data: store, error: storeError } = await supabase
+      .from("stores")
+      .select("id, store_name, city, description")
+      .eq("owner_id", user.id)
+      .maybeSingle();
+
+    if (storeError) throw storeError;
+
+    if (!store) {
+      currentStoreId = null;
+
+      storeInfo.textContent =
+        "Aucune boutique trouvée pour ce compte.";
+
+      document.getElementById("productsInfo").textContent =
+        "Les produits apparaîtront ici après la création de ta boutique.";
+
+      ordersList.replaceChildren();
+
+      ordersMessage.textContent =
+        "Crée ta boutique pour commencer à gérer tes commandes.";
+
+      couriersList.textContent =
+        "Crée ou associe une boutique pour gérer tes livreurs.";
+
+      return;
+    }
+
+    currentStoreId = store.id;
+    storeInfo.replaceChildren();
+
+    const title = document.createElement("h3");
+    title.textContent = store.store_name || "Ma boutique";
+
+    const city = document.createElement("p");
+    city.textContent = store.city || "Ville non renseignée";
+
+    const description = document.createElement("p");
+    description.textContent =
+      store.description || "Aucune description renseignée.";
+
+    storeInfo.append(title, city, description);
+
+    await loadProducts(store.id);
+    await loadOrders();
+    await loadCouriers();
+
+  } catch (error) {
+    console.error("Erreur du tableau vendeur :", error);
+
+    showMessage(
+      error.message || "Erreur de chargement du tableau vendeur.",
+      true
+    );
+
+  } finally {
+    loadingDashboard = false;
+  }
+}
+
+// Connexion
+loginForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  loginButton.disabled = true;
+  showMessage("Connexion en cours...");
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    await loadDashboard();
+    showMessage("Connexion vérifiée.");
+
+  } catch (error) {
+    console.error("Erreur de connexion :", error);
+
+    showMessage(
+      error.message || "Impossible de se connecter.",
+      true
+    );
+
+  } finally {
+    loginButton.disabled = false;
+  }
+});
+
+refreshOrdersButton.addEventListener("click", loadOrders);
+
+// Déconnexion
+logoutButton.addEventListener("click", async () => {
+
+  logoutButton.disabled = true;
+
+  try {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) throw error;
+
+    currentStoreId = null;
+
+    dashboard.classList.add("hidden");
+    loginCard.classList.remove("hidden");
+
+    ordersList.replaceChildren();
+    couriersList.replaceChildren();
+
+    ordersMessage.textContent =
+      "Connecte-toi pour consulter tes commandes.";
+
+    couriersMessage.textContent = "";
+
+    couriersList.textContent =
+      "Connecte-toi pour consulter tes livreurs.";
+
+    showMessage("Tu es déconnecté.");
+
+  } catch (error) {
+    showMessage(
+      error.message || "Erreur lors de la déconnexion.",
+      true
+    );
+
+  } finally {
+    logoutButton.disabled = false;
+  }
+});
+
+supabase.auth.onAuthStateChange(() => {
+  setTimeout(loadDashboard, 0);
+});
+
+loadDashboard();
+
 </script>
 
 </body>
-  </html>
+    </html>
