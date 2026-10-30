@@ -358,12 +358,11 @@
           "Chargement des commandes...";
 
         /*
-          IMPORTANT :
           On utilise la fonction SQL get_seller_orders()
           créée dans Supabase.
 
-          Cette fonction récupère uniquement les commandes
-          contenant des produits appartenant au vendeur connecté.
+          Elle récupère uniquement les commandes contenant
+          des produits appartenant au vendeur connecté.
         */
 
         const { data: orders, error } = await supabase
@@ -382,13 +381,11 @@
           return;
         }
 
-        // Trier les commandes par numéro décroissant.
-        const sortedOrders = [...orders].sort((a, b) => {
-          return Number(b.order_number || 0) -
-                 Number(a.order_number || 0);
-        });
+        // Les commandes sont déjà triées par date
+        // décroissante par la fonction SQL.
+        const sortedOrders = orders;
 
-        // Afficher les commandes.
+        // AFFICHER LES COMMANDES
         for (const order of sortedOrders) {
           const row = document.createElement("tr");
 
@@ -448,7 +445,7 @@
 
         const user = sessionData.session?.user;
 
-        // Aucun utilisateur connecté.
+        // AUCUN UTILISATEUR CONNECTÉ
         if (!user) {
           currentStoreId = null;
 
@@ -458,7 +455,7 @@
           return;
         }
 
-        // Vérifier le profil.
+        // VÉRIFIER LE PROFIL
         const { data: profile, error: profileError } =
           await supabase
             .from("profiles")
@@ -470,7 +467,7 @@
           throw profileError;
         }
 
-        // Réserver ce tableau aux vendeurs.
+        // RÉSERVER CE TABLEAU AUX VENDEURS
         if (!profile || profile.role !== "vendeur") {
           await supabase.auth.signOut();
 
@@ -493,7 +490,7 @@
         document.getElementById("accountInfo").textContent =
           (profile.full_name || user.email) + " — rôle vendeur";
 
-        // Charger la boutique du vendeur.
+        // CHARGER LA BOUTIQUE DU VENDEUR
         const storeInfo = document.getElementById("storeInfo");
 
         storeInfo.textContent = "Chargement de la boutique...";
@@ -509,7 +506,7 @@
           throw storeError;
         }
 
-        // Aucune boutique trouvée.
+        // AUCUNE BOUTIQUE TROUVÉE
         if (!store) {
           currentStoreId = null;
 
@@ -529,7 +526,7 @@
 
         currentStoreId = store.id;
 
-        // Afficher les informations de la boutique.
+        // AFFICHER LES INFORMATIONS DE LA BOUTIQUE
         storeInfo.replaceChildren();
 
         const title = document.createElement("h3");
@@ -545,7 +542,7 @@
 
         storeInfo.append(title, city, description);
 
-        // Charger les produits puis les commandes.
+        // CHARGER LES PRODUITS PUIS LES COMMANDES
         await loadProducts(store.id);
         await loadOrders();
 
