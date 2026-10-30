@@ -30,7 +30,49 @@ footer{background:var(--dark);color:white;padding:20px 3%;margin-top:20px}.foote
 @media(max-width:1100px){.top-layout{grid-template-columns:200px minmax(0,1fr)}.right-column{display:none}.product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.header-main{gap:13px}.logo-name{font-size:21px}.category-row{grid-template-columns:repeat(3,minmax(0,1fr))}.category-card:nth-child(n+4){display:none}}
 @media(max-width:650px){.header-main{padding:12px;display:grid;grid-template-columns:1fr auto auto;gap:10px}.logo-symbol{font-size:35px}.logo-name{font-size:19px}.logo-tag{font-size:9px}.search{grid-column:1/-1;grid-row:2;max-width:none;height:42px}.header-action{font-size:10px}.header-action .icon{font-size:21px}.navbar{gap:20px;padding:0 12px}main{padding:0 10px;margin-top:10px}.top-layout{display:block}.left-column{display:none}.hero{min-height:245px;padding:18px}.hero-content{max-width:75%}.hero-logo{font-size:20px}.hero h1{font-size:24px}.hero p{font-size:11px}.hero-image{width:39%;height:70%;right:-3px}.discount-badge{width:55px;height:55px;top:12px;right:10px;font-size:9px}.discount-badge strong{font-size:18px}.category-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}.category-card:nth-child(n+4){display:block}.category-image{height:80px}.promos{grid-template-columns:1fr;gap:9px}.promo{min-height:115px}.promo img{width:38%}.section-heading{margin-top:20px}.tabs{gap:14px;max-width:100%}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.product-image{height:145px}.product-name{font-size:12px}.price{font-size:13px}.old-price{display:block;margin:4px 0 0}.bottom-layout{grid-template-columns:1fr}.seller-banner h2{font-size:18px}.service-grid{grid-template-columns:1fr}.service-card{padding:12px}.service-card strong{font-size:12px}.service-card small{font-size:11px}.footer-inner{justify-content:center;text-align:center}.footer-links{justify-content:center;gap:13px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
-</style>
+/* Fenêtre personnalisée NEXUS 360 */
+.nexus-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(0,0,0,.72);
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.nexus-modal.show{display:flex}
+.nexus-modal-box{
+  width:100%;
+  max-width:390px;
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+  text-align:center;
+  box-shadow:0 15px 50px #0005;
+  animation:nexusPop .2s ease;
+}
+.nexus-modal-header{
+  background:#080d19;
+  color:#fff;
+  padding:22px;
+  font-size:23px;
+  font-weight:900;
+}
+.nexus-modal-header span{color:#ffc900}
+.nexus-modal-body{padding:25px 22px}
+.nexus-modal-body h2{font-size:21px;margin:0 0 12px;color:#13213b}
+.nexus-modal-body p{color:#718096;line-height:1.6;margin:0}
+.nexus-modal-actions{display:flex;gap:10px;padding:0 22px 22px}
+.nexus-modal-actions button{
+  flex:1;border:0;border-radius:9px;padding:13px 8px;font-weight:bold
+}
+.nexus-close{background:#edf1f7;color:#13213b}
+.nexus-discover{background:#ffc900;color:#080d19}
+@keyframes nexusPop{
+  from{transform:scale(.94);opacity:0}
+  to{transform:scale(1);opacity:1}
+}</style>
 </head>
 <body>
 <header class="topbar">
@@ -251,8 +293,34 @@ document.getElementById("loginTop").addEventListener("click",()=>openAuth("login
 document.getElementById("loginButton").addEventListener("click",()=>openAuth("login"));
 document.getElementById("registerButton").addEventListener("click",()=>openAuth("register"));
 document.getElementById("sellerButton").addEventListener("click",()=>openAuth("register"));
+const emptyCartModal = document.getElementById("nexusEmptyCart");
+
+function closeNexusModal(){
+  emptyCartModal.classList.remove("show");
+}
+
+document.getElementById("closeNexusModal")
+  .addEventListener("click",closeNexusModal);
+
+document.getElementById("discoverNexusProducts")
+  .addEventListener("click",()=>{
+    closeNexusModal();
+    scrollToProducts();
+  });
+
+emptyCartModal.addEventListener("click",function(e){
+  if(e.target === emptyCartModal) closeNexusModal();
+});
+
+document.addEventListener("keydown",function(e){
+  if(e.key === "Escape") closeNexusModal();
+});
+
 document.getElementById("cartTop").addEventListener("click",()=>{
-  if(!cart.length){alert("Votre panier est vide.");return;}
+  if(!cart.length){
+    emptyCartModal.classList.add("show");
+    return;
+  }
   window.location.href="./commande.html";
 });
 document.getElementById("favoritesTop").addEventListener("click",()=>{
@@ -262,7 +330,24 @@ document.getElementById("favoritesTop").addEventListener("click",()=>{
 });
 updateCart();
 loadProducts();
-</script>
+<div class="nexus-modal" id="nexusEmptyCart" role="dialog"
+     aria-modal="true" aria-labelledby="nexusModalTitle">
+  <div class="nexus-modal-box">
+    <div class="nexus-modal-header">
+      N <span>NEXUS 360</span>
+    </div>
+    <div class="nexus-modal-body">
+      <h2 id="nexusModalTitle">Votre panier est encore vide !</h2>
+      <p>Découvrez nos produits et trouvez tout ce dont vous avez besoin sur NEXUS 360.</p>
+    </div>
+    <div class="nexus-modal-actions">
+      <button class="nexus-close" id="closeNexusModal">Fermer</button>
+      <button class="nexus-discover" id="discoverNexusProducts">
+        Découvrir les produits
+      </button>
+    </div>
+  </div>
+</div></script>
 <script type="module" src="./firebase.js"></script>
 </body>
 </html>
