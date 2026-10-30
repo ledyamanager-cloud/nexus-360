@@ -17,7 +17,7 @@
     }
 
     .container {
-      max-width: 650px;
+      max-width: 700px;
       margin: 30px auto;
       background: white;
       padding: 25px;
@@ -29,6 +29,8 @@
       text-align: center;
       color: #123c69;
     }
+
+    h2 { color: #123c69; }
 
     .intro {
       text-align: center;
@@ -96,8 +98,8 @@
 
     .card {
       background: #f8fafc;
-      padding: 15px;
-      margin-top: 12px;
+      padding: 18px;
+      margin-top: 15px;
       border-radius: 9px;
       border: 1px solid #e2e8f0;
     }
@@ -105,6 +107,7 @@
     .card p {
       margin: 9px 0;
       line-height: 1.5;
+      overflow-wrap: anywhere;
     }
 
     .status {
@@ -114,6 +117,114 @@
       background: #dbeafe;
       color: #1e40af;
       font-weight: bold;
+    }
+
+    /* Frise chronologique */
+
+    .timeline {
+      margin-top: 25px;
+      padding: 10px 5px;
+    }
+
+    .timeline-item {
+      position: relative;
+      display: flex;
+      gap: 15px;
+      min-height: 105px;
+    }
+
+    .timeline-left {
+      width: 35px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .timeline-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e2e8f0;
+      color: #64748b;
+      font-size: 17px;
+      z-index: 1;
+    }
+
+    .timeline-line {
+      width: 4px;
+      flex: 1;
+      min-height: 55px;
+      background: #e2e8f0;
+    }
+
+    .timeline-content {
+      padding-bottom: 25px;
+    }
+
+    .timeline-content h3 {
+      margin: 5px 0;
+      color: #64748b;
+      font-size: 16px;
+    }
+
+    .timeline-content p {
+      margin: 5px 0;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .timeline-item.completed .timeline-icon {
+      background: #16a34a;
+      color: white;
+    }
+
+    .timeline-item.completed .timeline-line {
+      background: #16a34a;
+    }
+
+    .timeline-item.completed h3 {
+      color: #15803d;
+    }
+
+    .timeline-item.completed .timeline-content p {
+      color: #475569;
+    }
+
+    .timeline-item.current .timeline-icon {
+      background: #2563eb;
+      color: white;
+      box-shadow: 0 0 0 5px #dbeafe;
+    }
+
+    .timeline-item.current h3 {
+      color: #1d4ed8;
+      font-weight: bold;
+    }
+
+    .timeline-item:last-child {
+      min-height: 65px;
+    }
+
+    .timeline-item:last-child .timeline-line {
+      display: none;
+    }
+
+    .payment-status {
+      padding: 14px;
+      border-radius: 9px;
+      background: #fff7ed;
+      color: #9a3412;
+      line-height: 1.5;
+      font-weight: bold;
+    }
+
+    .payment-status.paid {
+      background: #dcfce7;
+      color: #166534;
     }
 
     .item {
@@ -133,19 +244,27 @@
       text-decoration: none;
       font-weight: bold;
     }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 18px;
+        margin: 10px auto;
+      }
+    }
   </style>
 </head>
 
 <body>
   <main class="container">
+
     <h1>📦 Suivi de commande</h1>
 
     <p class="intro">
-      Retrouvez les informations et l'évolution de votre commande
-      sur NEXUS 360.
+      Suivez votre colis étape par étape grâce à NEXUS 360.
     </p>
 
     <form id="trackingForm">
+
       <label for="orderNumber">Numéro de commande</label>
       <input
         type="text"
@@ -154,7 +273,7 @@
         required
       >
 
-      <label for="phone">Numéro de téléphone utilisé lors de l'achat</label>
+      <label for="phone">Téléphone utilisé lors de l'achat</label>
       <input
         type="tel"
         id="phone"
@@ -165,22 +284,44 @@
       <button type="submit" id="searchButton">
         Rechercher ma commande
       </button>
+
     </form>
 
     <div id="message"></div>
 
     <section id="result">
-      <h2>Informations de votre commande</h2>
+
+      <h2>📋 Informations de la commande</h2>
 
       <div class="card" id="orderInfo"></div>
 
       <div class="card">
-        <h3>Produits commandés</h3>
+        <h2>🚚 Progression de la livraison</h2>
+
+        <p>
+          Les étapes se mettent à jour selon l'avancement réel
+          de votre colis.
+        </p>
+
+        <div class="timeline" id="timeline"></div>
+      </div>
+
+      <div class="card">
+        <h2>💰 État du paiement</h2>
+        <div id="paymentInfo"></div>
+      </div>
+
+      <div class="card">
+        <h2>🛍️ Produits commandés</h2>
         <div id="itemsList"></div>
       </div>
+
     </section>
 
-    <a href="index.html" class="back">← Retour à l'accueil</a>
+    <a href="index.html" class="back">
+      ← Retour à l'accueil
+    </a>
+
   </main>
 
   <script type="module">
@@ -192,10 +333,13 @@
     const result = document.getElementById("result");
     const orderInfo = document.getElementById("orderInfo");
     const itemsList = document.getElementById("itemsList");
+    const timeline = document.getElementById("timeline");
+    const paymentInfo = document.getElementById("paymentInfo");
 
     function showMessage(text, type) {
       message.textContent = text;
       message.className = type;
+      message.style.display = "block";
     }
 
     function formatAmount(amount) {
@@ -203,9 +347,12 @@
     }
 
     function formatDate(date) {
+      if (!date) return "En attente";
+
       return new Date(date).toLocaleString("fr-FR", {
-        dateStyle: "long",
-        timeStyle: "short"
+        dateStyle: "short",
+        timeStyle: "short",
+        timeZone: "Africa/Kinshasa"
       });
     }
 
@@ -222,18 +369,132 @@
       return labels[status] || status || "En attente";
     }
 
+    function buildTimeline(data) {
+      const steps = [
+        {
+          title: "Colis en attente",
+          description: "Votre commande est enregistrée et attend sa préparation.",
+          icon: "📦",
+          date: data.pending_at || data.created_at,
+          states: ["pending"]
+        },
+        {
+          title: "Colis en route",
+          description: "Votre colis a été remis au livreur.",
+          icon: "🚚",
+          date: data.in_transit_at,
+          states: ["in_transit"]
+        },
+        {
+          title: "Colis arrivé",
+          description: "Votre colis est arrivé à destination.",
+          icon: "📍",
+          date: data.arrived_at,
+          states: ["arrived"]
+        },
+        {
+          title: "Colis livré",
+          description: "Votre colis a été remis au client.",
+          icon: "✅",
+          date: data.delivered_at,
+          states: ["delivered"]
+        }
+      ];
+
+      const currentStatus = data.delivery_status || "pending";
+
+      const currentIndex = {
+        pending: 0,
+        in_transit: 1,
+        arrived: 2,
+        delivered: 3
+      }[currentStatus];
+
+      timeline.replaceChildren();
+
+      steps.forEach((step, index) => {
+        const item = document.createElement("div");
+        item.className = "timeline-item";
+
+        if (currentIndex !== undefined && index < currentIndex) {
+          item.classList.add("completed");
+        } else if (currentIndex !== undefined && index === currentIndex) {
+          item.classList.add("current");
+        }
+
+        const left = document.createElement("div");
+        left.className = "timeline-left";
+
+        const icon = document.createElement("div");
+        icon.className = "timeline-icon";
+        icon.textContent = step.icon;
+
+        const line = document.createElement("div");
+        line.className = "timeline-line";
+
+        left.append(icon, line);
+
+        const content = document.createElement("div");
+        content.className = "timeline-content";
+
+        const title = document.createElement("h3");
+        title.textContent = step.title;
+
+        const description = document.createElement("p");
+        description.textContent = step.description;
+
+        const date = document.createElement("p");
+        date.textContent = step.date
+          ? "🕒 " + formatDate(step.date)
+          : "🕒 Heure à venir";
+
+        content.append(title, description, date);
+        item.append(left, content);
+        timeline.appendChild(item);
+      });
+
+      if (currentStatus === "cancelled") {
+        const warning = document.createElement("p");
+        warning.textContent = "⚠️ Cette commande a été annulée.";
+        warning.style.color = "#b91c1c";
+        timeline.appendChild(warning);
+      }
+    }
+
+    function buildPaymentInfo(data) {
+      paymentInfo.replaceChildren();
+
+      const paid = data.payment_status === "paid";
+
+      const box = document.createElement("div");
+      box.className = paid
+        ? "payment-status paid"
+        : "payment-status";
+
+      box.textContent = paid
+        ? "✅ Paiement confirmé" +
+          (data.paid_at ? " le " + formatDate(data.paid_at) : "")
+        : "⏳ Paiement en attente de confirmation.";
+
+      paymentInfo.appendChild(box);
+    }
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       result.style.display = "none";
       message.className = "";
       message.style.display = "none";
+
       button.disabled = true;
       button.textContent = "Recherche en cours...";
 
       try {
-        const orderNumber = document.getElementById("orderNumber").value.trim();
-        const phone = document.getElementById("phone").value.trim();
+        const orderNumber =
+          document.getElementById("orderNumber").value.trim();
+
+        const phone =
+          document.getElementById("phone").value.trim();
 
         const { data, error } = await supabase.rpc(
           "get_guest_order_tracking",
@@ -262,22 +523,26 @@
           ["Téléphone", data.customer_phone],
           ["Adresse de livraison", data.delivery_address],
           ["Montant total", formatAmount(data.total_amount)],
-          ["Statut", statusLabel(data.status)],
+          ["Statut de livraison", statusLabel(data.delivery_status)],
           ["Date de commande", formatDate(data.created_at)]
         ];
 
         details.forEach(([label, value]) => {
           const p = document.createElement("p");
+
           const strong = document.createElement("strong");
           strong.textContent = label + " : ";
-          p.append(strong, document.createTextNode(value || "Non renseigné"));
+
+          p.append(
+            strong,
+            document.createTextNode(value || "Non renseigné")
+          );
+
           orderInfo.appendChild(p);
         });
 
-        const status = document.createElement("span");
-        status.className = "status";
-        status.textContent = statusLabel(data.status);
-        orderInfo.appendChild(status);
+        buildTimeline(data);
+        buildPaymentInfo(data);
 
         itemsList.replaceChildren();
 
@@ -298,14 +563,20 @@
         });
 
         result.style.display = "block";
-        showMessage("Commande retrouvée avec succès !", "success");
+
+        showMessage(
+          "Commande retrouvée avec succès !",
+          "success"
+        );
 
       } catch (error) {
         console.error(error);
+
         showMessage(
           "Une erreur est survenue pendant la recherche. Réessayez.",
           "error"
         );
+
       } finally {
         button.disabled = false;
         button.textContent = "Rechercher ma commande";
