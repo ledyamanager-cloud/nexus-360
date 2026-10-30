@@ -22,8 +22,11 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .message{padding:12px;border-radius:8px;margin-top:12px;overflow-wrap:anywhere}
 .error{background:#fee2e2;color:#991b1b}
 .success{background:#dcfce7;color:#166534}
-.order{border:1px solid #dbe3ed;border-radius:12px;padding:16px;margin-top:14px}
+.order{border:1px solid #dbe3ed;border-radius:12px;padding:16px;margin-top:14px;background:white;transition:.2s}
 .order h3{margin-top:0;color:#1769aa;overflow-wrap:anywhere}
+.order.active-order{border:2px solid #16834a;background:#f0fdf4}
+.order.muted-order{background:#e9edf2;border-color:#cbd5e1;opacity:.75}
+.order.muted-order h3{color:#64748b}
 .badge{display:inline-block;background:#e2e8f0;padding:6px 10px;border-radius:20px;font-size:13px;margin:5px 0}
 .steps{display:grid;gap:8px;margin-top:14px}
 .step{padding:10px;border-radius:8px;background:#f1f5f9}
@@ -31,6 +34,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .step.current{background:#dbeafe;color:#1d4ed8}
 .small{color:#64748b;font-size:13px}
 .order button{margin-top:10px}
+.tour-summary{background:#dcfce7;color:#166534;padding:13px;border-radius:9px;margin:12px 0;font-weight:bold}
 @media(max-width:500px){header h1{font-size:18px}}
 </style></head><body><header>
 <h1>🚚 NEXUS 360 — Espace Livreur</h1>
@@ -45,13 +49,15 @@ button:disabled{opacity:.5;cursor:not-allowed}
 </section><section id="dashboard" class="hidden"><div class="card">
 <h2>Bienvenue <span id="courierName">Livreur</span> 👋</h2>
 <p>Boutique : <strong id="storeName">Chargement...</strong></p>
-<p class="small">Vous voyez uniquement les commandes de votre boutique.</p><button id="refreshBtn" class="gray">🔄 Actualiser les commandes</button>
+<p class="small">Vous voyez uniquement les commandes de votre boutique.</p><div id="tourSummary" class="tour-summary hidden"></div><button id="refreshBtn" class="gray">🔄 Actualiser les commandes</button>
 
 <div id="mainMessage"></div>
 </div><div class="card">
-<h2>📦 Commandes disponibles</h2>
-<p class="small">Choisissez une commande par son numéro.</p>
-<div id="ordersList">Chargement des commandes...</div>
+<h2>📦 Mes commandes et commandes disponibles</h2>
+<p class="small">
+Les commandes grisées sont disponibles pour être ajoutées à votre tournée.
+Vous pouvez en prendre plusieurs si elles sont sur votre chemin.
+</p><div id="ordersList">Chargement des commandes...</div>
 </div></section>
 </main><script type="module">
 
@@ -64,6 +70,7 @@ const loginMessage=document.getElementById("loginMessage");
 const mainMessage=document.getElementById("mainMessage");
 const ordersList=document.getElementById("ordersList");
 const logoutBtn=document.getElementById("logoutBtn");
+const tourSummary=document.getElementById("tourSummary");
 
 let currentUser=null;
 let isLoading=false;
@@ -105,7 +112,7 @@ async function verifyCourier(){
 
 const {data:sessionData,error:sessionError}=await supabase.auth.getSession();
 
-if(sessionError) throw sessionError;
+if(sessionError)throw sessionError;
 
 const user=sessionData.session?.user;
 
@@ -115,12 +122,11 @@ showLogin();
 return false;
 }
 
-// Vérification du rôle et de la boutique par RPC sécurisée.
 const {data:context,error}=await supabase.rpc(
 "get_courier_profile_context"
 );
 
-if(error) throw error;
+if(error)throw error;
 
 if(!context||context.role!=="livreur"){
 await supabase.auth.signOut();
@@ -163,7 +169,7 @@ email,
 password
 });
 
-if(error) throw error;
+if(error)throw error;
 
 await verifyCourier();
 
@@ -197,14 +203,51 @@ if(error)throw error;
 
 const orders=Array.isArray(data)?data:[];
 
+// Nombre de commandes actuellement attribuées à ce livreur.
+const myOrders=orders.filter(order=>
+order.courier_id===currentUser.id
+);
+
+const activeCount=myOrders.length;
+
+if(activeCount>0){
+
+tourSummary.classList.remove("hidden");
+tourSummary.innerHTML=
+`🚚 Votre tournée contient ${activeCount} commande(s) en cours. Vous pouvez encore en ajouter.`;
+
+}else{
+
+tourSummary.classList.add("hidden");
+tourSummary.innerHTML="";
+
+}
+
 if(!orders.length){
 
-ordersList.innerHTML="<p>🎉 Aucune commande à livrer pour le moment. Vous pourrez choisir une nouvelle commande dès qu'elle sera disponible.</p>";
+ordersList.innerHTML=
+"<p>🎉 Aucune commande à livrer pour le moment. Revenez plus tard.</p>";
+
 return;
 
 }
 
-ordersList.innerHTML=orders.map(renderOrder).join("");
+// Les commandes du livreur apparaissent en premier.
+orders.sort((a,b)=>{
+
+const aMine=a.courier_id===currentUser.id;
+const bMine=b.courier_id===currentUser.id;
+
+if(aMine&&!bMine)return -1;
+if(!aMine&&bMine)return 1;
+
+return new Date(a.created_at)-new Date(b.created_at);
+
+});
+
+ordersList.innerHTML=orders.map(order=>
+renderOrder(order,activeCount)
+).join("");
 
 ordersList.querySelectorAll("[data-claim]").forEach(button=>{
 button.addEventListener("click",()=>{
@@ -235,11 +278,22 @@ isLoading=false;
 
 }
 
-function renderOrder(order){
+function renderOrder(order,activeCount){
 
 const status=order.delivery_status||"pending";
+
 const assignedToMe=order.courier_id===currentUser.id;
+
 const available=!order.courier_id&&status==="pending";
+
+// Les commandes disponibles deviennent grises lorsqu'une tournée est active.
+const muted=available&&activeCount>0;
+
+const cardClass=assignedToMe
+?"active-order"
+:muted
+?"muted-order"
+:"";
 
 const steps=[
 ["pending","Commande en attente"],
@@ -268,19 +322,38 @@ let action="";
 
 if(available){
 
-action=`<button class="green" data-claim="${escapeHTML(order.order_number)}">Prendre cette commande</button>`;
+const buttonLabel=activeCount>0
+?"➕ Ajouter à ma tournée"
+:"Prendre cette commande";
+
+action=`
+<button class="green" data-claim="${escapeHTML(order.order_number)}">
+${buttonLabel}
+</button>`;
 
 }else if(assignedToMe&&status==="pending"){
 
-action=`<button class="orange" data-progress="in_transit" data-number="${escapeHTML(order.order_number)}">Démarrer la livraison</button>`;
+action=`
+<button class="orange" data-progress="in_transit"
+data-number="${escapeHTML(order.order_number)}">
+Démarrer la livraison
+</button>`;
 
 }else if(assignedToMe&&status==="in_transit"){
 
-action=`<button class="orange" data-progress="arrived" data-number="${escapeHTML(order.order_number)}">Confirmer l'arrivée</button>`;
+action=`
+<button class="orange" data-progress="arrived"
+data-number="${escapeHTML(order.order_number)}">
+Confirmer l'arrivée
+</button>`;
 
 }else if(assignedToMe&&status==="arrived"){
 
-action=`<button class="green" data-progress="delivered" data-number="${escapeHTML(order.order_number)}">Confirmer la livraison</button>`;
+action=`
+<button class="green" data-progress="delivered"
+data-number="${escapeHTML(order.order_number)}">
+Confirmer la livraison
+</button>`;
 
 }else{
 
@@ -293,9 +366,12 @@ const date=order.created_at
 :"";
 
 return `
-<article class="order">
+<article class="order ${cardClass}">
 
-<h3>Commande ${escapeHTML(order.order_number)}</h3>
+<h3>
+${assignedToMe?"🚚 Ma tournée — ":"📦 "}
+Commande ${escapeHTML(order.order_number)}
+</h3>
 
 <span class="badge">${escapeHTML(statusLabel(status))}</span>
 
@@ -320,20 +396,33 @@ ${action}
 
 async function claimOrder(orderNumber,button){
 
-if(!confirm("Voulez-vous prendre en charge la commande "+orderNumber+" ?"))return;
+if(!confirm(
+"Voulez-vous ajouter la commande "+orderNumber+" à votre tournée ?"
+))return;
 
 button.disabled=true;
 button.textContent="Attribution...";
 
 try{
 
-const {error}=await supabase.rpc("claim_courier_order",{
+const {data,error}=await supabase.rpc(
+"claim_courier_order",
+{
 p_order_number:orderNumber
-});
+}
+);
 
 if(error)throw error;
 
-showMessage(mainMessage,"✅ Commande prise en charge avec succès !","success");
+if(data&&data.success===false){
+throw new Error(data.message||"Impossible de prendre cette commande.");
+}
+
+showMessage(
+mainMessage,
+"✅ Commande ajoutée à votre tournée avec succès !",
+"success"
+);
 
 await loadOrders();
 
@@ -354,7 +443,9 @@ arrived:"confirmer l'arrivée à destination",
 delivered:"confirmer que le colis est livré"
 };
 
-if(!confirm("Voulez-vous "+labels[nextStatus]+" pour la commande "+orderNumber+" ?"))return;
+if(!confirm(
+"Voulez-vous "+labels[nextStatus]+" pour la commande "+orderNumber+" ?"
+))return;
 
 button.disabled=true;
 button.textContent="Mise à jour...";
@@ -375,13 +466,17 @@ if(nextStatus==="delivered"){
 
 showMessage(
 mainMessage,
-"🎉 Commande livrée ! Vous pouvez maintenant choisir une autre commande.",
+"🎉 Commande livrée ! Elle a été retirée de votre tournée.",
 "success"
 );
 
 }else{
 
-showMessage(mainMessage,"✅ Étape de livraison mise à jour !","success");
+showMessage(
+mainMessage,
+"✅ Étape de livraison mise à jour !",
+"success"
+);
 
 }
 
@@ -429,7 +524,6 @@ showMessage(loginMessage,escapeHTML(error.message));
 
 }
 
-// Actualisation automatique toutes les 10 secondes.
 setInterval(()=>{
 
 if(currentUser&&!document.hidden){
