@@ -1,1 +1,448 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Livreur | NEXUS 360</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #172033;
+    }
+    header {
+      background: #14213d;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    header h1 { margin: 0; font-size: 22px; }
+    main { max-width: 900px; margin: 25px auto; padding: 0 15px; }
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px #0000000c;
+    }
+    h2 { margin-top: 0; color: #14213d; }
+    input, button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 9px;
+      font-size: 15px;
+      margin-top: 10px;
+    }
+    input { border: 1px solid #cbd5e1; }
+    button {
+      border: 0;
+      background: #1769aa;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .logout { width: auto; background: #dc3545; margin: 0; }
+    .green { background: #16834a; }
+    .orange { background: #e68a00; }
+    .gray { background: #64748b; }
+    .hidden { display: none; }
+    .message { padding: 12px; border-radius: 8px; margin-top: 12px; }
+    .error { background: #fee2e2; color: #991b1b; }
+    .success { background: #dcfce7; color: #166534; }
+    .order {
+      border: 1px solid #dbe3ed;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 14px;
+    }
+    .order h3 { margin-top: 0; color: #1769aa; }
+    .badge {
+      display: inline-block;
+      background: #e2e8f0;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin: 5px 0;
+    }
+    .steps {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .step {
+      padding: 10px;
+      border-radius: 8px;
+      background: #f1f5f9;
+    }
+    .step.done { background: #dcfce7; color: #166534; }
+    .step.current { background: #dbeafe; color: #1d4ed8; }
+    .small { color: #64748b; font-size: 13px; }
+    .order button { margin-top: 10px; }
+    @media (max-width: 500px) {
+      header h1 { font-size: 19px; }
+    }
+  </style>
+</head>
+<body><header>
+  <h1>🚚 NEXUS 360 — Espace Livreur</h1>
+  <button id="logoutBtn" class="logout hidden">Déconnexion</button>
+</header><main>
+  <section id="loginSection" class="card">
+    <h2>Connexion livreur</h2>
+    <p>Connectez-vous avec votre compte personnel.</p>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Adresse e-mail" required>
+      <input type="password" id="password" placeholder="Mot de passe" required>
+      <button type="submit">Se connecter</button>
+    </form>
+    <div id="loginMessage"></div>
+  </section>  <section id="dashboard" class="hidden">
+    <div class="card">
+      <h2>Bienvenue <span id="courierName">Livreur</span> 👋</h2>
+      <p>Boutique : <strong id="storeName">Chargement...</strong></p>
+      <p class="small">Les commandes affichées appartiennent uniquement à votre boutique.</p>
+      <button id="refreshBtn" class="gray">🔄 Actualiser les commandes</button>
+      <div id="mainMessage"></div>
+    </div><div class="card">
+  <h2>📦 Commandes disponibles</h2>
+  <p class="small">Sélectionnez une commande pour la prendre en charge.</p>
+  <div id="ordersList">Chargement des commandes...</div>
+</div>
 
+  </section>
+</main><script type="module">
+  import { supabase } from "./supabase.js";
+
+  const loginSection = document.getElementById("loginSection");
+  const dashboard = document.getElementById("dashboard");
+  const loginForm = document.getElementById("loginForm");
+  const loginMessage = document.getElementById("loginMessage");
+  const mainMessage = document.getElementById("mainMessage");
+  const ordersList = document.getElementById("ordersList");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  let currentUser = null;
+  let courierStoreId = null;
+  let isLoading = false;
+
+  function showMessage(target, message, type = "error") {
+    target.innerHTML = `<div class="message ${type}">${message}</div>`;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[char]);
+  }
+
+  function money(value) {
+    return Number(value || 0).toLocaleString("fr-FR") + " FC";
+  }
+
+  function statusLabel(status) {
+    return {
+      pending: "En attente de prise en charge",
+      in_transit: "En transit",
+      arrived: "Arrivé à destination",
+      delivered: "Livré"
+    }[status] || status;
+  }
+
+  async function verifyCourier() {
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    const user = sessionData.session?.user;
+
+    if (!user) {
+      showLogin();
+      return false;
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role, full_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    if (!profile || profile.role !== "livreur") {
+      await supabase.auth.signOut();
+      throw new Error("Ce compte n'est pas autorisé à accéder à l'espace livreur.");
+    }
+
+    const { data: assignment, error: assignmentError } = await supabase
+      .from("store_couriers")
+      .select("store_id, stores(store_name)")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (assignmentError) throw assignmentError;
+
+    if (!assignment) {
+      throw new Error("Votre compte n'est pas encore associé à une boutique. Contactez l'administrateur.");
+    }
+
+    currentUser = user;
+    courierStoreId = assignment.store_id;
+
+    document.getElementById("courierName").textContent =
+      profile.full_name || user.email;
+
+    document.getElementById("storeName").textContent =
+      assignment.stores?.store_name || "Ma boutique";
+
+    loginSection.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+    logoutBtn.classList.remove("hidden");
+
+    await loadOrders();
+    return true;
+  }
+
+  function showLogin() {
+    loginSection.classList.remove("hidden");
+    dashboard.classList.add("hidden");
+    logoutBtn.classList.add("hidden");
+  }
+
+  loginForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    loginMessage.innerHTML = "";
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const button = loginForm.querySelector("button");
+    button.disabled = true;
+    button.textContent = "Connexion...";
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      await verifyCourier();
+    } catch (error) {
+      showMessage(loginMessage, escapeHTML(error.message));
+    } finally {
+      button.disabled = false;
+      button.textContent = "Se connecter";
+    }
+  });
+
+  async function loadOrders() {
+    if (isLoading) return;
+    isLoading = true;
+    ordersList.textContent = "Chargement des commandes...";
+
+    try {
+      const { data, error } = await supabase.rpc(
+        "get_courier_available_orders"
+      );
+
+      if (error) throw error;
+
+      const orders = Array.isArray(data) ? data : [];
+
+      if (!orders.length) {
+        ordersList.innerHTML =
+          "<p>Aucune commande disponible pour le moment.</p>";
+        return;
+      }
+
+      ordersList.innerHTML = orders.map(order => renderOrder(order)).join("");
+
+      ordersList.querySelectorAll("[data-claim]").forEach(button => {
+        button.addEventListener("click", () =>
+          claimOrder(button.dataset.claim, button)
+        );
+      });
+
+      ordersList.querySelectorAll("[data-progress]").forEach(button => {
+        button.addEventListener("click", () =>
+          updateProgress(
+            button.dataset.number,
+            button.dataset.progress,
+            button
+          )
+        );
+      });
+
+    } catch (error) {
+      ordersList.innerHTML = "";
+      showMessage(ordersList, escapeHTML(error.message));
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function renderOrder(order) {
+    const status = order.delivery_status || "pending";
+    const assignedToMe = order.courier_id === currentUser.id;
+    const available = !order.courier_id && status === "pending";
+
+    const steps = [
+      ["pending", "Commande en attente"],
+      ["in_transit", "Colis en transit"],
+      ["arrived", "Arrivé à destination"],
+      ["delivered", "Livré au client"]
+    ];
+
+    const progress = ["pending", "in_transit", "arrived", "delivered"];
+    const currentIndex = progress.indexOf(status);
+
+    const timeline = steps.map(([key, label], index) => {
+      let className = "";
+      if (index < currentIndex) className = "done";
+      if (index === currentIndex) className = "current";
+      return `<div class="step ${className}">${index < currentIndex ? "✅" : index === currentIndex ? "🔵" : "⚪"} ${label}</div>`;
+    }).join("");
+
+    let action = "";
+
+    if (available) {
+      action = `<button class="green" data-claim="${escapeHTML(order.order_number)}">Prendre cette commande</button>`;
+    } else if (assignedToMe && status === "pending") {
+      action = `<button class="orange" data-progress="in_transit" data-number="${escapeHTML(order.order_number)}">Démarrer la livraison</button>`;
+    } else if (assignedToMe && status === "in_transit") {
+      action = `<button class="orange" data-progress="arrived" data-number="${escapeHTML(order.order_number)}">Confirmer l'arrivée</button>`;
+    } else if (assignedToMe && status === "arrived") {
+      action = `<button class="green" data-progress="delivered" data-number="${escapeHTML(order.order_number)}">Confirmer la livraison</button>`;
+    } else if (assignedToMe && status === "delivered") {
+      action = `<span class="badge">Livraison terminée</span>`;
+    } else {
+      return "";
+    }
+
+    const date = order.created_at
+      ? new Date(order.created_at).toLocaleString("fr-FR")
+      : "";
+
+    return `
+      <article class="order">
+        <h3>Commande ${escapeHTML(order.order_number)}</h3>
+        <span class="badge">${escapeHTML(statusLabel(status))}</span>
+        <p><strong>Client :</strong> ${escapeHTML(order.customer_name)}</p>
+        <p><strong>Téléphone :</strong> ${escapeHTML(order.customer_phone)}</p>
+        <p><strong>Adresse :</strong> ${escapeHTML(order.delivery_address)}</p>
+        <p><strong>Total :</strong> ${money(order.total_amount)}</p>
+        <p class="small">Date : ${escapeHTML(date)}</p>
+        <div class="steps">${timeline}</div>
+        ${action}
+      </article>
+    `;
+  }
+
+  async function claimOrder(orderNumber, button) {
+    if (!confirm("Voulez-vous prendre en charge la commande " + orderNumber + " ?")) {
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Attribution...";
+
+    try {
+      const { error } = await supabase.rpc("claim_courier_order", {
+        p_order_number: orderNumber
+      });
+
+      if (error) throw error;
+
+      showMessage(mainMessage, "Commande prise en charge avec succès !", "success");
+      await loadOrders();
+
+    } catch (error) {
+      showMessage(mainMessage, escapeHTML(error.message));
+      await loadOrders();
+    }
+  }
+
+  async function updateProgress(orderNumber, nextStatus, button) {
+    const labels = {
+      in_transit: "démarrer la livraison",
+      arrived: "confirmer l'arrivée à destination",
+      delivered: "confirmer que le colis est livré"
+    };
+
+    if (!confirm("Voulez-vous " + labels[nextStatus] + " pour la commande " + orderNumber + " ?")) {
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Mise à jour...";
+
+    try {
+      const { error } = await supabase.rpc(
+        "update_courier_delivery_progress",
+        {
+          p_order_number: orderNumber,
+          p_delivery_status: nextStatus
+        }
+      );
+
+      if (error) throw error;
+
+      if (nextStatus === "delivered") {
+        showMessage(
+          mainMessage,
+          "🎉 Commande livrée ! Vous pouvez maintenant choisir une autre commande.",
+          "success"
+        );
+      } else {
+        showMessage(mainMessage, "Étape de livraison mise à jour !", "success");
+      }
+
+      await loadOrders();
+
+    } catch (error) {
+      showMessage(mainMessage, escapeHTML(error.message));
+      await loadOrders();
+    }
+  }
+
+  logoutBtn.addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    currentUser = null;
+    courierStoreId = null;
+    showLogin();
+  });
+
+  document.getElementById("refreshBtn").addEventListener("click", loadOrders);
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT") {
+      currentUser = null;
+      showLogin();
+    }
+  });
+
+  try {
+    await verifyCourier();
+  } catch (error) {
+    showLogin();
+    showMessage(loginMessage, escapeHTML(error.message));
+  }
+
+  // Actualisation automatique toutes les 10 secondes.
+  setInterval(() => {
+    if (currentUser && !document.hidden) loadOrders();
+  }, 10000);
+</script></body>
+</html>
