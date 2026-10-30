@@ -26,7 +26,6 @@
     }
 
     h1 { text-align: center; color: #123b72; }
-
     h2 { margin-top: 25px; font-size: 19px; }
 
     .item {
@@ -112,6 +111,28 @@
       letter-spacing: 1px;
     }
 
+    .contact-button {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 15px;
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .whatsapp-button { background: #16a34a; }
+    .call-button { background: #123b72; }
+
+    .contact-title {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #123b72;
+    }
+
     .back {
       display: block;
       margin-top: 20px;
@@ -172,6 +193,8 @@
     const CART_KEY = "nexus360_cart_v1";
     const CUSTOMER_KEY = "nexus360_customer_details_v1";
 
+    const STORE_PHONE = "243966557344";
+
     const cartItems = document.getElementById("cartItems");
     const totalElement = document.getElementById("total");
     const form = document.getElementById("orderForm");
@@ -187,7 +210,7 @@
       message.textContent = text;
     }
 
-    function showSuccess(orderNumber, totalAmount) {
+    function showSuccess(orderNumber, totalAmount, customerName) {
       message.replaceChildren();
       message.className = "message success";
 
@@ -207,7 +230,40 @@
       const advice = document.createElement("p");
       advice.textContent = "Conservez ce numéro pour suivre votre commande.";
 
-      message.append(title, numberLabel, number, total, advice);
+      const contactTitle = document.createElement("p");
+      contactTitle.className = "contact-title";
+      contactTitle.textContent = "📞 Besoin de contacter la boutique ?";
+
+      const whatsapp = document.createElement("a");
+      whatsapp.className = "contact-button whatsapp-button";
+      whatsapp.href =
+        "https://wa.me/" + STORE_PHONE +
+        "?text=" + encodeURIComponent(
+          "Bonjour NEXUS 360, je viens de confirmer ma commande.\n" +
+          "Numéro de commande : " + orderNumber + "\n" +
+          "Nom : " + customerName + "\n" +
+          "Montant : " + formatPrice(totalAmount) + " FC.\n" +
+          "Je souhaite avoir des informations sur ma commande."
+        );
+      whatsapp.target = "_blank";
+      whatsapp.rel = "noopener noreferrer";
+      whatsapp.textContent = "🟢 Contacter la boutique sur WhatsApp";
+
+      const call = document.createElement("a");
+      call.className = "contact-button call-button";
+      call.href = "tel:+" + STORE_PHONE;
+      call.textContent = "📞 Appeler directement la boutique";
+
+      message.append(
+        title,
+        numberLabel,
+        number,
+        total,
+        advice,
+        contactTitle,
+        whatsapp,
+        call
+      );
     }
 
     function formatPrice(value) {
@@ -357,16 +413,14 @@
           throw new Error("Le serveur n'a pas confirmé la commande.");
         }
 
-        const rawOrderNumber = data.order_number;
-        const orderNumber = rawOrderNumber === null || rawOrderNumber === undefined
+        const orderNumber = data.order_number == null
           ? ""
-          : String(rawOrderNumber).trim();
+          : String(data.order_number).trim();
 
         if (!orderNumber) {
-          console.error("Réponse reçue de create_guest_order sans numéro :", data);
           throw new Error(
-            "La commande semble avoir été traitée, mais le serveur n'a pas renvoyé son numéro. " +
-            "Ne validez pas une deuxième fois. Contactez l'administrateur pour vérifier la commande."
+            "La commande semble avoir été traitée, mais son numéro n'a pas été renvoyé. " +
+            "Ne validez pas une deuxième fois. Contactez l'administrateur."
           );
         }
 
@@ -378,15 +432,11 @@
             phone: customerPhone,
             address: deliveryAddress
           }));
-        } catch {
-          // La commande peut réussir même si le navigateur ne mémorise pas ces données.
-        }
+        } catch {}
 
         try {
           localStorage.removeItem(CART_KEY);
-        } catch {
-          // La commande est confirmée même si le panier ne peut pas être effacé.
-        }
+        } catch {}
 
         cart = [];
         displayCart();
@@ -394,7 +444,8 @@
 
         showSuccess(
           orderNumber,
-          Number.isFinite(confirmedTotal) ? confirmedTotal : 0
+          Number.isFinite(confirmedTotal) ? confirmedTotal : 0,
+          customerName
         );
 
       } catch (error) {
@@ -406,7 +457,8 @@
       } finally {
         isSubmitting = false;
         submitButton.textContent = "Confirmer ma commande";
-        submitButton.disabled = cart.length === 0 || form.classList.contains("hidden");
+        submitButton.disabled =
+          cart.length === 0 || form.classList.contains("hidden");
       }
     });
   </script>
