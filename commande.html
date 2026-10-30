@@ -234,10 +234,13 @@
     autocomplete="street-address"
     placeholder="Commune, quartier, avenue, numéro..." required></textarea>
 
-  <button id="submitButton" type="submit">Confirmer ma commande</button>
+  <button id="submitButton" type="submit">
+    Confirmer ma commande
+  </button>
 </form>
 
-<div id="message" class="message hidden" role="status" aria-live="polite"></div>
+<div id="message" class="message hidden"
+  role="status" aria-live="polite"></div>
 
 <a class="back" href="./catalogue.html">← Retour au catalogue</a>
 
@@ -271,7 +274,42 @@
       }).format(Number(value) || 0);
     }
 
-    function showSuccess(orderNumber, totalAmount, customerName) {
+    async function getStoreName(items) {
+      const productIds = [...new Set(items.map(item => item.product_id))];
+
+      const { data: products, error: productsError } = await supabase
+        .from("products")
+        .select("id, store_id")
+        .in("id", productIds);
+
+      if (productsError) throw productsError;
+
+      if (!products || products.length !== productIds.length) {
+        throw new Error("Impossible de retrouver tous les produits de la commande.");
+      }
+
+      const storeIds = [...new Set(products.map(product => product.store_id))];
+
+      if (storeIds.length !== 1 || !storeIds[0]) {
+        throw new Error("Les produits doivent appartenir à une seule boutique.");
+      }
+
+      const { data: store, error: storeError } = await supabase
+        .from("stores")
+        .select("store_name")
+        .eq("id", storeIds[0])
+        .single();
+
+      if (storeError) throw storeError;
+
+      if (!store || !store.store_name) {
+        throw new Error("Impossible de retrouver le nom de la boutique.");
+      }
+
+      return store.store_name;
+    }
+
+    function showSuccess(orderNumber, totalAmount, customerName, storeName) {
       message.replaceChildren();
       message.className = "message success";
 
@@ -286,27 +324,33 @@
       number.textContent = orderNumber;
 
       const total = document.createElement("p");
-      total.textContent = "Total confirmé : " + formatPrice(totalAmount) + " FC.";
+      total.textContent =
+        "Total confirmé : " + formatPrice(totalAmount) + " FC.";
 
       const advice = document.createElement("p");
-      advice.textContent = "Conservez ce numéro pour suivre votre commande.";
+      advice.textContent =
+        "Conservez ce numéro pour suivre votre commande.";
 
       const paymentSection = document.createElement("section");
       paymentSection.className = "payment-section";
 
       const paymentTitle = document.createElement("h3");
-      paymentTitle.textContent = "💳 Comment souhaitez-vous payer votre commande ?";
+      paymentTitle.textContent =
+        "💳 Comment souhaitez-vous payer votre commande ?";
 
       const cashButton = document.createElement("button");
       cashButton.type = "button";
       cashButton.className = "payment-choice cash-choice";
-      cashButton.textContent = "💵 Payer après livraison (Cash au vendeur)";
+      cashButton.textContent =
+        "💵 Payer après livraison (Cash au vendeur)";
 
       const electronicButton = document.createElement("button");
       electronicButton.type = "button";
-      electronicButton.className = "payment-choice electronic-choice";
+      electronicButton.className =
+        "payment-choice electronic-choice";
       electronicButton.disabled = true;
-      electronicButton.textContent = "💳 Paiement électronique – Bientôt disponible";
+      electronicButton.textContent =
+        "💳 Paiement électronique – Bientôt disponible";
 
       const emailInfo = document.createElement("p");
       emailInfo.className = "payment-info";
@@ -319,6 +363,7 @@
       const emailLink = document.createElement("a");
       emailLink.href = "mailto:" + PAYMENT_EMAIL;
       emailLink.textContent = PAYMENT_EMAIL;
+
       emailInfo.appendChild(emailLink);
       emailInfo.append(document.createTextNode("."));
 
@@ -330,22 +375,33 @@
 
       const contactTitle = document.createElement("p");
       contactTitle.className = "contact-title hidden";
-      contactTitle.textContent = "📞 Vous pouvez contacter la boutique :";
+      contactTitle.textContent =
+        "📞 Vous pouvez contacter la boutique " + storeName + " :";
 
       const whatsapp = document.createElement("a");
-      whatsapp.className = "contact-button whatsapp-button hidden";
+      whatsapp.className =
+        "contact-button whatsapp-button hidden";
+
+      const whatsappMessage =
+        "Bonjour cher(e) " + storeName + " !\n\n" +
+        "Je me nomme " + customerName + ". " +
+        "Je viens de passer une commande sur NEXUS 360.\n\n" +
+        "Voici les détails de ma commande :\n\n" +
+        "Numéro de commande : " + orderNumber + "\n" +
+        "Montant total : " + formatPrice(totalAmount) + " FC\n" +
+        "Mode de paiement : Cash après livraison.\n\n" +
+        "Je souhaiterais avoir des informations concernant " +
+        "la livraison et le suivi de ma commande.\n\n" +
+        "Merci beaucoup pour votre disponibilité !";
+
       whatsapp.href =
         "https://wa.me/" + STORE_PHONE +
-        "?text=" + encodeURIComponent(
-          "Bonjour NEXUS 360, je viens de confirmer ma commande.\n" +
-          "Numéro de commande : " + orderNumber + "\n" +
-          "Nom : " + customerName + "\n" +
-          "Montant : " + formatPrice(totalAmount) + " FC.\n" +
-          "J'ai choisi le paiement cash après livraison."
-        );
+        "?text=" + encodeURIComponent(whatsappMessage);
+
       whatsapp.target = "_blank";
       whatsapp.rel = "noopener noreferrer";
-      whatsapp.textContent = "🟢 Contacter la boutique sur WhatsApp";
+      whatsapp.textContent =
+        "🟢 Contacter la boutique sur WhatsApp";
 
       const call = document.createElement("a");
       call.className = "contact-button call-button hidden";
@@ -354,7 +410,9 @@
 
       cashButton.addEventListener("click", () => {
         cashButton.disabled = true;
-        cashButton.textContent = "✅ Paiement après livraison choisi";
+        cashButton.textContent =
+          "✅ Paiement après livraison choisi";
+
         cashConfirmation.classList.remove("hidden");
         contactTitle.classList.remove("hidden");
         whatsapp.classList.remove("hidden");
@@ -384,7 +442,10 @@
 
     function loadCart() {
       try {
-        const saved = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+        const saved = JSON.parse(
+          localStorage.getItem(CART_KEY) || "[]"
+        );
+
         cart = Array.isArray(saved)
           ? saved.filter(item =>
               item &&
@@ -458,10 +519,18 @@
 
     function loadCustomerDetails() {
       try {
-        const saved = JSON.parse(localStorage.getItem(CUSTOMER_KEY) || "{}");
-        document.getElementById("customerName").value = saved.name || "";
-        document.getElementById("customerPhone").value = saved.phone || "";
-        document.getElementById("deliveryAddress").value = saved.address || "";
+        const saved = JSON.parse(
+          localStorage.getItem(CUSTOMER_KEY) || "{}"
+        );
+
+        document.getElementById("customerName").value =
+          saved.name || "";
+
+        document.getElementById("customerPhone").value =
+          saved.phone || "";
+
+        document.getElementById("deliveryAddress").value =
+          saved.address || "";
       } catch {
         // Le formulaire reste utilisable.
       }
@@ -481,12 +550,24 @@
         return;
       }
 
-      const customerName = document.getElementById("customerName").value.trim();
-      const customerPhone = document.getElementById("customerPhone").value.trim();
-      const deliveryAddress = document.getElementById("deliveryAddress").value.trim();
+      const customerName =
+        document.getElementById("customerName").value.trim();
 
-      if (customerName.length < 2 || customerPhone.length < 6 || deliveryAddress.length < 5) {
-        showMessage("Vérifiez votre nom, votre téléphone et votre adresse.", "error");
+      const customerPhone =
+        document.getElementById("customerPhone").value.trim();
+
+      const deliveryAddress =
+        document.getElementById("deliveryAddress").value.trim();
+
+      if (
+        customerName.length < 2 ||
+        customerPhone.length < 6 ||
+        deliveryAddress.length < 5
+      ) {
+        showMessage(
+          "Vérifiez votre nom, votre téléphone et votre adresse.",
+          "error"
+        );
         return;
       }
 
@@ -506,21 +587,31 @@
 
       isSubmitting = true;
       submitButton.disabled = true;
-      submitButton.textContent = "Envoi en cours...";
+      submitButton.textContent = "Vérification en cours...";
       message.className = "message hidden";
 
       try {
-        const { data, error } = await supabase.rpc("create_guest_order", {
-          p_customer_name: customerName,
-          p_customer_phone: customerPhone,
-          p_delivery_address: deliveryAddress,
-          p_items: items
-        });
+        // Récupérer le nom de la boutique avant de créer la commande.
+        const storeName = await getStoreName(items);
+
+        submitButton.textContent = "Envoi de la commande...";
+
+        const { data, error } = await supabase.rpc(
+          "create_guest_order",
+          {
+            p_customer_name: customerName,
+            p_customer_phone: customerPhone,
+            p_delivery_address: deliveryAddress,
+            p_items: items
+          }
+        );
 
         if (error) throw error;
 
         if (!data || data.success !== true) {
-          throw new Error("Le serveur n'a pas confirmé la commande.");
+          throw new Error(
+            "Le serveur n'a pas confirmé la commande."
+          );
         }
 
         const orderNumber = data.order_number == null
@@ -529,19 +620,23 @@
 
         if (!orderNumber) {
           throw new Error(
-            "La commande semble avoir été traitée, mais son numéro n'a pas été renvoyé. " +
-            "Ne validez pas une deuxième fois. Contactez l'administrateur."
+            "La commande semble avoir été traitée, mais son numéro " +
+            "n'a pas été renvoyé. Ne validez pas une deuxième fois. " +
+            "Contactez l'administrateur."
           );
         }
 
         const confirmedTotal = Number(data.total_amount);
 
         try {
-          localStorage.setItem(CUSTOMER_KEY, JSON.stringify({
-            name: customerName,
-            phone: customerPhone,
-            address: deliveryAddress
-          }));
+          localStorage.setItem(
+            CUSTOMER_KEY,
+            JSON.stringify({
+              name: customerName,
+              phone: customerPhone,
+              address: deliveryAddress
+            })
+          );
         } catch {}
 
         try {
@@ -555,15 +650,18 @@
         showSuccess(
           orderNumber,
           Number.isFinite(confirmedTotal) ? confirmedTotal : 0,
-          customerName
+          customerName,
+          storeName
         );
 
       } catch (error) {
         console.error("Erreur de commande :", error);
+
         showMessage(
           error.message || "Impossible de confirmer la commande.",
           "error"
         );
+
       } finally {
         isSubmitting = false;
         submitButton.textContent = "Confirmer ma commande";
