@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Administration | NEXUS 360</title>
-
-  <style>
+  <title>Administration | NEXUS 360</title>  <style>
     * { box-sizing: border-box; }
 
     body {
@@ -86,7 +83,7 @@
       color: #0369a1;
     }
 
-    .hidden { display: none; }
+    .hidden { display: none !important; }
     .muted { color: #475569; }
 
     #message, #ordersMessage {
@@ -100,186 +97,482 @@
       margin: 8px 12px 8px 0;
     }
 
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 16px;
+    .order-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 14px;
     }
 
-    table {
-      width: 100%;
-      min-width: 900px;
-      border-collapse: collapse;
-      text-align: left;
+    .order-card h3 {
+      margin-top: 0;
+      overflow-wrap: anywhere;
     }
 
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #e2e8f0;
-      vertical-align: top;
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 4px 4px 4px 0;
     }
 
-    th {
-      background: #f8fafc;
-      color: #334155;
+    .date-info {
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
     }
 
-    td select { min-width: 170px; margin-top: 0; }
-    td button { min-width: 120px; margin-top: 8px; }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 12px;
+    }
 
-    @media (max-width: 480px) {
+    .actions button { margin-top: 8px; }
+
+    .section-label {
+      display: block;
+      margin-top: 14px;
+      font-weight: bold;
+    }
+
+    .error { color: #b91c1c; }
+    .success { color: #166534; }
+
+    @media (max-width: 600px) {
       main { width: calc(100% - 16px); }
       .card { padding: 14px; }
+      .actions { grid-template-columns: 1fr; }
     }
-  </style>
-</head>
+  </style></head><body>
+<header>
+  <h1>NEXUS 360</h1>
+  <div>Administration de la plateforme</div>
+</header><main>  <!-- CONNEXION -->  <section class="card" id="loginCard">
+    <h2>Connexion administrateur</h2><form id="loginForm">
+  <label for="email">Adresse e-mail</label>
+  <input id="email" type="email" autocomplete="username" required>
 
-<body>
-  <header>
-    <h1>NEXUS 360</h1>
-    <div>Administration de la plateforme</div>
-  </header>
+  <label for="password">Mot de passe</label>
+  <input id="password" type="password" autocomplete="current-password" required>
 
-  <main>
-    <section class="card" id="loginCard">
-      <h2>Connexion administrateur</h2>
+  <button id="loginButton" type="submit">Se connecter</button>
+</form>
 
-      <form id="loginForm">
-        <label for="email">Adresse e-mail</label>
-        <input id="email" type="email" autocomplete="username" required>
+  </section>  <!-- TABLEAU ADMIN -->  <section id="dashboard" class="hidden"><div class="card">
+  <h2>Bienvenue dans l'administration</h2>
+  <p id="accountInfo"></p>
 
-        <label for="password">Mot de passe</label>
-        <input id="password" type="password" autocomplete="current-password" required>
+  <button id="refreshButton" type="button">
+    Actualiser les statistiques
+  </button>
 
-        <button type="submit">Se connecter</button>
-      </form>
-    </section>
+  <button id="logoutButton" class="secondary" type="button">
+    Se déconnecter
+  </button>
+</div>
 
-    <section id="dashboard" class="hidden">
-      <div class="card">
-        <h2>Bienvenue dans l'administration</h2>
-        <p id="accountInfo"></p>
+<!-- STATISTIQUES -->
+<div class="card">
+  <h2>Vue d'ensemble</h2>
 
-        <button id="refreshButton" type="button">
-          Actualiser les statistiques
-        </button>
+  <div class="grid">
+    <div class="stat">
+      Utilisateurs
+      <strong id="usersCount">—</strong>
+    </div>
 
-        <button id="logoutButton" class="secondary" type="button">
-          Se déconnecter
-        </button>
-      </div>
+    <div class="stat">
+      Vendeurs
+      <strong id="sellersCount">—</strong>
+    </div>
 
-      <div class="card">
-        <h2>Vue d'ensemble</h2>
+    <div class="stat">
+      Boutiques
+      <strong id="storesCount">—</strong>
+    </div>
 
-        <div class="grid">
-          <div class="stat">
-            Utilisateurs
-            <strong id="usersCount">—</strong>
-          </div>
+    <div class="stat">
+      Produits
+      <strong id="productsCount">—</strong>
+    </div>
 
-          <div class="stat">
-            Vendeurs
-            <strong id="sellersCount">—</strong>
-          </div>
+    <div class="stat">
+      Commandes
+      <strong id="ordersCount">—</strong>
+    </div>
+  </div>
+</div>
 
-          <div class="stat">
-            Boutiques
-            <strong id="storesCount">—</strong>
-          </div>
+<!-- GESTION DES COMMANDES -->
+<div class="card">
+  <h2>📦 Gestion de toutes les commandes</h2>
 
-          <div class="stat">
-            Produits
-            <strong id="productsCount">—</strong>
-          </div>
+  <p class="muted">
+    Suis les livraisons, modifie les statuts et confirme les paiements.
+  </p>
 
-          <div class="stat">
-            Commandes
-            <strong id="ordersCount">—</strong>
-          </div>
-        </div>
-      </div>
+  <button id="loadOrdersButton" type="button">
+    Afficher / actualiser les commandes
+  </button>
 
-      <div class="card">
-        <h2>📦 Gestion des commandes</h2>
+  <p id="ordersMessage" role="status" aria-live="polite">
+    Appuie sur le bouton pour afficher les commandes.
+  </p>
 
-        <p class="muted">
-          Consulte les commandes et modifie leur statut.
-          Le changement est enregistré dans Supabase.
-        </p>
+  <div id="ordersList"></div>
+</div>
 
-        <button id="loadOrdersButton" type="button">
-          Afficher / actualiser les commandes
-        </button>
+<!-- ACCÈS RAPIDES -->
+<div class="card">
+  <h2>Accès rapides</h2>
 
-        <p id="ordersMessage" role="status">
-          Appuie sur le bouton pour afficher les commandes.
-        </p>
+  <a href="catalogue.html">Catalogue des produits</a>
+  <a href="ajouter-produit.html">Ajouter un produit</a>
+  <a href="tableau-vendeur.html">Espace vendeur</a>
+  <a href="commande.html">Page de commande</a>
+  <a href="suivi-commande.html">Suivi des commandes</a>
+</div>
 
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>N° commande</th>
-                <th>Client</th>
-                <th>Téléphone</th>
-                <th>Adresse de livraison</th>
-                <th>Total</th>
-                <th>Statut actuel</th>
-                <th>Nouveau statut</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+  </section>  <section class="card">
+    <p id="message" role="status" aria-live="polite"></p>
+  </section></main><script type="module">
+  import { supabase } from "./supabase.js";
 
-            <tbody id="ordersTableBody"></tbody>
-          </table>
-        </div>
-      </div>
+  const loginCard = document.getElementById("loginCard");
+  const dashboard = document.getElementById("dashboard");
+  const message = document.getElementById("message");
+  const ordersMessage = document.getElementById("ordersMessage");
+  const ordersList = document.getElementById("ordersList");
 
-      <div class="card">
-        <h2>Accès rapides</h2>
+  const loginButton = document.getElementById("loginButton");
+  const logoutButton = document.getElementById("logoutButton");
+  const loadOrdersButton = document.getElementById("loadOrdersButton");
 
-        <a href="catalogue.html">Catalogue des produits</a>
-        <a href="ajouter-produit.html">Ajouter un produit</a>
-        <a href="tableau-vendeur.html">Espace vendeur</a>
-        <a href="commande.html">Page de commande</a>
-      </div>
-    </section>
+  let loadingDashboard = false;
+  let loadingOrders = false;
 
-    <section class="card">
-      <p id="message" role="status"></p>
-    </section>
-  </main>
+  const DELIVERY_STATUSES = [
+    ["pending", "En attente"],
+    ["in_transit", "En route"],
+    ["arrived", "Arrivée"],
+    ["delivered", "Livrée"]
+  ];
 
-  <script type="module">
-    import { supabase } from "./supabase.js";
+  const PAYMENT_STATUSES = [
+    ["unpaid", "Non payé"],
+    ["paid", "Payé"]
+  ];
 
-    const loginCard = document.getElementById("loginCard");
-    const dashboard = document.getElementById("dashboard");
-    const message = document.getElementById("message");
-    const ordersMessage = document.getElementById("ordersMessage");
-    const ordersTableBody = document.getElementById("ordersTableBody");
+  function showMessage(text, isError = false) {
+    message.textContent = text;
+    message.className = isError ? "error" : "success";
+  }
 
-    const STATUSES = [
-      { value: "pending", label: "En attente" },
-      { value: "confirmed", label: "Confirmée" },
-      { value: "processing", label: "En préparation" },
-      { value: "shipped", label: "En cours de livraison" },
-      { value: "delivered", label: "Livrée" },
-      { value: "cancelled", label: "Annulée" }
+  function deliveryLabel(value) {
+    return DELIVERY_STATUSES.find(item => item[0] === value)?.[1]
+      || "En attente";
+  }
+
+  function paymentLabel(value) {
+    return value === "paid" ? "Payé" : "Non payé";
+  }
+
+  function formatMoney(value) {
+    if (value == null || !Number.isFinite(Number(value))) return "—";
+    return Number(value).toLocaleString("fr-FR") + " FC";
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+
+    return date.toLocaleString("fr-FR", {
+      timeZone: "Africa/Kinshasa",
+      dateStyle: "short",
+      timeStyle: "short"
+    });
+  }
+
+  async function getCount(table, filters = []) {
+    let query = supabase
+      .from(table)
+      .select("*", { count: "exact", head: true });
+
+    for (const filter of filters) {
+      query = query.eq(filter.column, filter.value);
+    }
+
+    const { count, error } = await query;
+
+    if (error) throw error;
+
+    return count ?? 0;
+  }
+
+  async function loadStatistics() {
+    const ids = [
+      "usersCount",
+      "sellersCount",
+      "storesCount",
+      "productsCount",
+      "ordersCount"
     ];
 
-    function showMessage(text, isError = false) {
-      message.textContent = text;
-      message.style.color = isError ? "#b91c1c" : "#166534";
+    ids.forEach(id => {
+      document.getElementById(id).textContent = "…";
+    });
+
+    try {
+      const results = await Promise.all([
+        getCount("profiles"),
+        getCount("profiles", [
+          { column: "role", value: "vendeur" }
+        ]),
+        getCount("stores"),
+        getCount("products"),
+        getCount("orders")
+      ]);
+
+      ids.forEach((id, index) => {
+        document.getElementById(id).textContent = results[index];
+      });
+
+    } catch (error) {
+      ids.forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+
+      throw error;
+    }
+  }
+
+  function makeSelect(options, selectedValue) {
+    const select = document.createElement("select");
+
+    for (const [value, label] of options) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      select.appendChild(option);
     }
 
-    function statusLabel(value) {
-      const status = STATUSES.find(item => item.value === value);
-      return status ? status.label : (value || "En attente");
+    select.value = selectedValue;
+    return select;
+  }
+
+  async function updateOrder(orderNumber, field, value, button) {
+    button.disabled = true;
+    button.textContent = "Enregistrement...";
+
+    try {
+      const params = {
+        p_order_number: orderNumber,
+        p_delivery_status: field === "delivery" ? value : null,
+        p_payment_status: field === "payment" ? value : null
+      };
+
+      const { data, error } = await supabase.rpc(
+        "update_admin_order_progress",
+        params
+      );
+
+      if (error) throw error;
+
+      if (data && data.success === false) {
+        throw new Error("La modification n'a pas été enregistrée.");
+      }
+
+      ordersMessage.textContent =
+        "Commande " + orderNumber + " mise à jour avec succès.";
+
+      await loadOrders();
+      await loadStatistics();
+
+    } catch (error) {
+      console.error("Erreur de mise à jour :", error);
+
+      ordersMessage.textContent =
+        "Erreur : " + (error.message || "Impossible de modifier la commande.");
+
+      button.disabled = false;
+      button.textContent = "Réessayer";
+    }
+  }
+
+  function createOrderCard(order) {
+    const card = document.createElement("article");
+    card.className = "order-card";
+
+    const title = document.createElement("h3");
+    title.textContent = "Commande " + (order.order_number || "—");
+    card.appendChild(title);
+
+    const details = [
+      ["Client", order.customer_name || "—"],
+      ["Téléphone", order.customer_phone || "—"],
+      ["Adresse", order.delivery_address || "—"],
+      ["Montant", formatMoney(order.total_amount)],
+      ["Date de commande", formatDate(order.created_at)]
+    ];
+
+    for (const [label, value] of details) {
+      const p = document.createElement("p");
+      const strong = document.createElement("strong");
+      strong.textContent = label + " : ";
+      p.append(strong, document.createTextNode(value));
+      card.appendChild(p);
     }
 
-    async function loadDashboard() {
+    const deliveryBadge = document.createElement("span");
+    deliveryBadge.className = "badge";
+    deliveryBadge.textContent =
+      "Livraison : " + deliveryLabel(order.delivery_status);
+
+    const paymentBadge = document.createElement("span");
+    paymentBadge.className = "badge";
+    paymentBadge.textContent =
+      "Paiement : " + paymentLabel(order.payment_status);
+
+    card.append(deliveryBadge, paymentBadge);
+
+    const dates = document.createElement("p");
+    dates.className = "date-info";
+    dates.textContent =
+      "En attente : " + formatDate(order.pending_at) +
+      "\nEn route : " + formatDate(order.in_transit_at) +
+      "\nArrivée : " + formatDate(order.arrived_at) +
+      "\nLivrée : " + formatDate(order.delivered_at) +
+      "\nPaiement confirmé : " + formatDate(order.paid_at);
+
+    card.appendChild(dates);
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    // LIVRAISON
+    const deliveryBox = document.createElement("div");
+
+    const deliveryLabelElement = document.createElement("label");
+    deliveryLabelElement.className = "section-label";
+    deliveryLabelElement.textContent = "Statut de livraison";
+
+    const deliverySelect = makeSelect(
+      DELIVERY_STATUSES,
+      order.delivery_status || "pending"
+    );
+
+    const deliveryButton = document.createElement("button");
+    deliveryButton.className = "save-status";
+    deliveryButton.textContent = "Enregistrer la livraison";
+
+    deliveryButton.addEventListener("click", () => {
+      updateOrder(
+        order.order_number,
+        "delivery",
+        deliverySelect.value,
+        deliveryButton
+      );
+    });
+
+    deliveryBox.append(
+      deliveryLabelElement,
+      deliverySelect,
+      deliveryButton
+    );
+
+    // PAIEMENT
+    const paymentBox = document.createElement("div");
+
+    const paymentLabelElement = document.createElement("label");
+    paymentLabelElement.className = "section-label";
+    paymentLabelElement.textContent = "Statut du paiement";
+
+    const paymentSelect = makeSelect(
+      PAYMENT_STATUSES,
+      order.payment_status || "unpaid"
+    );
+
+    const paymentButton = document.createElement("button");
+    paymentButton.className = "save-status";
+    paymentButton.textContent = "Enregistrer le paiement";
+
+    paymentButton.addEventListener("click", () => {
+      updateOrder(
+        order.order_number,
+        "payment",
+        paymentSelect.value,
+        paymentButton
+      );
+    });
+
+    paymentBox.append(
+      paymentLabelElement,
+      paymentSelect,
+      paymentButton
+    );
+
+    actions.append(deliveryBox, paymentBox);
+    card.appendChild(actions);
+
+    return card;
+  }
+
+  async function loadOrders() {
+    if (loadingOrders) return;
+
+    loadingOrders = true;
+    loadOrdersButton.disabled = true;
+    ordersList.replaceChildren();
+
+    try {
+      ordersMessage.textContent = "Chargement de toutes les commandes...";
+
+      const { data: orders, error } = await supabase.rpc(
+        "get_admin_order_management"
+      );
+
+      if (error) throw error;
+
+      if (!orders || orders.length === 0) {
+        ordersMessage.textContent = "Aucune commande trouvée.";
+        return;
+      }
+
+      for (const order of orders) {
+        ordersList.appendChild(createOrderCard(order));
+      }
+
+      ordersMessage.textContent =
+        orders.length + " commande(s) chargée(s).";
+
+    } catch (error) {
+      console.error("Erreur de chargement :", error);
+
+      ordersMessage.textContent =
+        "Impossible de charger les commandes : " +
+        (error.message || "Erreur inconnue.");
+
+    } finally {
+      loadingOrders = false;
+      loadOrdersButton.disabled = false;
+    }
+  }
+
+  async function loadDashboard() {
+    if (loadingDashboard) return;
+
+    loadingDashboard = true;
+
+    try {
       const { data: sessionData, error: sessionError } =
         await supabase.auth.getSession();
 
@@ -315,288 +608,94 @@
       dashboard.classList.remove("hidden");
 
       document.getElementById("accountInfo").textContent =
-        `${profile.full_name || user.email} — Administrateur`;
+        (profile.full_name || user.email) + " — Administrateur";
 
       await loadStatistics();
+
+    } catch (error) {
+      console.error(error);
+      showMessage(error.message || "Erreur de chargement.", true);
+
+    } finally {
+      loadingDashboard = false;
     }
+  }
 
-    async function getCount(table, filters = null) {
-      let query = supabase
-        .from(table)
-        .select("*", { count: "exact", head: true });
+  document.getElementById("loginForm").addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
 
-      if (filters) {
-        for (const filter of filters) {
-          query = query.eq(filter.column, filter.value);
-        }
-      }
-
-      const { count, error } = await query;
-
-      if (error) throw error;
-
-      return count ?? 0;
-    }
-
-    async function loadStatistics() {
-      const ids = [
-        "usersCount",
-        "sellersCount",
-        "storesCount",
-        "productsCount",
-        "ordersCount"
-      ];
-
-      ids.forEach(id => {
-        document.getElementById(id).textContent = "…";
-      });
+      loginButton.disabled = true;
+      showMessage("Connexion en cours...");
 
       try {
-        const results = await Promise.all([
-          getCount("profiles"),
-          getCount("profiles", [
-            { column: "role", value: "vendeur" }
-          ]),
-          getCount("stores"),
-          getCount("products"),
-          getCount("orders")
-        ]);
-
-        ids.forEach((id, index) => {
-          document.getElementById(id).textContent = results[index];
-        });
-
-        showMessage("Statistiques chargées.");
-
-      } catch (error) {
-        ids.forEach(id => {
-          document.getElementById(id).textContent = "—";
-        });
-
-        showMessage(
-          "Impossible de charger les statistiques. " +
-          "Vérifie les permissions RLS de Supabase. Détail : " +
-          error.message,
-          true
-        );
-      }
-    }
-
-    async function loadOrders() {
-      ordersMessage.textContent = "Chargement des commandes...";
-      ordersTableBody.replaceChildren();
-
-      try {
-        const { data, error } = await supabase
-          .from("orders")
-          .select(`
-            order_number,
-            customer_name,
-            customer_phone,
-            delivery_address,
-            total_amount,
-            status
-          `)
-          .order("order_number", { ascending: false });
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-          ordersMessage.textContent =
-            "Aucune commande trouvée ou aucune commande accessible.";
-          return;
-        }
-
-        for (const order of data) {
-          const row = document.createElement("tr");
-
-          const values = [
-            order.order_number ?? "—",
-            order.customer_name ?? "—",
-            order.customer_phone ?? "—",
-            order.delivery_address ?? "—",
-            order.total_amount == null
-              ? "—"
-              : Number(order.total_amount).toLocaleString("fr-FR") + " FC",
-            statusLabel(order.status)
-          ];
-
-          values.forEach(value => {
-            const cell = document.createElement("td");
-            cell.textContent = String(value);
-            row.appendChild(cell);
-          });
-
-          const selectCell = document.createElement("td");
-          const select = document.createElement("select");
-
-          const currentStatus = order.status || "pending";
-
-          for (const item of STATUSES) {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.textContent = item.label;
-            option.selected = item.value === currentStatus;
-            select.appendChild(option);
-          }
-
-          if (!STATUSES.some(item => item.value === currentStatus)) {
-            const option = document.createElement("option");
-            option.value = currentStatus;
-            option.textContent = `Statut existant : ${currentStatus}`;
-            option.selected = true;
-            select.insertBefore(option, select.firstChild);
-          }
-
-          selectCell.appendChild(select);
-          row.appendChild(selectCell);
-
-          const actionCell = document.createElement("td");
-          const saveButton = document.createElement("button");
-
-          saveButton.type = "button";
-          saveButton.className = "save-status";
-          saveButton.textContent = "Enregistrer";
-
-          saveButton.addEventListener("click", async () => {
-            const newStatus = select.value;
-
-            saveButton.disabled = true;
-            saveButton.textContent = "Enregistrement...";
-
-            ordersMessage.textContent =
-              `Mise à jour de la commande ${order.order_number}...`;
-
-            try {
-              const { data: updatedRows, error: updateError } =
-                await supabase
-                  .from("orders")
-                  .update({ status: newStatus })
-                  .eq("order_number", order.order_number)
-                  .select("order_number, status");
-
-              if (updateError) throw updateError;
-
-              if (!updatedRows || updatedRows.length === 0) {
-                throw new Error(
-                  "Aucune ligne modifiée. Vérifie les politiques RLS UPDATE de la table orders et les droits administrateur."
-                );
-              }
-
-              ordersMessage.textContent =
-                `Statut de la commande ${order.order_number} enregistré : ` +
-                statusLabel(updatedRows[0].status) + ".";
-
-              await loadOrders();
-              await loadStatistics();
-
-            } catch (error) {
-              console.error("Erreur de mise à jour :", error);
-
-              ordersMessage.textContent =
-                "Impossible d'enregistrer le statut. " +
-                (error.message || "Erreur inconnue") +
-                " Vérifie aussi que la valeur du statut est autorisée par la base de données.";
-
-              saveButton.disabled = false;
-              saveButton.textContent = "Réessayer";
-            }
-          });
-
-          actionCell.appendChild(saveButton);
-          row.appendChild(actionCell);
-
-          ordersTableBody.appendChild(row);
-        }
-
-        ordersMessage.textContent =
-          data.length +
-          " commande(s) affichée(s). Choisis un statut puis appuie sur Enregistrer.";
-
-      } catch (error) {
-        console.error("Erreur de chargement des commandes :", error);
-
-        ordersMessage.textContent =
-          "Impossible d'afficher les commandes. Détail : " +
-          error.message;
-      }
-    }
-
-    document
-      .getElementById("loadOrdersButton")
-      .addEventListener("click", loadOrders);
-
-    document
-      .getElementById("loginForm")
-      .addEventListener("submit", async event => {
-        event.preventDefault();
-
-        showMessage("Connexion en cours...");
-
-        const email =
-          document.getElementById("email").value.trim();
-
-        const password =
-          document.getElementById("password").value;
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
 
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password
         });
 
-        if (error) {
-          showMessage(error.message, true);
-          return;
-        }
+        if (error) throw error;
 
-        try {
-          await loadDashboard();
-        } catch (error) {
-          showMessage(error.message || "Erreur de chargement.", true);
-        }
-      });
+        await loadDashboard();
+        showMessage("Connexion réussie.");
 
-    document
-      .getElementById("refreshButton")
-      .addEventListener("click", async () => {
-        try {
-          await loadStatistics();
-        } catch (error) {
-          showMessage(error.message, true);
-        }
-      });
+      } catch (error) {
+        showMessage(error.message || "Erreur de connexion.", true);
 
-    document
-      .getElementById("logoutButton")
-      .addEventListener("click", async () => {
-        const { error } = await supabase.auth.signOut();
+      } finally {
+        loginButton.disabled = false;
+      }
+    }
+  );
 
-        if (error) {
-          showMessage(error.message, true);
-          return;
-        }
+  document.getElementById("refreshButton").addEventListener(
+    "click",
+    async () => {
+      try {
+        await loadStatistics();
+        showMessage("Statistiques actualisées.");
+      } catch (error) {
+        showMessage(error.message, true);
+      }
+    }
+  );
 
-        dashboard.classList.add("hidden");
-        loginCard.classList.remove("hidden");
-        ordersTableBody.replaceChildren();
+  loadOrdersButton.addEventListener("click", loadOrders);
 
-        ordersMessage.textContent =
-          "Connecte-toi pour consulter les commandes.";
+  logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
 
-        showMessage("Déconnexion réussie.");
-      });
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
 
-    supabase.auth.onAuthStateChange(() => {
-      setTimeout(() => {
-        loadDashboard().catch(error => {
-          showMessage(error.message, true);
-        });
-      }, 0);
-    });
+      dashboard.classList.add("hidden");
+      loginCard.classList.remove("hidden");
+      ordersList.replaceChildren();
 
-    loadDashboard().catch(error => {
-      showMessage(error.message, true);
-    });
-  </script>
-</body>
+      ordersMessage.textContent =
+        "Connecte-toi pour consulter les commandes.";
+
+      showMessage("Déconnexion réussie.");
+
+    } catch (error) {
+      showMessage(error.message || "Erreur de déconnexion.", true);
+
+    } finally {
+      logoutButton.disabled = false;
+    }
+  });
+
+  supabase.auth.onAuthStateChange(() => {
+    setTimeout(() => {
+      loadDashboard();
+    }, 0);
+  });
+
+  loadDashboard();
+</script></body>
 </html>
