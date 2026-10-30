@@ -1,8 +1,11 @@
-<!DOCTYPE html><html lang="fr">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tableau de bord vendeur | NEXUS 360</title>  <style>
+  <title>Tableau de bord vendeur | NEXUS 360</title>
+
+  <style>
     * { box-sizing: border-box; }
 
     body {
@@ -59,6 +62,7 @@
     button.secondary { background: #475569; }
     button.green { background: #15803d; }
     button.orange { background: #c2410c; }
+    button.red { background: #b91c1c; }
 
     .hidden { display: none !important; }
 
@@ -76,7 +80,7 @@
 
     .muted { color: #475569; }
 
-    #message, #ordersMessage {
+    #message, #ordersMessage, #couriersMessage {
       white-space: pre-wrap;
       overflow-wrap: anywhere;
     }
@@ -117,547 +121,898 @@
       line-height: 1.6;
     }
 
+    .warning {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .courier-card {
+      border: 1px solid #cbd5e1;
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+
+    .courier-card p {
+      overflow-wrap: anywhere;
+    }
+
     @media (max-width: 600px) {
       .order-actions { grid-template-columns: 1fr; }
       .card { padding: 15px; }
     }
-  </style></head><body>
-  <header>
-    <h1>NEXUS 360</h1>
-    <div>Espace vendeur</div>
-  </header>  <main>
-    <section class="card" id="loginCard">
-      <h2>Connexion vendeur</h2>
-      <p class="muted">Connecte-toi avec ton compte NEXUS 360.</p>  <form id="loginForm">
-    <label for="email">Adresse e-mail</label>
-    <input id="email" type="email" autocomplete="username" required>
+  </style>
+</head>
 
-    <label for="password">Mot de passe</label>
-    <input id="password" type="password" autocomplete="current-password" required>
+<body>
+<header>
+  <h1>NEXUS 360</h1>
+  <div>Espace vendeur</div>
+</header>
 
-    <button id="loginButton" type="submit">Se connecter</button>
-  </form>
-</section>
+<main>
 
-<section id="dashboard" class="hidden">
+  <section class="card" id="loginCard">
+    <h2>Connexion vendeur</h2>
+    <p class="muted">Connecte-toi avec ton compte NEXUS 360.</p>
 
-  <div class="card">
-    <h2>Mon compte</h2>
-    <p id="accountInfo">Chargement du compte...</p>
-    <button class="secondary" id="logoutButton" type="button">
-      Se déconnecter
-    </button>
-  </div>
+    <form id="loginForm">
+      <label for="email">Identifiant</label>
+      <input id="email" type="email" autocomplete="username" required>
 
-  <div class="card">
-    <h2>Ma boutique</h2>
-    <div id="storeInfo">Chargement de la boutique...</div>
-    <p>
-      <a href="ajouter-produit.html">Ajouter un produit</a>
-      &nbsp;|&nbsp;
-      <a href="catalogue.html">Voir le catalogue</a>
-    </p>
-  </div>
+      <label for="password">Mot de passe</label>
+      <input id="password" type="password" autocomplete="current-password" required>
 
-  <div class="card">
-    <h2>Mes produits</h2>
-    <div id="productsInfo">Chargement des produits...</div>
-  </div>
+      <button id="loginButton" type="submit">Se connecter</button>
+    </form>
+  </section>
 
-  <div class="card">
-    <h2>📦 Mes commandes</h2>
-    <p class="muted">
-      Consulte les commandes de ta boutique et actualise leur progression.
-    </p>
+  <section id="dashboard" class="hidden">
 
-    <button id="refreshOrdersButton" type="button">
-      Actualiser mes commandes
-    </button>
+    <div class="card">
+      <h2>Mon compte</h2>
+      <p id="accountInfo">Chargement du compte...</p>
+      <button class="secondary" id="logoutButton" type="button">
+        Se déconnecter
+      </button>
+    </div>
 
-    <p id="ordersMessage" role="status" aria-live="polite">
-      Chargement des commandes...
-    </p>
+    <div class="card">
+      <h2>Ma boutique</h2>
+      <div id="storeInfo">Chargement de la boutique...</div>
+      <p>
+        <a href="ajouter-produit.html">Ajouter un produit</a>
+        &nbsp;|&nbsp;
+        <a href="catalogue.html">Voir le catalogue</a>
+      </p>
+    </div>
 
-    <div id="ordersList"></div>
-  </div>
-</section>
+    <div class="card">
+      <h2>Mes produits</h2>
+      <div id="productsInfo">Chargement des produits...</div>
+    </div>
 
-<section class="card">
-  <p id="message" role="status" aria-live="polite"></p>
-</section>
+    <!-- GESTION DES LIVREURS -->
+    <div class="card" id="couriersSection">
+      <h2>🚚 Gestion de mes livreurs</h2>
 
-  </main>  <script type="module">
-    import { supabase } from "./supabase.js";
+      <p class="muted">
+        Crée et gère les comptes des livreurs de ta propre boutique.
+        Chaque livreur possède son identifiant personnel.
+      </p>
 
-    const loginCard = document.getElementById("loginCard");
-    const dashboard = document.getElementById("dashboard");
-    const message = document.getElementById("message");
-    const ordersMessage = document.getElementById("ordersMessage");
-    const ordersList = document.getElementById("ordersList");
+      <div class="warning">
+        Les identifiants des livreurs doivent se terminer par
+        <strong>@nexus.com</strong>.
+        Si tu saisis Gmail, Yahoo ou une autre adresse, elle sera
+        automatiquement transformée.
+      </div>
 
-    const loginForm = document.getElementById("loginForm");
-    const loginButton = document.getElementById("loginButton");
-    const logoutButton = document.getElementById("logoutButton");
-    const refreshOrdersButton = document.getElementById("refreshOrdersButton");
+      <form id="courierForm">
 
-    let currentStoreId = null;
-    let loadingDashboard = false;
-    let loadingOrders = false;
+        <label class="section-label" for="courierName">
+          Nom complet du livreur
+        </label>
+        <input
+          id="courierName"
+          type="text"
+          placeholder="Exemple : Jean Dupont"
+          required
+        >
 
-    function showMessage(text, isError = false) {
-      message.textContent = text;
-      message.className = isError ? "error-text" : "success-text";
+        <label class="section-label" for="courierPhone">
+          Téléphone
+        </label>
+        <input
+          id="courierPhone"
+          type="tel"
+          placeholder="+243..."
+          required
+        >
+
+        <label class="section-label" for="courierUsername">
+          Identifiant du livreur
+        </label>
+        <input
+          id="courierUsername"
+          type="text"
+          placeholder="Exemple : jean@nexus.com"
+          autocomplete="off"
+          required
+        >
+
+        <label class="section-label" for="courierPassword">
+          Mot de passe provisoire
+        </label>
+        <input
+          id="courierPassword"
+          type="password"
+          minlength="8"
+          placeholder="Minimum 8 caractères"
+          autocomplete="new-password"
+          required
+        >
+
+        <button id="createCourierButton" type="submit">
+          Créer le compte livreur
+        </button>
+      </form>
+
+      <p id="couriersMessage" role="status" aria-live="polite"></p>
+
+      <hr style="margin:24px 0;border:0;border-top:1px solid #e2e8f0;">
+
+      <h3>Mes livreurs</h3>
+
+      <button id="refreshCouriersButton" type="button">
+        Actualiser la liste
+      </button>
+
+      <div id="couriersList">
+        Connecte-toi pour consulter tes livreurs.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📦 Mes commandes</h2>
+      <p class="muted">
+        Consulte les commandes de ta boutique et actualise leur progression.
+      </p>
+
+      <button id="refreshOrdersButton" type="button">
+        Actualiser mes commandes
+      </button>
+
+      <p id="ordersMessage" role="status" aria-live="polite">
+        Chargement des commandes...
+      </p>
+
+      <div id="ordersList"></div>
+    </div>
+
+  </section>
+
+  <section class="card">
+    <p id="message" role="status" aria-live="polite"></p>
+  </section>
+
+</main>
+
+<script type="module">
+  import { supabase } from "./supabase.js";
+
+  const loginCard = document.getElementById("loginCard");
+  const dashboard = document.getElementById("dashboard");
+  const message = document.getElementById("message");
+  const ordersMessage = document.getElementById("ordersMessage");
+  const ordersList = document.getElementById("ordersList");
+
+  const loginForm = document.getElementById("loginForm");
+  const loginButton = document.getElementById("loginButton");
+  const logoutButton = document.getElementById("logoutButton");
+  const refreshOrdersButton = document.getElementById("refreshOrdersButton");
+
+  const courierForm = document.getElementById("courierForm");
+  const courierName = document.getElementById("courierName");
+  const courierPhone = document.getElementById("courierPhone");
+  const courierUsername = document.getElementById("courierUsername");
+  const courierPassword = document.getElementById("courierPassword");
+  const createCourierButton = document.getElementById("createCourierButton");
+  const refreshCouriersButton = document.getElementById("refreshCouriersButton");
+  const couriersMessage = document.getElementById("couriersMessage");
+  const couriersList = document.getElementById("couriersList");
+
+  let currentStoreId = null;
+  let loadingDashboard = false;
+  let loadingOrders = false;
+  let loadingCouriers = false;
+
+  function showMessage(text, isError = false) {
+    message.textContent = text;
+    message.className = isError ? "error-text" : "success-text";
+  }
+
+  function formatMoney(value) {
+    if (value == null || !Number.isFinite(Number(value))) return "—";
+    return Number(value).toLocaleString("fr-FR") + " FC";
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+
+    return date.toLocaleString("fr-FR", {
+      timeZone: "Africa/Kinshasa",
+      dateStyle: "short",
+      timeStyle: "short"
+    });
+  }
+
+  function deliveryLabel(status) {
+    const labels = {
+      pending: "En attente",
+      in_transit: "En route",
+      arrived: "Arrivée",
+      delivered: "Livrée"
+    };
+
+    return labels[status] || "En attente";
+  }
+
+  function paymentLabel(status) {
+    return status === "paid" ? "Payée" : "Non payée";
+  }
+
+  // Normalisation automatique des identifiants internes.
+  function normalizeCourierUsername(value) {
+    const original = value.trim().toLowerCase();
+    const localPart = original.split("@")[0];
+
+    const cleanLocalPart = localPart.replace(/[^a-z0-9._-]/g, "");
+
+    if (!cleanLocalPart) return "";
+
+    return cleanLocalPart + "@nexus.com";
+  }
+
+  courierUsername.addEventListener("change", () => {
+    const original = courierUsername.value.trim().toLowerCase();
+    const normalized = normalizeCourierUsername(original);
+
+    if (!normalized) return;
+
+    if (original !== normalized) {
+      courierUsername.value = normalized;
+
+      alert(
+        "Identifiant corrigé automatiquement.\n\n" +
+        "Le nouvel identifiant est : " + normalized
+      );
+    }
+  });
+
+  async function callCourierFunction(body) {
+    const { data, error } = await supabase.functions.invoke(
+      "manage-store-couriers",
+      { body }
+    );
+
+    if (error) {
+      throw new Error(
+        error.message || "Impossible de contacter le service des livreurs."
+      );
     }
 
-    function formatMoney(value) {
-      if (value == null || !Number.isFinite(Number(value))) return "—";
-      return Number(value).toLocaleString("fr-FR") + " FC";
+    if (data?.success === false) {
+      throw new Error(data.message || data.error || "Opération impossible.");
     }
 
-    function formatDate(value) {
-      if (!value) return "—";
-
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return "—";
-
-      return date.toLocaleString("fr-FR", {
-        timeZone: "Africa/Kinshasa",
-        dateStyle: "short",
-        timeStyle: "short"
-      });
+    if (data?.error) {
+      throw new Error(data.error);
     }
 
-    function deliveryLabel(status) {
-      const labels = {
-        pending: "En attente",
-        in_transit: "En route",
-        arrived: "Arrivée",
-        delivered: "Livrée"
-      };
+    return data;
+  }
 
-      return labels[status] || "En attente";
+  async function loadCouriers() {
+    if (loadingCouriers) return;
+
+    if (!currentStoreId) {
+      couriersList.textContent = "Aucune boutique associée à ce compte.";
+      return;
     }
 
-    function paymentLabel(status) {
-      return status === "paid" ? "Payée" : "Non payée";
-    }
+    loadingCouriers = true;
+    refreshCouriersButton.disabled = true;
+    couriersList.textContent = "Chargement des livreurs...";
+    couriersMessage.textContent = "";
 
-    async function loadProducts(storeId) {
-      const productsInfo = document.getElementById("productsInfo");
-      productsInfo.textContent = "Chargement des produits...";
+    try {
+      const data = await callCourierFunction({ action: "list" });
 
-      const { data: products, error } = await supabase
-        .from("products")
-        .select("id, product_name, price, stock, is_active")
-        .eq("store_id", storeId)
-        .order("created_at", { ascending: false });
+      const couriers =
+        Array.isArray(data) ? data :
+        Array.isArray(data.couriers) ? data.couriers :
+        Array.isArray(data.data) ? data.data :
+        Array.isArray(data.livreurs) ? data.livreurs : [];
 
-      if (error) throw error;
+      couriersList.replaceChildren();
 
-      productsInfo.replaceChildren();
-
-      if (!products || products.length === 0) {
-        productsInfo.textContent = "Aucun produit trouvé dans ta boutique.";
+      if (couriers.length === 0) {
+        couriersList.textContent = "Aucun livreur enregistré pour cette boutique.";
         return;
       }
 
-      for (const product of products) {
-        const item = document.createElement("div");
-        item.className = "item";
-
-        const name = document.createElement("strong");
-        name.textContent = product.product_name || "Produit sans nom";
-
-        const details = document.createElement("p");
-        details.textContent =
-          "Prix : " + formatMoney(product.price) +
-          " — Stock : " + (product.stock ?? 0) +
-          " — " + (product.is_active ? "Actif" : "Inactif");
-
-        item.append(name, details);
-        productsInfo.appendChild(item);
-      }
-    }
-
-    async function updateOrder(orderNumber, field, value, button) {
-      if (!orderNumber || !value) return;
-
-      button.disabled = true;
-      button.textContent = "Enregistrement...";
-
-      try {
-        const params = {
-          p_order_number: orderNumber,
-          p_delivery_status: field === "delivery" ? value : null,
-          p_payment_status: field === "payment" ? value : null
-        };
-
-        const { data, error } = await supabase.rpc(
-          "update_seller_order_progress",
-          params
-        );
-
-        if (error) throw error;
-        if (data && data.success === false) {
-          throw new Error("La modification n'a pas été enregistrée.");
-        }
-
-        ordersMessage.textContent = "Modification enregistrée.";
-        await loadOrders();
-
-      } catch (error) {
-        console.error("Erreur de mise à jour :", error);
-        ordersMessage.textContent =
-          "Erreur : " + (error.message || "Impossible de modifier la commande.");
-
-      } finally {
-        button.disabled = false;
-      }
-    }
-
-    function createOrderCard(order) {
-      const card = document.createElement("article");
-      card.className = "order-card";
-
-      const title = document.createElement("h3");
-      title.textContent = "Commande " + (order.order_number || "—");
-      card.appendChild(title);
-
-      const details = [
-        ["Client", order.customer_name || "—"],
-        ["Téléphone", order.customer_phone || "—"],
-        ["Adresse", order.delivery_address || "—"],
-        ["Montant", formatMoney(order.total_amount)],
-        ["Date de commande", formatDate(order.created_at)]
-      ];
-
-      for (const [label, value] of details) {
-        const p = document.createElement("p");
-        const strong = document.createElement("strong");
-        strong.textContent = label + " : ";
-        p.append(strong, document.createTextNode(value));
-        card.appendChild(p);
-      }
-
-      const deliveryBadge = document.createElement("p");
-      deliveryBadge.className = "badge";
-      deliveryBadge.textContent =
-        "Livraison : " + deliveryLabel(order.delivery_status);
-      card.appendChild(deliveryBadge);
-
-      const paymentBadge = document.createElement("p");
-      paymentBadge.className = "badge";
-      paymentBadge.textContent =
-        "Paiement : " + paymentLabel(order.payment_status);
-      card.appendChild(paymentBadge);
-
-      const dates = document.createElement("p");
-      dates.className = "date-info";
-      dates.textContent =
-        "En attente : " + formatDate(order.pending_at) +
-        "\nEn route : " + formatDate(order.in_transit_at) +
-        "\nArrivée : " + formatDate(order.arrived_at) +
-        "\nLivrée : " + formatDate(order.delivered_at) +
-        "\nPaiement confirmé : " + formatDate(order.paid_at);
-      card.appendChild(dates);
-
-      const actions = document.createElement("div");
-      actions.className = "order-actions";
-
-      // MODIFICATION DU STATUT DE LIVRAISON
-      const deliveryBox = document.createElement("div");
-
-      const deliveryLabelElement = document.createElement("label");
-      deliveryLabelElement.className = "section-label";
-      deliveryLabelElement.textContent = "Progression de la livraison";
-
-      const deliverySelect = document.createElement("select");
-
-      const deliveryOptions = [
-        ["pending", "En attente"],
-        ["in_transit", "En route"],
-        ["arrived", "Arrivée"],
-        ["delivered", "Livrée"]
-      ];
-
-      for (const [value, label] of deliveryOptions) {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = label;
-        deliverySelect.appendChild(option);
-      }
-
-      deliverySelect.value = order.delivery_status || "pending";
-
-      const deliveryButton = document.createElement("button");
-      deliveryButton.textContent = "Mettre à jour la livraison";
-      deliveryButton.addEventListener("click", () => {
-        updateOrder(
-          order.order_number,
-          "delivery",
-          deliverySelect.value,
-          deliveryButton
-        );
-      });
-
-      deliveryBox.append(
-        deliveryLabelElement,
-        deliverySelect,
-        deliveryButton
-      );
-
-      // MODIFICATION DU STATUT DE PAIEMENT
-      const paymentBox = document.createElement("div");
-
-      const paymentLabelElement = document.createElement("label");
-      paymentLabelElement.className = "section-label";
-      paymentLabelElement.textContent = "État du paiement";
-
-      const paymentSelect = document.createElement("select");
-
-      const unpaidOption = document.createElement("option");
-      unpaidOption.value = "unpaid";
-      unpaidOption.textContent = "Non payé";
-
-      const paidOption = document.createElement("option");
-      paidOption.value = "paid";
-      paidOption.textContent = "Payé";
-
-      paymentSelect.append(unpaidOption, paidOption);
-      paymentSelect.value = order.payment_status || "unpaid";
-
-      const paymentButton = document.createElement("button");
-      paymentButton.className = "green";
-      paymentButton.textContent = "Enregistrer le paiement";
-      paymentButton.addEventListener("click", () => {
-        updateOrder(
-          order.order_number,
-          "payment",
-          paymentSelect.value,
-          paymentButton
-        );
-      });
-
-      paymentBox.append(
-        paymentLabelElement,
-        paymentSelect,
-        paymentButton
-      );
-
-      actions.append(deliveryBox, paymentBox);
-      card.appendChild(actions);
-
-      return card;
-    }
-
-    async function loadOrders() {
-      if (loadingOrders) return;
-
-      loadingOrders = true;
-      refreshOrdersButton.disabled = true;
-      ordersList.replaceChildren();
-
-      try {
-        if (!currentStoreId) {
-          ordersMessage.textContent = "Aucune boutique associée à ce compte.";
-          return;
-        }
-
-        ordersMessage.textContent = "Chargement des commandes...";
-
-        const { data: orders, error } = await supabase.rpc(
-          "get_seller_order_management"
-        );
-
-        if (error) throw error;
-
-        if (!orders || orders.length === 0) {
-          ordersMessage.textContent = "Aucune commande trouvée pour cette boutique.";
-          return;
-        }
-
-        for (const order of orders) {
-          ordersList.appendChild(createOrderCard(order));
-        }
-
-        ordersMessage.textContent =
-          orders.length + " commande(s) trouvée(s) pour ta boutique.";
-
-      } catch (error) {
-        console.error("Erreur de chargement des commandes :", error);
-
-        ordersMessage.textContent =
-          "Erreur lors du chargement des commandes : " +
-          (error.message || "Erreur inconnue.");
-
-      } finally {
-        loadingOrders = false;
-        refreshOrdersButton.disabled = false;
-      }
-    }
-
-    async function loadDashboard() {
-      if (loadingDashboard) return;
-
-      loadingDashboard = true;
-
-      try {
-        const { data: sessionData, error: sessionError } =
-          await supabase.auth.getSession();
-
-        if (sessionError) throw sessionError;
-
-        const user = sessionData.session?.user;
-
-        if (!user) {
-          currentStoreId = null;
-          loginCard.classList.remove("hidden");
-          dashboard.classList.add("hidden");
-          return;
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("role, full_name")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        if (profileError) throw profileError;
-
-        if (!profile || profile.role !== "vendeur") {
-          await supabase.auth.signOut();
-
-          currentStoreId = null;
-          loginCard.classList.remove("hidden");
-          dashboard.classList.add("hidden");
-
-          showMessage("Accès réservé aux comptes ayant le rôle vendeur.", true);
-          return;
-        }
-
-        loginCard.classList.add("hidden");
-        dashboard.classList.remove("hidden");
-
-        document.getElementById("accountInfo").textContent =
-          (profile.full_name || user.email) + " — rôle vendeur";
-
-        const storeInfo = document.getElementById("storeInfo");
-        storeInfo.textContent = "Chargement de la boutique...";
-
-        const { data: store, error: storeError } = await supabase
-          .from("stores")
-          .select("id, store_name, city, description")
-          .eq("owner_id", user.id)
-          .maybeSingle();
-
-        if (storeError) throw storeError;
-
-        if (!store) {
-          currentStoreId = null;
-
-          storeInfo.textContent = "Aucune boutique trouvée pour ce compte.";
-          document.getElementById("productsInfo").textContent =
-            "Les produits apparaîtront ici après la création de ta boutique.";
-
-          ordersList.replaceChildren();
-          ordersMessage.textContent =
-            "Crée ta boutique pour commencer à gérer tes commandes.";
-          return;
-        }
-
-        currentStoreId = store.id;
-        storeInfo.replaceChildren();
-
-        const title = document.createElement("h3");
-        title.textContent = store.store_name || "Ma boutique";
-
-        const city = document.createElement("p");
-        city.textContent = store.city || "Ville non renseignée";
-
-        const description = document.createElement("p");
-        description.textContent =
-          store.description || "Aucune description renseignée.";
-
-        storeInfo.append(title, city, description);
-
-        await loadProducts(store.id);
-        await loadOrders();
-
-      } catch (error) {
-        console.error("Erreur du tableau vendeur :", error);
-        showMessage(
-          error.message || "Erreur de chargement du tableau vendeur.",
-          true
-        );
-
-      } finally {
-        loadingDashboard = false;
-      }
-    }
-
-    loginForm.addEventListener("submit", async event => {
-      event.preventDefault();
-
-      loginButton.disabled = true;
-      showMessage("Connexion en cours...");
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      try {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password
+      for (const courier of couriers) {
+        const card = document.createElement("div");
+        card.className = "courier-card";
+
+        const name = document.createElement("h3");
+        name.textContent = courier.full_name || "Livreur sans nom";
+
+        const username = document.createElement("p");
+        username.textContent =
+          "Identifiant : " +
+          (courier.email || courier.username || courier.user_email || "Non disponible");
+
+        const phone = document.createElement("p");
+        phone.textContent = "Téléphone : " + (courier.phone || "Non renseigné");
+
+        const button = document.createElement("button");
+        button.className = "red";
+        button.textContent = "Retirer ce livreur";
+
+        const courierId =
+          courier.user_id || courier.id || courier.courier_id;
+
+        button.addEventListener("click", async () => {
+          if (!courierId) {
+            alert("Identifiant du livreur introuvable.");
+            return;
+          }
+
+          const confirmed = confirm(
+            "Veux-tu vraiment retirer " +
+            (courier.full_name || "ce livreur") +
+            " de ta boutique ?"
+          );
+
+          if (!confirmed) return;
+
+          button.disabled = true;
+          button.textContent = "Suppression...";
+
+          try {
+            await callCourierFunction({
+              action: "remove",
+              courier_id: courierId
+            });
+
+            couriersMessage.textContent =
+              "Le livreur a été retiré de ta boutique.";
+
+            await loadCouriers();
+
+          } catch (error) {
+            console.error(error);
+            couriersMessage.textContent =
+              "Erreur : " + error.message;
+            button.disabled = false;
+            button.textContent = "Retirer ce livreur";
+          }
         });
 
-        if (error) throw error;
-
-        await loadDashboard();
-        showMessage("Connexion vérifiée.");
-
-      } catch (error) {
-        console.error("Erreur de connexion :", error);
-        showMessage(error.message || "Impossible de se connecter.", true);
-
-      } finally {
-        loginButton.disabled = false;
+        card.append(name, username, phone, button);
+        couriersList.appendChild(card);
       }
+
+      couriersMessage.textContent =
+        couriers.length + " livreur(s) enregistré(s).";
+
+    } catch (error) {
+      console.error("Erreur de chargement des livreurs :", error);
+      couriersList.textContent = "Impossible de charger les livreurs.";
+      couriersMessage.textContent = "Erreur : " + error.message;
+
+    } finally {
+      loadingCouriers = false;
+      refreshCouriersButton.disabled = false;
+    }
+  }
+
+  courierForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!currentStoreId) {
+      couriersMessage.textContent =
+        "Aucune boutique associée à ce compte.";
+      return;
+    }
+
+    const username = normalizeCourierUsername(courierUsername.value);
+
+    if (!username) {
+      couriersMessage.textContent = "Identifiant invalide.";
+      return;
+    }
+
+    if (courierUsername.value.trim().toLowerCase() !== username) {
+      courierUsername.value = username;
+
+      alert(
+        "Identifiant corrigé automatiquement :\n" + username
+      );
+    }
+
+    createCourierButton.disabled = true;
+    createCourierButton.textContent = "Création du compte...";
+
+    couriersMessage.textContent = "Création du compte livreur en cours...";
+
+    try {
+      const data = await callCourierFunction({
+        action: "create",
+        full_name: courierName.value.trim(),
+        phone: courierPhone.value.trim(),
+        username,
+        password: courierPassword.value
+      });
+
+      couriersMessage.textContent =
+        data.message || "Compte livreur créé avec succès.";
+
+      courierForm.reset();
+
+      await loadCouriers();
+
+    } catch (error) {
+      console.error("Erreur création livreur :", error);
+
+      couriersMessage.textContent =
+        "Erreur : " + error.message;
+
+    } finally {
+      createCourierButton.disabled = false;
+      createCourierButton.textContent = "Créer le compte livreur";
+    }
+  });
+
+  refreshCouriersButton.addEventListener("click", loadCouriers);
+
+  async function loadProducts(storeId) {
+    const productsInfo = document.getElementById("productsInfo");
+    productsInfo.textContent = "Chargement des produits...";
+
+    const { data: products, error } = await supabase
+      .from("products")
+      .select("id, product_name, price, stock, is_active")
+      .eq("store_id", storeId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    productsInfo.replaceChildren();
+
+    if (!products || products.length === 0) {
+      productsInfo.textContent = "Aucun produit trouvé dans ta boutique.";
+      return;
+    }
+
+    for (const product of products) {
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const name = document.createElement("strong");
+      name.textContent = product.product_name || "Produit sans nom";
+
+      const details = document.createElement("p");
+      details.textContent =
+        "Prix : " + formatMoney(product.price) +
+        " — Stock : " + (product.stock ?? 0) +
+        " — " + (product.is_active ? "Actif" : "Inactif");
+
+      item.append(name, details);
+      productsInfo.appendChild(item);
+    }
+  }
+
+  async function updateOrder(orderNumber, field, value, button) {
+    if (!orderNumber || !value) return;
+
+    button.disabled = true;
+    button.textContent = "Enregistrement...";
+
+    try {
+      const params = {
+        p_order_number: orderNumber,
+        p_delivery_status: field === "delivery" ? value : null,
+        p_payment_status: field === "payment" ? value : null
+      };
+
+      const { data, error } = await supabase.rpc(
+        "update_seller_order_progress",
+        params
+      );
+
+      if (error) throw error;
+
+      if (data && data.success === false) {
+        throw new Error("La modification n'a pas été enregistrée.");
+      }
+
+      ordersMessage.textContent = "Modification enregistrée.";
+      await loadOrders();
+
+    } catch (error) {
+      console.error("Erreur de mise à jour :", error);
+      ordersMessage.textContent =
+        "Erreur : " + (error.message || "Impossible de modifier la commande.");
+
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  function createOrderCard(order) {
+    const card = document.createElement("article");
+    card.className = "order-card";
+
+    const title = document.createElement("h3");
+    title.textContent = "Commande " + (order.order_number || "—");
+    card.appendChild(title);
+
+    const details = [
+      ["Client", order.customer_name || "—"],
+      ["Téléphone", order.customer_phone || "—"],
+      ["Adresse", order.delivery_address || "—"],
+      ["Montant", formatMoney(order.total_amount)],
+      ["Date de commande", formatDate(order.created_at)]
+    ];
+
+    for (const [label, value] of details) {
+      const p = document.createElement("p");
+      const strong = document.createElement("strong");
+      strong.textContent = label + " : ";
+      p.append(strong, document.createTextNode(value));
+      card.appendChild(p);
+    }
+
+    const deliveryBadge = document.createElement("p");
+    deliveryBadge.className = "badge";
+    deliveryBadge.textContent =
+      "Livraison : " + deliveryLabel(order.delivery_status);
+    card.appendChild(deliveryBadge);
+
+    const paymentBadge = document.createElement("p");
+    paymentBadge.className = "badge";
+    paymentBadge.textContent =
+      "Paiement : " + paymentLabel(order.payment_status);
+    card.appendChild(paymentBadge);
+
+    const dates = document.createElement("p");
+    dates.className = "date-info";
+    dates.textContent =
+      "En attente : " + formatDate(order.pending_at) +
+      "\nEn route : " + formatDate(order.in_transit_at) +
+      "\nArrivée : " + formatDate(order.arrived_at) +
+      "\nLivrée : " + formatDate(order.delivered_at) +
+      "\nPaiement confirmé : " + formatDate(order.paid_at);
+    card.appendChild(dates);
+
+    const actions = document.createElement("div");
+    actions.className = "order-actions";
+
+    const deliveryBox = document.createElement("div");
+
+    const deliveryLabelElement = document.createElement("label");
+    deliveryLabelElement.className = "section-label";
+    deliveryLabelElement.textContent = "Progression de la livraison";
+
+    const deliverySelect = document.createElement("select");
+
+    const deliveryOptions = [
+      ["pending", "En attente"],
+      ["in_transit", "En route"],
+      ["arrived", "Arrivée"],
+      ["delivered", "Livrée"]
+    ];
+
+    for (const [value, label] of deliveryOptions) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      deliverySelect.appendChild(option);
+    }
+
+    deliverySelect.value = order.delivery_status || "pending";
+
+    const deliveryButton = document.createElement("button");
+    deliveryButton.textContent = "Mettre à jour la livraison";
+    deliveryButton.addEventListener("click", () => {
+      updateOrder(
+        order.order_number,
+        "delivery",
+        deliverySelect.value,
+        deliveryButton
+      );
     });
 
-    refreshOrdersButton.addEventListener("click", loadOrders);
+    deliveryBox.append(
+      deliveryLabelElement,
+      deliverySelect,
+      deliveryButton
+    );
 
-    logoutButton.addEventListener("click", async () => {
-      logoutButton.disabled = true;
+    const paymentBox = document.createElement("div");
 
-      try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
+    const paymentLabelElement = document.createElement("label");
+    paymentLabelElement.className = "section-label";
+    paymentLabelElement.textContent = "État du paiement";
+
+    const paymentSelect = document.createElement("select");
+
+    const unpaidOption = document.createElement("option");
+    unpaidOption.value = "unpaid";
+    unpaidOption.textContent = "Non payé";
+
+    const paidOption = document.createElement("option");
+    paidOption.value = "paid";
+    paidOption.textContent = "Payé";
+
+    paymentSelect.append(unpaidOption, paidOption);
+    paymentSelect.value = order.payment_status || "unpaid";
+
+    const paymentButton = document.createElement("button");
+    paymentButton.className = "green";
+    paymentButton.textContent = "Enregistrer le paiement";
+    paymentButton.addEventListener("click", () => {
+      updateOrder(
+        order.order_number,
+        "payment",
+        paymentSelect.value,
+        paymentButton
+      );
+    });
+
+    paymentBox.append(
+      paymentLabelElement,
+      paymentSelect,
+      paymentButton
+    );
+
+    actions.append(deliveryBox, paymentBox);
+    card.appendChild(actions);
+
+    return card;
+  }
+
+  async function loadOrders() {
+    if (loadingOrders) return;
+
+    loadingOrders = true;
+    refreshOrdersButton.disabled = true;
+    ordersList.replaceChildren();
+
+    try {
+      if (!currentStoreId) {
+        ordersMessage.textContent = "Aucune boutique associée à ce compte.";
+        return;
+      }
+
+      ordersMessage.textContent = "Chargement des commandes...";
+
+      const { data: orders, error } = await supabase.rpc(
+        "get_seller_order_management"
+      );
+
+      if (error) throw error;
+
+      if (!orders || orders.length === 0) {
+        ordersMessage.textContent = "Aucune commande trouvée pour cette boutique.";
+        return;
+      }
+
+      for (const order of orders) {
+        ordersList.appendChild(createOrderCard(order));
+      }
+
+      ordersMessage.textContent =
+        orders.length + " commande(s) trouvée(s) pour ta boutique.";
+
+    } catch (error) {
+      console.error("Erreur de chargement des commandes :", error);
+
+      ordersMessage.textContent =
+        "Erreur lors du chargement des commandes : " +
+        (error.message || "Erreur inconnue.");
+
+    } finally {
+      loadingOrders = false;
+      refreshOrdersButton.disabled = false;
+    }
+  }
+
+  async function loadDashboard() {
+    if (loadingDashboard) return;
+
+    loadingDashboard = true;
+
+    try {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      const user = sessionData.session?.user;
+
+      if (!user) {
+        currentStoreId = null;
+        loginCard.classList.remove("hidden");
+        dashboard.classList.add("hidden");
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role, full_name")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profileError) throw profileError;
+
+      if (!profile || profile.role !== "vendeur") {
+        await supabase.auth.signOut();
 
         currentStoreId = null;
-        dashboard.classList.add("hidden");
         loginCard.classList.remove("hidden");
-        ordersList.replaceChildren();
+        dashboard.classList.add("hidden");
 
-        ordersMessage.textContent =
-          "Connecte-toi pour consulter tes commandes.";
-
-        showMessage("Tu es déconnecté.");
-
-      } catch (error) {
-        showMessage(
-          error.message || "Erreur lors de la déconnexion.",
-          true
-        );
-
-      } finally {
-        logoutButton.disabled = false;
+        showMessage("Accès réservé aux comptes ayant le rôle vendeur.", true);
+        return;
       }
-    });
 
-    supabase.auth.onAuthStateChange(() => {
-      setTimeout(loadDashboard, 0);
-    });
+      loginCard.classList.add("hidden");
+      dashboard.classList.remove("hidden");
 
-    loadDashboard();
-  </script></body>
-</html>
+      document.getElementById("accountInfo").textContent =
+        (profile.full_name || user.email) + " — rôle vendeur";
+
+      const storeInfo = document.getElementById("storeInfo");
+      storeInfo.textContent = "Chargement de la boutique...";
+
+      const { data: store, error: storeError } = await supabase
+        .from("stores")
+        .select("id, store_name, city, description")
+        .eq("owner_id", user.id)
+        .maybeSingle();
+
+      if (storeError) throw storeError;
+
+      if (!store) {
+        currentStoreId = null;
+
+        storeInfo.textContent = "Aucune boutique trouvée pour ce compte.";
+        document.getElementById("productsInfo").textContent =
+          "Les produits apparaîtront ici après la création de ta boutique.";
+
+        ordersList.replaceChildren();
+        ordersMessage.textContent =
+          "Crée ta boutique pour commencer à gérer tes commandes.";
+
+        couriersList.textContent =
+          "Crée ou associe une boutique pour gérer tes livreurs.";
+
+        return;
+      }
+
+      currentStoreId = store.id;
+      storeInfo.replaceChildren();
+
+      const title = document.createElement("h3");
+      title.textContent = store.store_name || "Ma boutique";
+
+      const city = document.createElement("p");
+      city.textContent = store.city || "Ville non renseignée";
+
+      const description = document.createElement("p");
+      description.textContent =
+        store.description || "Aucune description renseignée.";
+
+      storeInfo.append(title, city, description);
+
+      await loadProducts(store.id);
+      await loadOrders();
+      await loadCouriers();
+
+    } catch (error) {
+      console.error("Erreur du tableau vendeur :", error);
+      showMessage(
+        error.message || "Erreur de chargement du tableau vendeur.",
+        true
+      );
+
+    } finally {
+      loadingDashboard = false;
+    }
+  }
+
+  loginForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    loginButton.disabled = true;
+    showMessage("Connexion en cours...");
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      await loadDashboard();
+      showMessage("Connexion vérifiée.");
+
+    } catch (error) {
+      console.error("Erreur de connexion :", error);
+      showMessage(error.message || "Impossible de se connecter.", true);
+
+    } finally {
+      loginButton.disabled = false;
+    }
+  });
+
+  refreshOrdersButton.addEventListener("click", loadOrders);
+
+  logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      currentStoreId = null;
+      dashboard.classList.add("hidden");
+      loginCard.classList.remove("hidden");
+      ordersList.replaceChildren();
+      couriersList.replaceChildren();
+
+      ordersMessage.textContent =
+        "Connecte-toi pour consulter tes commandes.";
+
+      couriersMessage.textContent = "";
+      couriersList.textContent =
+        "Connecte-toi pour consulter tes livreurs.";
+
+      showMessage("Tu es déconnecté.");
+
+    } catch (error) {
+      showMessage(
+        error.message || "Erreur lors de la déconnexion.",
+        true
+      );
+
+    } finally {
+      logoutButton.disabled = false;
+    }
+  });
+
+  supabase.auth.onAuthStateChange(() => {
+    setTimeout(loadDashboard, 0);
+  });
+
+  loadDashboard();
+</script>
+
+</body>
+  </html>
