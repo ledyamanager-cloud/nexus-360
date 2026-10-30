@@ -1,4 +1,4 @@
-here<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -45,6 +45,85 @@ button,.action-btn{font:inherit;border:0;border-radius:10px;padding:14px 17px;fo
 .catalog-btn{display:flex;margin-top:17px;width:100%;padding:15px;background:#f4f8fc;border:1px solid #cbd9e8;color:#15508c;text-decoration:none;border-radius:11px;font-weight:800;justify-content:center}
 @media(max-width:760px){.page{padding:0 10px 25px;margin:14px auto}.panel{padding:16px}.summary-box{grid-template-columns:auto 1fr;gap:10px 14px;padding:16px}.summary-divider{display:none}.summary-note{grid-column:2}.store-grid{grid-template-columns:1fr 1fr}.store-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.payment-options{margin-left:0}}
 @media(max-width:520px){.site-header{padding:12px 10px}.header-inner{gap:8px}.tagline{font-size:11px}.brand-name{font-size:27px}.page-title{font-size:23px}.success-banner{padding:16px;gap:12px}.success-icon{width:54px;height:54px;flex-basis:54px;font-size:30px}.success-banner h2{font-size:19px}.success-banner p{font-size:14px}.store-card{padding:12px}.store-head{flex-wrap:wrap}.store-heading h3{font-size:18px}.status-pill{margin-left:auto;font-size:11px}.store-grid{grid-template-columns:1fr}.store-actions{grid-column:auto;display:flex}.payment-options,.contact-panel,.form-grid{grid-template-columns:1fr}.field-full{grid-column:auto}.cart-row img{width:62px;height:62px}.summary-total{font-size:27px}}
+
+/* Nouvelle direction visuelle NEXUS 360 : bleu profond, bleu vif et jaune */
+body{background:linear-gradient(145deg,#edf5ff 0%,#f7faff 48%,#eaf2ff 100%);color:#102f68}
+.site-header{padding:14px 20px;background:linear-gradient(105deg,#061b42 0%,#073b91 68%,#0759dc 100%);position:relative;overflow:hidden}
+.site-header:after{content:"";position:absolute;width:260px;height:110px;right:4%;top:-65px;border:20px solid #ffc928;border-left:0;border-bottom:0;border-radius:0 0 100% 0;transform:rotate(-12deg);opacity:.95}
+.header-inner{position:relative;z-index:1}
+.back-arrow{font-size:32px}
+.brand-name{letter-spacing:-1.2px;text-shadow:0 2px 8px #00143c55}
+.brand-name:before{content:"N";display:inline-grid;place-items:center;width:42px;height:42px;margin-right:10px;border-radius:12px;background:linear-gradient(145deg,#ffc928 0 45%,#0871ed 46%);color:#fff;font-size:28px;font-style:italic;vertical-align:middle}
+.header-cart{padding:7px 10px;border-radius:13px;background:#ffffff18}
+.cart-count{background:#ffc928;color:#092d68}
+.page{max-width:1100px;margin:24px auto;padding:0 18px 45px}
+.panel{padding:28px;border:1px solid #e1ecfb;border-radius:24px;box-shadow:0 14px 38px #164b8d12;background:#ffffffed}
+.page-title{font-size:clamp(27px,4vw,39px);font-weight:900;letter-spacing:-.8px;color:#082f75;margin-bottom:10px}
+.intro{font-size:17px;color:#526d98;max-width:720px;margin-bottom:24px}
+.checkout-hero{display:flex;align-items:center;justify-content:center;gap:24px;margin:4px 0 25px;padding:10px 14px}
+.hero-cart-art{width:112px;height:100px;flex:0 0 112px;display:grid;place-items:center;position:relative;color:#0759dc;font-size:76px}
+.hero-cart-art:after{content:"";position:absolute;width:28px;height:28px;right:8px;top:0;background:#ffc928;transform:rotate(12deg);border-radius:5px}
+.benefit-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:20px 0 27px;padding:17px 10px;background:#fff;border:1px solid #e5effc;border-radius:20px;box-shadow:0 8px 22px #164b8d0c}
+.benefit{display:flex;align-items:center;gap:10px;padding:5px 13px;border-right:1px solid #e2ebf7;min-width:0}
+.benefit:last-child{border:0}
+.benefit-icon{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:50%;background:#eaf3ff;color:#0759dc;font-size:23px}
+.benefit strong{display:block;font-size:14px;color:#123b72}.benefit small{display:block;margin-top:4px;color:#7185a4;font-size:12px}
+h2{font-size:22px;color:#0a3478;margin:25px 0 14px}
+.cart-section-heading{display:flex;align-items:center;gap:15px;margin:0}
+.cart-heading-icon,.form-heading-icon{width:58px;height:58px;display:grid;place-items:center;flex:0 0 58px;border-radius:50%;background:linear-gradient(145deg,#0875f5,#063b9c);color:white;font-size:27px;box-shadow:0 7px 16px #0759dc30}
+.cart-heading-copy h2,.form-heading-copy h2{margin:0 0 5px;font-size:23px}
+.cart-heading-copy p,.form-heading-copy p{margin:0;color:#6780a5;font-size:14px}
+.cart-summary-head{display:flex;align-items:center;gap:15px;justify-content:space-between;margin:0 0 15px;padding:17px 20px;background:linear-gradient(105deg,#eaf4ff,#f4f8ff);border:1px solid #cfe2ff;border-radius:19px}
+.cart-summary-head .total-box{margin:0;padding:13px 20px;background:linear-gradient(110deg,#0866e8,#073c9b);border:0;color:#fff;border-radius:15px;font-size:21px;white-space:nowrap}
+.cart-summary-head .total-box span{color:#ffdc3e}
+.cart-list{background:#fff;border:1px solid #dfeafa;border-radius:15px;padding:5px 16px}
+.cart-row img{width:82px;height:82px;border-radius:13px}
+.form-title-row{display:flex;align-items:center;gap:15px;margin:28px 0 7px}
+.form-title-row h2{margin:0 0 5px}
+label{font-size:15px;color:#15396f;margin:17px 0 9px}
+input,textarea{border:1.5px solid #c9dcf7;border-radius:14px;padding:16px 17px;background:#fff;font-size:15px;box-shadow:inset 0 1px 2px #0c3e8010}
+input:focus,textarea:focus{border-color:#0870ee;box-shadow:0 0 0 4px #0870ee16}
+textarea{min-height:115px}
+.primary-btn{margin-top:25px;padding:18px;border-radius:16px;background:linear-gradient(105deg,#0868ed,#073c9b);box-shadow:0 10px 22px #0759dc35;font-size:18px;letter-spacing:.1px}
+.primary-btn:after{content:"→";font-size:22px;margin-left:8px}
+.security-note{display:flex;align-items:center;gap:13px;margin:22px 4px 0;padding:17px 20px;border:1px solid #d6e8ff;background:#eaf4ff;border-radius:18px;color:#123b72}
+.security-icon{width:44px;height:44px;flex:0 0 44px;border-radius:50%;display:grid;place-items:center;background:#0759dc;color:#fff;font-size:22px}
+.security-note strong{display:block;margin-bottom:4px}.security-note small{color:#627b9f;line-height:1.4}
+.brand-footer{text-align:center;padding:35px 10px 15px;color:#123b72;position:relative;overflow:hidden}
+.brand-footer:before,.brand-footer:after{content:"";position:absolute;bottom:-70px;width:190px;height:115px;background:#0759dc;border-radius:50% 50% 0 0;z-index:0}
+.brand-footer:before{left:-90px;transform:rotate(25deg);box-shadow:25px -12px 0 #ffc928}
+.brand-footer:after{right:-90px;transform:rotate(-25deg);box-shadow:-25px -12px 0 #ffc928}
+.brand-footer>*{position:relative;z-index:1}
+.brand-footer strong{font-size:25px;letter-spacing:-.5px}.brand-footer strong span{color:#eab900}
+.brand-footer p{margin:6px 0 20px;color:#60799e;font-size:13px}
+.footer-services{display:flex;justify-content:center;gap:0;max-width:620px;margin:auto}
+.footer-services span{flex:1;padding:10px 8px;border-right:1px solid #d7e4f5;font-weight:800;font-size:13px}
+.footer-services span:last-child{border:0}
+.success-banner,.summary-box,.store-card,.payment-panel,.contact-panel{border-radius:18px}
+@media(max-width:760px){
+ .page{padding:0 12px 30px;margin:15px auto}.panel{padding:19px 16px;border-radius:20px}
+ .benefit-strip{grid-template-columns:1fr 1fr;row-gap:10px;padding:12px}
+ .benefit:nth-child(2){border-right:0}.benefit{padding:7px}
+ .cart-summary-head{align-items:flex-start;flex-direction:column}
+ .cart-summary-head .total-box{align-self:stretch;text-align:center}
+}
+@media(max-width:520px){
+ .site-header{padding:12px 10px}.header-inner{gap:8px}.brand-name{font-size:26px}.brand-name:before{width:34px;height:34px;font-size:23px;margin-right:6px}
+ .tagline{font-size:10px}.page-title{font-size:26px}.intro{font-size:14px}
+ .checkout-hero{gap:5px;margin:0 0 15px}.hero-cart-art{width:68px;height:68px;flex-basis:68px;font-size:50px}
+ .benefit-strip{grid-template-columns:1fr 1fr;margin:14px 0 20px}
+ .benefit-icon{width:38px;height:38px;flex-basis:38px;font-size:19px}
+ .benefit strong{font-size:12px}.benefit small{font-size:10px}
+ .cart-heading-icon,.form-heading-icon{width:48px;height:48px;flex-basis:48px;font-size:22px}
+ .cart-heading-copy h2,.form-heading-copy h2{font-size:19px}
+ .cart-heading-copy p,.form-heading-copy p{font-size:12px}
+ .cart-summary-head{padding:14px}.cart-summary-head .total-box{font-size:18px}
+ .form-grid{grid-template-columns:1fr}.field-full{grid-column:auto}
+ .primary-btn{font-size:16px;padding:16px}
+ .security-note{padding:14px}.brand-footer{padding-top:28px}
+ .footer-services span{font-size:11px;padding:8px 4px}
+}
+
 </style>
 </head>
 <body>
@@ -55,17 +134,39 @@ button,.action-btn{font:inherit;border:0;border-radius:10px;padding:14px 17px;fo
 </div></header>
 <main class="page">
 <section id="checkoutPanel" class="panel">
+<div class="checkout-hero">
+<div class="hero-cart-art" aria-hidden="true">🛒</div>
+<div>
 <h1 class="page-title">Finaliser ma commande</h1>
-<p class="intro">Complétez vos coordonnées pour recevoir votre commande. Aucun compte client n'est nécessaire.</p>
-<h2>Votre panier</h2><div id="cartItems" class="cart-list"></div>
+<p class="intro">Complétez vos coordonnées pour recevoir votre commande.<br>Aucun compte client n'est nécessaire.</p>
+</div>
+</div>
+<div class="benefit-strip">
+<div class="benefit"><span class="benefit-icon">✓</span><div><strong>Paiement sécurisé</strong><small>À la livraison</small></div></div>
+<div class="benefit"><span class="benefit-icon">🚚</span><div><strong>Livraison rapide</strong><small>Partout</small></div></div>
+<div class="benefit"><span class="benefit-icon">☏</span><div><strong>Service client</strong><small>À votre écoute</small></div></div>
+<div class="benefit"><span class="benefit-icon">★</span><div><strong>Qualité garantie</strong><small>Nos boutiques partenaires</small></div></div>
+</div>
+<div class="cart-summary-head">
+<div class="cart-section-heading">
+<span class="cart-heading-icon">🛒</span>
+<div class="cart-heading-copy"><h2>Votre panier</h2><p>Vérifiez les articles avant de confirmer votre commande.</p></div>
+</div>
 <div class="total-box">Total : <span id="total">0 FC</span></div>
-<h2>Informations de livraison</h2>
+</div>
+<div id="cartItems" class="cart-list"></div>
+<div class="form-title-row">
+<span class="form-heading-icon">♙</span>
+<div class="form-heading-copy"><h2>Informations de livraison</h2><p>Vos coordonnées pour la livraison de votre commande.</p></div>
+</div>
 <form id="orderForm"><div class="form-grid">
 <div><label for="customerName">Nom complet</label><input id="customerName" type="text" minlength="2" maxlength="150" autocomplete="name" required></div>
 <div><label for="customerPhone">Numéro de téléphone</label><input id="customerPhone" type="tel" minlength="6" maxlength="30" autocomplete="tel" required></div>
 <div class="field-full"><label for="deliveryAddress">Adresse de livraison</label><textarea id="deliveryAddress" minlength="5" maxlength="500" autocomplete="street-address" placeholder="Commune, quartier, avenue, numéro..." required></textarea></div>
 </div><button id="submitButton" class="primary-btn" type="submit">Confirmer ma commande</button></form>
 <div id="message" class="message hidden" role="status" aria-live="polite"></div>
+<div class="security-note"><span class="security-icon">♢</span><div><strong>Vos informations sont sécurisées</strong><small>Nous protégeons vos données personnelles et ne les partageons pas avec des tiers.</small></div></div>
+<footer class="brand-footer"><strong>NEXUS <span>360</span></strong><p>Tout un monde de services, sur une seule plateforme.</p><div class="footer-services"><span>🚘<br>NEXUS Auto</span><span>▦<br>NEXUS Consigne</span><span>▣<br>NEXUS Events</span></div></footer>
 </section>
 <section id="confirmationPanel" class="panel hidden" aria-live="polite">
 <div class="success-banner"><div class="success-icon">✓</div><div><h2>Toutes vos commandes sont confirmées !</h2><p>Votre commande a été enregistrée avec succès. Voici le récapitulatif de vos commandes par boutique.</p></div></div>
@@ -80,22 +181,143 @@ button,.action-btn{font:inherit;border:0;border-radius:10px;padding:14px 17px;fo
 </section></main>
 <script type="module">
 import { supabase } from "./supabase.js";
-const CART_KEY="nexus360_cart_v1",CUSTOMER_KEY="nexus360_customer_details_v1",STORE_PHONE="243966557344";
+const CART_KEY="nexus360_cart_v1", CUSTOMER_KEY="nexus360_customer_details_v1", STORE_PHONE="243966557344";
 const $=id=>document.getElementById(id);
 let cart=[],isSubmitting=false;
 const fmt=v=>new Intl.NumberFormat("fr-FR",{maximumFractionDigits:2}).format(Number(v)||0);
-function showMessage(t,type){$("message").textContent=t;$("message").className="message "+type}
-function loadCart(){try{const saved=JSON.parse(localStorage.getItem(CART_KEY)||"[]");cart=Array.isArray(saved)?saved.filter(i=>{const id=i?.product_id||i?.id;return i&&typeof id==="string"&&Number.isInteger(Number(i.quantity))&&Number(i.quantity)>0&&Number.isFinite(Number(i.price))&&Number(i.price)>=0}).map(i=>({...i,id:i.product_id||i.id,quantity:Number(i.quantity),price:Number(i.price)})):[]}catch{cart=[]}}
-function displayCart(){const box=$("cartItems");box.replaceChildren();let sum=0;cart.forEach(i=>{sum+=i.price*i.quantity;const row=document.createElement("div");row.className="cart-row";if(i.image_url){const im=document.createElement("img");im.src=i.image_url;im.alt=i.name||i.product_name||"Produit";im.onerror=()=>im.remove();row.append(im)}const info=document.createElement("div");info.className="cart-info";const n=document.createElement("strong");n.textContent=i.name||i.product_name||"Produit";const q=document.createElement("p");q.className="subtle";q.textContent="Quantité : "+i.quantity;const p=document.createElement("div");p.className="price";p.textContent=fmt(i.price*i.quantity)+" FC";info.append(n,q,p);row.append(info);box.append(row)});if(!cart.length){const e=document.createElement("div");e.className="empty-cart";e.textContent="Votre panier est vide.";box.append(e)}$("total").textContent=fmt(sum)+" FC";$("cartCount").textContent=String(cart.reduce((n,i)=>n+i.quantity,0));$("submitButton").disabled=!cart.length}
-function loadCustomer(){try{const s=JSON.parse(localStorage.getItem(CUSTOMER_KEY)||"{}");$("customerName").value=s.name||"";$("customerPhone").value=s.phone||"";$("deliveryAddress").value=s.address||""}catch{}}
-async function copyText(text,button){const old=button.textContent;let ok=false;try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);ok=true}else{const a=document.createElement("textarea");a.value=text;a.style.position="fixed";a.style.opacity="0";document.body.append(a);a.select();ok=document.execCommand("copy");a.remove()}}catch{}button.textContent=ok?"✓ Détails copiés":"Copie impossible";setTimeout(()=>button.textContent=old,2500)}
-function makeOrderCard(order,customer){const card=document.createElement("article");card.className="store-card";const head=document.createElement("div");head.className="store-head";const avatar=document.createElement("div");avatar.className="store-avatar";avatar.textContent=(order.store_name||"N").trim()[0].toUpperCase();const heading=document.createElement("div");heading.className="store-heading";const name=document.createElement("h3");name.textContent=order.store_name||"Boutique";const desc=document.createElement("p");desc.textContent="Votre boutique partenaire NEXUS 360";heading.append(name,desc);const status=document.createElement("span");status.className="status-pill";status.textContent="✓ Commande confirmée";head.append(avatar,heading,status);
-const grid=document.createElement("div");grid.className="store-grid";const meta=document.createElement("div");meta.className="order-meta";const date=new Date().toLocaleDateString("fr-FR");[["N° de commande",order.order_number],["Date de commande",date],["Montant",fmt(order.total_amount)+" FC"]].forEach(([l,v])=>{const line=document.createElement("div");line.className="meta-line";const a=document.createElement("div");a.className="meta-label";a.textContent=l;const b=document.createElement("div");b.className="meta-value";b.textContent=v;line.append(a,b);meta.append(line)});
-const products=document.createElement("div");products.className="ordered-products";const matching=cart.filter(i=>order.store_id&&i.store_id&&String(i.store_id)===String(order.store_id));if(matching.length){matching.forEach(i=>{const line=document.createElement("div");line.className="product-line";if(i.image_url){const im=document.createElement("img");im.src=i.image_url;im.alt=i.name||i.product_name||"Produit";im.onerror=()=>im.remove();line.append(im)}const info=document.createElement("div");const n=document.createElement("strong");n.textContent=i.name||i.product_name||"Produit";const q=document.createElement("div");q.className="subtle";q.textContent="Quantité : "+i.quantity;const p=document.createElement("div");p.className="price";p.textContent=fmt(i.price*i.quantity)+" FC";info.append(n,q,p);line.append(info);products.append(line)})}else{const p=document.createElement("p");p.className="subtle";p.textContent="Le détail des articles n'est pas disponible dans la réponse du serveur.";products.append(p)}
-const actions=document.createElement("div");actions.className="store-actions";const track=document.createElement("a");track.className="action-btn track-btn";track.href="./suivi-commande.html?numero="+encodeURIComponent(order.order_number);track.textContent="▣　Suivre cette commande";const detail="COMMANDE NEXUS 360\nBoutique : "+order.store_name+"\nN° : "+order.order_number+"\nDate : "+date+"\nMontant : "+fmt(order.total_amount)+" FC\nClient : "+customer.name+"\nTéléphone : "+customer.phone+"\nAdresse : "+customer.address+"\nPaiement : après livraison.";const copy=document.createElement("button");copy.type="button";copy.className="action-btn copy-btn";copy.textContent="▢　Copier les détails";copy.addEventListener("click",()=>copyText(detail,copy));actions.append(track,copy);grid.append(meta,products,actions);card.append(head,grid);return card}
-function showSuccess(orders,total,customer){$("grandTotal").textContent=fmt(total)+" FC";const shops=new Set(orders.map(o=>o.store_id||o.store_name)).size;$("ordersCount").textContent="Vous avez "+orders.length+(orders.length>1?" commandes":" commande")+" pour "+shops+(shops>1?" boutiques.":" boutique.");const list=$("ordersList");list.replaceChildren();orders.forEach(o=>list.append(makeOrderCard(o,customer)));const text="Bonjour, je viens de passer commande sur NEXUS 360 :\n"+orders.map(o=>o.store_name+" : "+o.order_number+" — "+fmt(o.total_amount)+" FC").join("\n")+"\nTotal général : "+fmt(total)+" FC";$("whatsappAll").href="https://wa.me/"+STORE_PHONE+"?text="+encodeURIComponent(text);$("cashButton").addEventListener("click",()=>{$("cashConfirmation").classList.remove("hidden");$("cashButton").textContent="✓ Paiement après livraison choisi";$("cashButton").disabled=true},{once:true});$("checkoutPanel").classList.add("hidden");$("confirmationPanel").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}
+
+function showMessage(text,type){$("message").textContent=text;$("message").className="message "+type}
+function loadCart(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(CART_KEY)||"[]");
+    cart=Array.isArray(saved)?saved.filter(i=>{
+      const id=i?.product_id||i?.id;
+      return i&&typeof id==="string"&&Number.isInteger(Number(i.quantity))&&Number(i.quantity)>0&&Number.isFinite(Number(i.price))&&Number(i.price)>=0;
+    }).map(i=>({...i,id:i.product_id||i.id,quantity:Number(i.quantity),price:Number(i.price)})):[];
+  }catch{cart=[]}
+}
+function displayCart(){
+  const box=$("cartItems");box.replaceChildren();let sum=0;
+  cart.forEach(i=>{
+    sum+=i.price*i.quantity;
+    const row=document.createElement("div");row.className="cart-row";
+    if(i.image_url){const im=document.createElement("img");im.src=i.image_url;im.alt=i.name||i.product_name||"Produit";im.onerror=()=>im.remove();row.append(im)}
+    const info=document.createElement("div");info.className="cart-info";
+    const n=document.createElement("strong");n.textContent=i.name||i.product_name||"Produit";
+    const q=document.createElement("p");q.className="subtle";q.textContent="Quantité : "+i.quantity;
+    const p=document.createElement("div");p.className="price";p.textContent=fmt(i.price*i.quantity)+" FC";
+    info.append(n,q,p);row.append(info);box.append(row);
+  });
+  if(!cart.length){const e=document.createElement("div");e.className="empty-cart";e.textContent="Votre panier est vide.";box.append(e)}
+  $("total").textContent=fmt(sum)+" FC";
+  $("cartCount").textContent=String(cart.reduce((n,i)=>n+i.quantity,0));
+  $("submitButton").disabled=!cart.length;
+}
+function loadCustomer(){
+  try{const s=JSON.parse(localStorage.getItem(CUSTOMER_KEY)||"{}");$("customerName").value=s.name||"";$("customerPhone").value=s.phone||"";$("deliveryAddress").value=s.address||""}catch{}
+}
+async function copyText(text,button){
+  const old=button.textContent;let ok=false;
+  try{
+    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);ok=true}
+    else{const a=document.createElement("textarea");a.value=text;a.style.position="fixed";a.style.opacity="0";document.body.append(a);a.select();ok=document.execCommand("copy");a.remove()}
+  }catch{}
+  button.textContent=ok?"✓ Détails copiés":"Copie impossible";setTimeout(()=>button.textContent=old,2500);
+}
+
+function makeOrderCard(order,customer){
+  const card=document.createElement("article");card.className="store-card";
+  const head=document.createElement("div");head.className="store-head";
+  const avatar=document.createElement("div");avatar.className="store-avatar";avatar.textContent=(order.store_name||"N").trim().charAt(0).toUpperCase();
+  const heading=document.createElement("div");heading.className="store-heading";
+  const name=document.createElement("h3");name.textContent=order.store_name||"Boutique";
+  const desc=document.createElement("p");desc.textContent=order.store_description||"Votre boutique partenaire NEXUS 360";
+  heading.append(name,desc);
+  const status=document.createElement("span");status.className="status-pill";status.textContent="✓ Commande confirmée";
+  head.append(avatar,heading,status);
+
+  const grid=document.createElement("div");grid.className="store-grid";
+  const meta=document.createElement("div");meta.className="order-meta";
+  const rawDate=order.created_at||order.order_date||order.date;
+  const parsed=rawDate?new Date(rawDate):new Date();
+  const dateText=Number.isNaN(parsed.getTime())?new Date().toLocaleString("fr-FR"):parsed.toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short"});
+  [["N° de commande",order.order_number],["Date de commande",dateText],["Montant",fmt(order.total_amount)+" FC"]].forEach(([label,value])=>{
+    const line=document.createElement("div");line.className="meta-line";
+    const l=document.createElement("div");l.className="meta-label";l.textContent=label;
+    const v=document.createElement("div");v.className="meta-value";v.textContent=value||"—";
+    line.append(l,v);meta.append(line);
+  });
+
+  const products=document.createElement("div");products.className="ordered-products";
+  const orderItems=Array.isArray(order.items)?order.items:[];
+  if(orderItems.length){
+    orderItems.forEach(item=>{
+      const line=document.createElement("div");line.className="product-line";
+      if(item.image_url){const im=document.createElement("img");im.src=item.image_url;im.alt=item.product_name||"Produit";im.loading="lazy";im.onerror=()=>im.remove();line.append(im)}
+      const info=document.createElement("div");
+      const n=document.createElement("strong");n.textContent=item.product_name||"Produit";
+      const q=document.createElement("div");q.className="subtle";q.textContent="Quantité : "+(Number(item.quantity)||0);
+      const unit=Number(item.unit_price)||0,qty=Number(item.quantity)||0;
+      const lineTotal=item.line_total!=null?Number(item.line_total):unit*qty;
+      const u=document.createElement("div");u.className="subtle";u.textContent="Prix unitaire : "+fmt(unit)+" FC";
+      const p=document.createElement("div");p.className="price";p.textContent=fmt(lineTotal)+" FC";
+      info.append(n,q,u,p);line.append(info);products.append(line);
+    });
+  }else{
+    const p=document.createElement("p");p.className="subtle";p.textContent="Le serveur n'a pas fourni le détail des articles pour cette commande.";products.append(p);
+  }
+
+  const actions=document.createElement("div");actions.className="store-actions";
+  const track=document.createElement("a");track.className="action-btn track-btn";track.href="./suivi-commande.html?numero="+encodeURIComponent(order.order_number||"");track.textContent="▣　Suivre cette commande";
+  const details=[
+    "COMMANDE NEXUS 360","Boutique : "+(order.store_name||"Boutique"),
+    "N° : "+(order.order_number||"—"),"Date : "+dateText,
+    "Montant : "+fmt(order.total_amount)+" FC","Client : "+customer.name,
+    "Téléphone : "+customer.phone,"Adresse : "+customer.address,"Articles :",
+    ...orderItems.map(i=>"- "+(i.product_name||"Produit")+" x"+(Number(i.quantity)||0)+" : "+fmt(i.line_total!=null?i.line_total:(Number(i.unit_price)||0)*(Number(i.quantity)||0))+" FC"),
+    "Paiement : après livraison."
+  ].join("\n");
+  const copy=document.createElement("button");copy.type="button";copy.className="action-btn copy-btn";copy.textContent="▢　Copier les détails";copy.addEventListener("click",()=>copyText(details,copy));
+  actions.append(track,copy);grid.append(meta,products,actions);card.append(head,grid);return card;
+}
+
+function showSuccess(orders,total,customer){
+  $("grandTotal").textContent=fmt(total)+" FC";
+  const count=new Set(orders.map(o=>o.store_id||o.store_name)).size;
+  $("ordersCount").textContent=orders.length+(orders.length>1?" commandes":" commande")+" pour "+count+(count>1?" boutiques.":" boutique.");
+  const list=$("ordersList");list.replaceChildren();orders.forEach(o=>list.append(makeOrderCard(o,customer)));
+  const message="Bonjour, je viens de passer commande sur NEXUS 360 :\n"+orders.map(o=>(o.store_name||"Boutique")+" : "+(o.order_number||"—")+" — "+fmt(o.total_amount)+" FC").join("\n")+"\nTotal général : "+fmt(total)+" FC";
+  $("whatsappAll").href="https://wa.me/"+STORE_PHONE+"?text="+encodeURIComponent(message);
+  $("cashButton").addEventListener("click",()=>{
+    $("cashConfirmation").classList.remove("hidden");
+    $("cashButton").textContent="✓ Paiement après livraison choisi";
+    $("cashButton").disabled=true;
+  },{once:true});
+  $("checkoutPanel").classList.add("hidden");$("confirmationPanel").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});
+}
+
 loadCart();displayCart();loadCustomer();
-$("orderForm").addEventListener("submit",async e=>{e.preventDefault();if(isSubmitting)return;if(!cart.length){showMessage("Votre panier est vide.","error");return}const customer={name:$("customerName").value.trim(),phone:$("customerPhone").value.trim(),address:$("deliveryAddress").value.trim()};if(customer.name.length<2||customer.phone.length<6||customer.address.length<5){showMessage("Vérifiez votre nom, votre téléphone et votre adresse.","error");return}const items=cart.map(i=>({product_id:i.id,quantity:i.quantity}));if(items.some(i=>!i.product_id||!Number.isInteger(i.quantity)||i.quantity<1||i.quantity>100)){showMessage("Une quantité ou un produit du panier est invalide.","error");return}isSubmitting=true;$("submitButton").disabled=true;$("submitButton").textContent="Envoi des commandes...";$("message").className="message hidden";try{const {data,error}=await supabase.rpc("create_guest_multi_store_order",{p_customer_name:customer.name,p_customer_phone:customer.phone,p_delivery_address:customer.address,p_items:items});if(error)throw error;if(!data||data.success!==true||!Array.isArray(data.orders)||!data.orders.length)throw new Error("Le serveur n'a pas renvoyé la confirmation complète des commandes.");if(data.orders.some(o=>!o.order_number||!o.store_name||!Number.isFinite(Number(o.total_amount))))throw new Error("Le récapitulatif est incomplet. Ne validez pas une deuxième fois ; contactez l'administrateur.");const total=Number(data.total_amount);if(!Number.isFinite(total))throw new Error("Le montant total renvoyé par le serveur est invalide. Ne validez pas une deuxième fois.");try{localStorage.setItem(CUSTOMER_KEY,JSON.stringify(customer));localStorage.removeItem(CART_KEY)}catch{}showSuccess(data.orders,total,customer)}catch(err){console.error("Erreur de commande :",err);showMessage(err.message||"Impossible de confirmer les commandes.","error")}finally{isSubmitting=false;if($("confirmationPanel").classList.contains("hidden")){$("submitButton").textContent="Confirmer ma commande";$("submitButton").disabled=!cart.length}}});
+
+$("orderForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(isSubmitting)return;
+  if(!cart.length){showMessage("Votre panier est vide.","error");return}
+  const customer={name:$("customerName").value.trim(),phone:$("customerPhone").value.trim(),address:$("deliveryAddress").value.trim()};
+  if(customer.name.length<2||customer.phone.length<6||customer.address.length<5){showMessage("Vérifiez votre nom, votre téléphone et votre adresse.","error");return}
+  const items=cart.map(i=>({product_id:i.id,quantity:i.quantity}));
+  if(items.some(i=>!i.product_id||!Number.isInteger(i.quantity)||i.quantity<1||i.quantity>100)){showMessage("Une quantité ou un produit du panier est invalide.","error");return}
+  isSubmitting=true;$("submitButton").disabled=true;$("submitButton").textContent="Envoi des commandes...";$("message").className="message hidden";
+  try{
+    const {data,error}=await supabase.rpc("create_guest_multi_store_order",{p_customer_name:customer.name,p_customer_phone:customer.phone,p_delivery_address:customer.address,p_items:items});
+    if(error)throw error;
+    if(!data||data.success!==true||!Array.isArray(data.orders)||!data.orders.length)throw new Error("Le serveur n'a pas renvoyé la confirmation complète des commandes.");
+    if(data.orders.some(o=>!o.order_number||!o.store_name||!Number.isFinite(Number(o.total_amount))))throw new Error("Le récapitulatif est incomplet. Ne validez pas une deuxième fois ; contactez l'administrateur.");
+    const total=Number(data.total_amount);
+    if(!Number.isFinite(total))throw new Error("Le montant total renvoyé par le serveur est invalide. Ne validez pas une deuxième fois.");
+    try{localStorage.setItem(CUSTOMER_KEY,JSON.stringify(customer));localStorage.removeItem(CART_KEY)}catch{}
+    showSuccess(data.orders,total,customer);
+  }catch(err){console.error("Erreur de commande :",err);showMessage(err.message||"Impossible de confirmer les commandes.","error")}
+  finally{isSubmitting=false;if($("confirmationPanel").classList.contains("hidden")){$("submitButton").textContent="Confirmer ma commande";$("submitButton").disabled=!cart.length}}
+});
 </script>
 </body>
 </html>
