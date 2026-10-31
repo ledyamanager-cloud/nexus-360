@@ -6,151 +6,613 @@
   <title>Ajouter un produit - NEXUS 360</title>
 
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --navy: #061d50;
+      --navy-dark: #041638;
+      --blue: #0759dc;
+      --blue-light: #eaf3ff;
+      --yellow: #ffc900;
+      --text: #10234b;
+      --muted: #64748b;
+      --border: #d8e1ef;
+      --background: #f2f6fc;
+      --white: #fff;
+      --red: #b42336;
+      --red-bg: #ffe1e7;
+      --green: #166534;
+      --green-bg: #dcfce7;
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      color: #222;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--background);
+      color: var(--text);
     }
 
-    header {
-      background: #14213d;
+    /* EN-TÊTE */
+    .site-header {
+      min-height: 98px;
+      background:
+        linear-gradient(135deg, transparent 65%, #0759dc 65%, #0759dc 78%, transparent 78%),
+        linear-gradient(115deg, transparent 72%, var(--yellow) 72%, var(--yellow) 80%, transparent 80%),
+        var(--navy);
       color: white;
-      text-align: center;
-      padding: 20px;
+      display: flex;
+      align-items: center;
+      padding: 20px clamp(18px, 4vw, 55px);
+      overflow: hidden;
     }
 
-    header h1 { color: #fca311; margin: 0; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-decoration: none;
+      color: white;
+    }
 
+    .brand-mark {
+      position: relative;
+      width: 64px;
+      height: 54px;
+      flex-shrink: 0;
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      width: 17px;
+      height: 46px;
+      border-radius: 5px;
+      transform: skew(-8deg);
+    }
+
+    .brand-mark::before {
+      left: 8px;
+      background: linear-gradient(#35a7ff, #0759dc);
+    }
+
+    .brand-mark::after {
+      right: 8px;
+      background: linear-gradient(#ffe45c, #ffc900);
+    }
+
+    .brand-mark span {
+      position: absolute;
+      z-index: 2;
+      left: 23px;
+      top: 2px;
+      width: 17px;
+      height: 50px;
+      background: linear-gradient(135deg, #ffe45c, #ffc900);
+      transform: rotate(-38deg);
+      border-radius: 4px;
+      box-shadow: 0 0 0 2px #062b70;
+    }
+
+    .brand-text strong {
+      display: block;
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      white-space: nowrap;
+    }
+
+    .brand-text strong span {
+      color: var(--yellow);
+    }
+
+    .brand-text small {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+      color: #f2f6ff;
+    }
+
+    /* CONTENU */
     main {
-      max-width: 650px;
-      margin: 25px auto;
-      padding: 15px;
+      width: min(100% - 32px, 900px);
+      margin: 28px auto 36px;
     }
 
-    .card {
-      background: white;
-      padding: 24px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px #00000012;
+    .form-card {
+      position: relative;
+      overflow: hidden;
+      background: var(--white);
+      border: 1px solid #e3eaf5;
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 42px);
+      box-shadow: 0 8px 24px rgba(13, 48, 105, 0.12);
+    }
+
+    .card-decoration {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 40%;
+      height: 190px;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 80% 15%, rgba(255, 201, 0, .55), transparent 45%),
+        linear-gradient(145deg, transparent 30%, rgba(7, 89, 220, .08) 60%, transparent 80%);
+    }
+
+    .card-heading {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .heading-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      flex-shrink: 0;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #0c70f5, #063c9d);
+      color: white;
+      font-size: 29px;
+      box-shadow: 0 5px 12px #0759dc35;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(23px, 3vw, 30px);
+      color: var(--navy);
+    }
+
+    .intro {
+      margin: 10px 0 0;
+      color: #334a70;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    form {
+      position: relative;
+    }
+
+    .field {
+      margin-top: 20px;
     }
 
     label {
       display: block;
-      margin-top: 17px;
-      font-weight: bold;
+      margin-bottom: 9px;
+      color: var(--navy);
+      font-size: 16px;
+      font-weight: 700;
     }
 
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 7px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
+    .input-wrap {
+      position: relative;
     }
 
-    textarea { min-height: 100px; }
+    .field-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #174b9d;
+      font-size: 19px;
+      pointer-events: none;
+    }
 
-    button {
+    input,
+    textarea {
+      display: block;
       width: 100%;
-      padding: 14px;
-      margin-top: 22px;
-      background: #fca311;
-      color: #14213d;
-      border: 0;
-      border-radius: 8px;
-      font-weight: bold;
+      min-height: 52px;
+      padding: 13px 16px 13px 52px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: #172b4d;
+      font: inherit;
       font-size: 16px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+      padding-top: 16px;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px #0759dc18;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #7b8ba5;
+    }
+
+    input[type="file"] {
+      padding: 9px 12px 9px 48px;
+      font-size: 14px;
       cursor: pointer;
     }
 
-    button:disabled {
-      opacity: 0.6;
+    input[type="file"]::file-selector-button {
+      padding: 8px 12px;
+      margin-right: 12px;
+      border: 1px solid #c7d3e5;
+      border-radius: 7px;
+      background: #edf3fc;
+      color: var(--navy);
+      cursor: pointer;
+    }
+
+    .file-wrap .field-icon {
+      top: 26px;
+    }
+
+    #preview {
+      display: none;
+      max-width: 100%;
+      max-height: 260px;
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      object-fit: contain;
+      background: #f8fafc;
+    }
+
+    /* BOUTON */
+    #saveButton {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 58px;
+      margin-top: 26px;
+      padding: 15px 20px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(100deg, #ffd329, #ffc000);
+      color: #071b45;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 5px 12px #ffc90035;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    #saveButton:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px #ffc90045;
+    }
+
+    #saveButton:disabled {
+      opacity: .65;
       cursor: not-allowed;
     }
 
     #message {
       margin-top: 18px;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
       overflow-wrap: anywhere;
     }
 
-    .success { background: #d4edda; color: #155724; }
-    .error { background: #f8d7da; color: #721c24; }
-    .info { background: #e2e3e5; color: #383d41; }
-
-    #preview {
-      max-width: 100%;
-      max-height: 250px;
-      margin-top: 12px;
-      display: none;
-      border-radius: 8px;
+    .success {
+      background: var(--green-bg);
+      color: var(--green);
     }
 
-    a {
-      display: inline-block;
-      margin-top: 20px;
-      color: #14213d;
+    .error {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .info {
+      background: var(--blue-light);
+      color: #174b9d;
+    }
+
+    .card-links {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .card-links a {
+      color: #073d91;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .card-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* PIED DE PAGE */
+    footer {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, transparent 88%, #0759dc 88%, #0759dc 92%, transparent 92%),
+        linear-gradient(145deg, transparent 91%, var(--yellow) 91%, var(--yellow) 96%, transparent 96%),
+        var(--navy);
+      color: white;
+      padding: 28px clamp(18px, 4vw, 55px) 20px;
+    }
+
+    .footer-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .footer-brand .brand-mark {
+      width: 48px;
+      height: 42px;
+    }
+
+    .footer-brand .brand-mark::before,
+    .footer-brand .brand-mark::after {
+      height: 36px;
+      width: 13px;
+    }
+
+    .footer-brand .brand-mark span {
+      height: 38px;
+      width: 13px;
+      left: 18px;
+    }
+
+    .footer-brand .brand-text strong {
+      font-size: 23px;
+    }
+
+    .footer-brand .brand-text small {
+      font-size: 12px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .footer-links a:hover {
+      color: var(--yellow);
+    }
+
+    .socials {
+      display: flex;
+      gap: 12px;
+    }
+
+    .socials a {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #ffffff70;
+      border-radius: 50%;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .copyright {
+      max-width: 1200px;
+      margin: 22px auto 0;
+      padding-top: 18px;
+      border-top: 1px solid #ffffff30;
+      text-align: center;
+      font-size: 13px;
+      color: #e1eaff;
+    }
+
+    @media (max-width: 600px) {
+      .site-header {
+        min-height: 82px;
+        padding: 16px;
+      }
+
+      .brand {
+        gap: 10px;
+      }
+
+      .brand-mark {
+        width: 48px;
+        height: 44px;
+      }
+
+      .brand-mark::before,
+      .brand-mark::after {
+        height: 38px;
+        width: 13px;
+      }
+
+      .brand-mark span {
+        height: 40px;
+        width: 13px;
+        left: 18px;
+      }
+
+      .brand-text strong {
+        font-size: 24px;
+      }
+
+      .brand-text small {
+        font-size: 11px;
+      }
+
+      main {
+        width: calc(100% - 24px);
+        margin: 16px auto 24px;
+      }
+
+      .form-card {
+        padding: 22px 18px;
+        border-radius: 15px;
+      }
+
+      .card-heading {
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .heading-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .intro {
+        font-size: 14px;
+      }
+
+      input,
+      textarea {
+        font-size: 16px;
+      }
+
+      .card-links {
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .footer-main {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
+      }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>NEXUS 360</h1>
-    <p>Publie tes produits en ligne</p>
+  <header class="site-header">
+    <a class="brand" href="./index.html" aria-label="NEXUS 360 - Accueil">
+      <span class="brand-mark" aria-hidden="true"><span></span></span>
+      <span class="brand-text">
+        <strong>NEXUS <span>360</span></strong>
+        <small>Tout un monde de services</small>
+      </span>
+    </a>
   </header>
 
   <main>
-    <section class="card">
-      <h2>📦 Ajouter un produit</h2>
-      <p>Remplis les informations de ton produit.</p>
+    <section class="form-card">
+      <div class="card-decoration" aria-hidden="true"></div>
+
+      <div class="card-heading">
+        <div class="heading-icon" aria-hidden="true">📦</div>
+        <div>
+          <h2>Ajouter un produit</h2>
+          <p class="intro">Remplis les informations de ton produit.</p>
+        </div>
+      </div>
 
       <form id="productForm">
-        <label for="productName">Nom du produit *</label>
-        <input
-          id="productName"
-          maxlength="150"
-          required
-          placeholder="Ex. : Chaussures élégantes"
-        >
+        <div class="field">
+          <label for="productName">Nom du produit *</label>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">◆</span>
+            <input
+              id="productName"
+              maxlength="150"
+              required
+              placeholder="Ex. : Chaussures élégantes"
+            >
+          </div>
+        </div>
 
-        <label for="description">Description</label>
-        <textarea
-          id="description"
-          maxlength="3000"
-          placeholder="Décris ton produit..."
-        ></textarea>
+        <div class="field">
+          <label for="description">Description</label>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">▤</span>
+            <textarea
+              id="description"
+              maxlength="3000"
+              placeholder="Décris ton produit..."
+            ></textarea>
+          </div>
+        </div>
 
-        <label for="price">Prix (CDF) *</label>
-        <input
-          id="price"
-          type="number"
-          min="0"
-          step="0.01"
-          required
-          placeholder="Ex. : 25000"
-        >
+        <div class="field">
+          <label for="price">Prix (CDF) *</label>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">▤</span>
+            <input
+              id="price"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              placeholder="Ex. : 25000"
+            >
+          </div>
+        </div>
 
-        <label for="stock">Quantité en stock *</label>
-        <input
-          id="stock"
-          type="number"
-          min="0"
-          step="1"
-          value="1"
-          required
-        >
+        <div class="field">
+          <label for="stock">Quantité en stock *</label>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">◆</span>
+            <input
+              id="stock"
+              type="number"
+              min="0"
+              step="1"
+              value="1"
+              required
+            >
+          </div>
+        </div>
 
-        <label for="photo">Photo du produit</label>
-        <input id="photo" type="file" accept="image/*">
-        <img id="preview" alt="Aperçu du produit">
+        <div class="field">
+          <label for="photo">Photo du produit</label>
+          <div class="input-wrap file-wrap">
+            <span class="field-icon" aria-hidden="true">▣</span>
+            <input id="photo" type="file" accept="image/*">
+          </div>
+          <img id="preview" alt="Aperçu du produit">
+        </div>
 
         <button id="saveButton" type="submit" disabled>
+          <span aria-hidden="true">☁</span>
           Publier le produit
         </button>
       </form>
@@ -159,15 +621,48 @@
         Chargement de NEXUS 360...
       </div>
 
-      <a href="./boutique.html">← Retour à ma boutique</a>
-      <br>
-      <a href="./catalogue.html">Voir le catalogue →</a>
+      <div class="card-links">
+        <a href="./boutique.html">← Retour à ma boutique</a>
+        <a href="./catalogue.html">Voir le catalogue →</a>
+      </div>
     </section>
   </main>
+
+  <footer>
+    <div class="footer-main">
+      <a class="brand footer-brand" href="./index.html" aria-label="NEXUS 360 - Accueil">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span class="brand-text">
+          <strong>NEXUS <span>360</span></strong>
+          <small>Tout un monde de services</small>
+        </span>
+      </a>
+
+      <nav class="footer-links" aria-label="Liens de pied de page">
+        <a href="./a-propos.html">À propos</a>
+        <a href="./conditions.html">Conditions d'utilisation</a>
+        <a href="./confidentialite.html">Confidentialité</a>
+        <a href="./contact.html">Contact</a>
+      </nav>
+
+      <div class="socials" aria-label="Réseaux sociaux">
+        <a href="#" aria-label="Facebook">f</a>
+        <a href="#" aria-label="WhatsApp">◉</a>
+        <a href="#" aria-label="YouTube">▶</a>
+      </div>
+    </div>
+
+    <div class="copyright">
+      © <span id="year"></span> NEXUS 360. Tous droits réservés.
+    </div>
+  </footer>
 
   <script type="module">
     const message = document.getElementById("message");
     const button = document.getElementById("saveButton");
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
 
     function showMessage(text, type = "info") {
       message.textContent = text;
@@ -303,7 +798,7 @@
         }
 
         button.disabled = true;
-        button.textContent = "Publication en cours...";
+        button.innerHTML = "<span>⏳</span> Publication en cours...";
 
         let uploadedFilePath = null;
 
@@ -377,7 +872,7 @@
           );
         } finally {
           button.disabled = !ready;
-          button.textContent = "Publier le produit";
+          button.innerHTML = "<span>☁</span> Publier le produit";
         }
       });
 
@@ -394,4 +889,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
