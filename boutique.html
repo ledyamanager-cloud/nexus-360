@@ -6,186 +6,692 @@
   <title>Ma boutique - NEXUS 360</title>
 
   <style>
+    :root {
+      --navy: #061b49;
+      --navy-dark: #031338;
+      --blue: #0759dc;
+      --blue-light: #eaf3ff;
+      --yellow: #ffc900;
+      --yellow-dark: #f4b900;
+      --text: #10234a;
+      --muted: #66758f;
+      --border: #dce4f0;
+      --background: #f3f7ff;
+      --white: #ffffff;
+      --radius: 22px;
+      --shadow: 0 10px 30px rgba(8, 32, 78, 0.10);
+    }
+
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      color: #222;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    header {
-      background: #14213d;
+    /* EN-TÊTE */
+
+    .site-header {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(120deg, transparent 68%, rgba(0, 82, 210, 0.35) 68%),
+        linear-gradient(115deg, var(--navy-dark), #063c9d 75%, #0759dc);
       color: white;
-      padding: 20px;
-      text-align: center;
+      padding: 18px 24px;
+      min-height: 116px;
+      display: flex;
+      align-items: center;
     }
 
-    header h1 {
-      margin: 0;
-      color: #fca311;
+    .site-header::after {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 110px;
+      right: -100px;
+      bottom: -78px;
+      border-top: 17px solid var(--yellow);
+      border-radius: 50%;
+      transform: rotate(-13deg);
+      pointer-events: none;
     }
 
-    header p {
-      margin-bottom: 0;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+      text-decoration: none;
+      color: white;
     }
 
-    .container {
-      max-width: 650px;
-      margin: 30px auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 25px;
+    .brand-symbol {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      flex: 0 0 64px;
       border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .brand-symbol::before,
+    .brand-symbol::after {
+      content: "";
+      position: absolute;
+      width: 17px;
+      height: 72px;
+      top: -4px;
+      border-radius: 8px;
+      transform: rotate(-36deg);
+    }
+
+    .brand-symbol::before {
+      left: 17px;
+      background: linear-gradient(#45a7ff, #0759dc);
+      box-shadow: 16px 0 0 #ffc900;
+    }
+
+    .brand-symbol::after {
+      left: 36px;
+      background: var(--yellow);
+      opacity: 0.95;
+    }
+
+    .brand-name {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 36px);
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .brand-name span {
+      color: var(--yellow);
+    }
+
+    .brand-tagline {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #e8efff;
+    }
+
+    /* CONTENU */
+
+    main {
+      width: 100%;
+      max-width: 1040px;
+      margin: 38px auto;
+      padding: 0 22px;
+      flex: 1;
+    }
+
+    .form-card {
+      position: relative;
+      overflow: hidden;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 38px 42px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(220, 228, 240, 0.8);
+    }
+
+    .card-decoration {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 290px;
+      height: 220px;
+      background:
+        radial-gradient(ellipse at 75% 20%, rgba(255, 201, 0, 0.35), transparent 42%),
+        linear-gradient(145deg, transparent 45%, rgba(0, 105, 230, 0.08) 46%, rgba(0, 105, 230, 0.18) 65%, transparent 66%);
+      pointer-events: none;
+    }
+
+    .card-decoration::after {
+      content: "🛍️";
+      position: absolute;
+      right: 28px;
+      top: 24px;
+      font-size: 90px;
+      filter: drop-shadow(0 10px 10px rgba(0, 40, 100, 0.15));
+    }
+
+    .card-heading {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .heading-icon {
+      width: 66px;
+      height: 66px;
+      flex: 0 0 66px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #0b70ed, #063b9e);
+      color: white;
+      font-size: 32px;
+      box-shadow: 0 7px 16px rgba(7, 89, 220, 0.22);
     }
 
     h2 {
-      color: #14213d;
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(25px, 4vw, 34px);
+      font-weight: 800;
+    }
+
+    .intro {
+      position: relative;
+      z-index: 1;
+      max-width: 650px;
+      margin: 0 0 28px;
+      color: #455675;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    form {
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-field {
+      margin-top: 22px;
     }
 
     label {
       display: block;
-      margin-top: 18px;
-      font-weight: bold;
+      margin-bottom: 9px;
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .field-icon {
+      position: absolute;
+      left: 17px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #0759b8;
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .input-wrap input {
+      padding-left: 52px;
     }
 
     input,
     textarea {
+      display: block;
       width: 100%;
-      padding: 13px;
-      margin-top: 8px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      padding: 15px 17px;
+      border: 1px solid #cfd9e8;
+      border-radius: 13px;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
       font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(7, 89, 220, 0.10);
     }
 
     textarea {
-      min-height: 110px;
+      min-height: 130px;
       resize: vertical;
+      line-height: 1.6;
     }
 
-    button {
+    input::placeholder,
+    textarea::placeholder {
+      color: #8a97ac;
+    }
+
+    .submit-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
       width: 100%;
-      padding: 14px;
-      margin-top: 22px;
-      background: #fca311;
-      color: #14213d;
+      min-height: 60px;
+      margin-top: 30px;
+      padding: 16px 22px;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #ffd52a, #ffbd00);
+      color: #17294b;
+      font-size: 17px;
+      font-weight: 800;
       cursor: pointer;
+      box-shadow: 0 6px 14px rgba(255, 190, 0, 0.24);
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
     }
 
-    button:disabled {
+    .submit-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 9px 20px rgba(255, 190, 0, 0.32);
+    }
+
+    .submit-button:disabled {
       opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .button-icon {
+      font-size: 21px;
     }
 
     #message {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 8px;
       display: none;
+      margin-top: 20px;
+      padding: 15px 18px;
+      border-radius: 13px;
+      font-size: 14px;
+      line-height: 1.6;
       overflow-wrap: anywhere;
     }
 
     .success {
       display: block !important;
-      background: #d4edda;
-      color: #155724;
+      background: #e4f7e9;
+      color: #176534;
+      border: 1px solid #b8e6c5;
     }
 
     .error {
       display: block !important;
-      background: #f8d7da;
-      color: #721c24;
+      background: #fff0f1;
+      color: #a51d2d;
+      border: 1px solid #f5c3ca;
     }
 
     .info {
       display: block !important;
-      background: #e2e3e5;
-      color: #383d41;
+      background: #edf4ff;
+      color: #174b91;
+      border: 1px solid #c8ddfb;
     }
 
-    .back {
-      display: inline-block;
-      margin-top: 20px;
-      color: #14213d;
-      font-weight: bold;
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      color: #164a91;
+      font-weight: 700;
       text-decoration: none;
     }
 
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    /* PIED DE PAGE */
+
     footer {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(115deg, var(--navy-dark), #063b96);
+      color: white;
+      padding: 28px 24px 20px;
+    }
+
+    footer::after {
+      content: "";
+      position: absolute;
+      width: 330px;
+      height: 100px;
+      right: -100px;
+      bottom: -75px;
+      border-top: 16px solid var(--yellow);
+      border-radius: 50%;
+      transform: rotate(-17deg);
+      pointer-events: none;
+    }
+
+    .footer-main {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand .brand-symbol {
+      width: 48px;
+      height: 48px;
+      flex-basis: 48px;
+    }
+
+    .footer-brand .brand-name {
+      font-size: 24px;
+    }
+
+    .footer-brand .brand-tagline {
+      font-size: 11px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      color: #e7efff;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      color: var(--yellow);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 12px;
+    }
+
+    .footer-social a {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .footer-bottom {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 24px auto 0;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
       text-align: center;
-      padding: 20px;
-      color: #666;
+      color: #d7e3ff;
+      font-size: 13px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 700px) {
+      .site-header {
+        min-height: 96px;
+        padding: 16px;
+      }
+
+      .brand {
+        gap: 10px;
+      }
+
+      .brand-symbol {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+      }
+
+      .brand-symbol::before {
+        left: 12px;
+        width: 13px;
+        height: 58px;
+      }
+
+      .brand-symbol::after {
+        left: 27px;
+        width: 13px;
+        height: 58px;
+      }
+
+      .brand-name {
+        font-size: 25px;
+      }
+
+      .brand-tagline {
+        font-size: 11px;
+      }
+
+      main {
+        margin: 22px auto;
+        padding: 0 13px;
+      }
+
+      .form-card {
+        padding: 25px 20px;
+        border-radius: 18px;
+      }
+
+      .card-decoration {
+        width: 150px;
+        height: 130px;
+        opacity: 0.7;
+      }
+
+      .card-decoration::after {
+        right: 12px;
+        top: 18px;
+        font-size: 54px;
+      }
+
+      .card-heading {
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .heading-icon {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+        border-radius: 14px;
+        font-size: 25px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      .intro {
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .form-field {
+        margin-top: 19px;
+      }
+
+      input,
+      textarea {
+        font-size: 16px;
+      }
+
+      .submit-button {
+        min-height: 56px;
+        font-size: 16px;
+      }
+
+      .footer-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 22px;
+      }
+
+      .footer-links {
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .brand-name {
+        font-size: 22px;
+      }
+
+      .brand-tagline {
+        font-size: 10px;
+      }
+
+      .form-card {
+        padding: 22px 16px;
+      }
+
+      h2 {
+        font-size: 21px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>NEXUS 360</h1>
-    <p>Crée et gère ta boutique en ligne</p>
+  <header class="site-header">
+    <a class="brand" href="./index.html" aria-label="NEXUS 360 - Accueil">
+      <span class="brand-symbol" aria-hidden="true"></span>
+
+      <span>
+        <h1 class="brand-name">NEXUS <span>360</span></h1>
+        <p class="brand-tagline">Tout un monde de services</p>
+      </span>
+    </a>
   </header>
 
-  <main class="container">
-    <section class="card">
-      <h2 id="formTitle">🏪 Ma boutique</h2>
+  <main>
+    <section class="form-card">
+      <div class="card-decoration" aria-hidden="true"></div>
 
-      <p>
-        Présente ta boutique aux clients et prépare-toi
-        à vendre tes produits sur NEXUS 360.
+      <div class="card-heading">
+        <div class="heading-icon" aria-hidden="true">🏪</div>
+        <h2 id="formTitle">Ma boutique</h2>
+      </div>
+
+      <p class="intro">
+        Présente ta boutique aux clients et prépare-toi à vendre tes
+        produits sur NEXUS 360.
       </p>
 
       <form id="storeForm">
-        <label for="storeName">Nom de la boutique *</label>
-        <input
-          id="storeName"
-          type="text"
-          maxlength="100"
-          placeholder="Ex. : Boutique Excellence"
-          required
-        >
+        <div class="form-field">
+          <label for="storeName">Nom de la boutique *</label>
 
-        <label for="storeDescription">Description</label>
-        <textarea
-          id="storeDescription"
-          maxlength="2000"
-          placeholder="Présente ta boutique et tes produits..."
-        ></textarea>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">▣</span>
+            <input
+              id="storeName"
+              type="text"
+              maxlength="100"
+              placeholder="Ex. : Boutique Excellence"
+              required
+            >
+          </div>
+        </div>
 
-        <label for="storeCity">Ville</label>
-        <input
-          id="storeCity"
-          type="text"
-          maxlength="100"
-          placeholder="Ex. : Kinshasa"
-        >
+        <div class="form-field">
+          <label for="storeDescription">Description</label>
 
-        <button id="saveButton" type="submit">
-          Créer ma boutique
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true" style="top: 25px;">✎</span>
+            <textarea
+              id="storeDescription"
+              maxlength="2000"
+              placeholder="Présente ta boutique et tes produits..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="storeCity">Ville</label>
+
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">📍</span>
+            <input
+              id="storeCity"
+              type="text"
+              maxlength="100"
+              placeholder="Ex. : Votre ville"
+            >
+          </div>
+        </div>
+
+        <button class="submit-button" id="saveButton" type="submit">
+          <span class="button-icon" aria-hidden="true">▣</span>
+          <span>Créer ma boutique</span>
         </button>
       </form>
 
       <div id="message" role="status" aria-live="polite"></div>
 
-      <a class="back" href="./index.html">
+      <a class="back-link" href="./index.html">
         ← Retour à l'accueil
       </a>
     </section>
   </main>
 
   <footer>
-    © 2026 NEXUS 360 — Tous droits réservés.
+    <div class="footer-main">
+      <a class="brand footer-brand" href="./index.html" aria-label="NEXUS 360 - Accueil">
+        <span class="brand-symbol" aria-hidden="true"></span>
+
+        <span>
+          <span class="brand-name">NEXUS <span>360</span></span>
+          <p class="brand-tagline">Tout un monde de services</p>
+        </span>
+      </a>
+
+      <nav class="footer-links" aria-label="Liens du pied de page">
+        <a href="./index.html">À propos</a>
+        <span aria-hidden="true">|</span>
+        <a href="./conditions.html">Conditions d'utilisation</a>
+        <span aria-hidden="true">|</span>
+        <a href="./confidentialite.html">Confidentialité</a>
+        <span aria-hidden="true">|</span>
+        <a href="./contact.html">Contact</a>
+      </nav>
+
+      <div class="footer-social" aria-label="Réseaux sociaux">
+        <a href="#" aria-label="Facebook">f</a>
+        <a href="#" aria-label="WhatsApp">◉</a>
+        <a href="#" aria-label="YouTube">▶</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      © <span id="currentYear">2026</span> NEXUS 360 — Tous droits réservés.
+    </div>
   </footer>
 
   <script type="module">
@@ -200,6 +706,9 @@
     const message = document.getElementById("message");
     const formTitle = document.getElementById("formTitle");
 
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
+
     let currentUser = null;
     let existingStore = null;
 
@@ -209,47 +718,58 @@
     }
 
     async function initializePage() {
-      const { data, error } = await supabase.auth.getUser();
+      try {
+        const { data, error } = await supabase.auth.getUser();
 
-      if (error || !data.user) {
+        if (error || !data.user) {
+          showMessage(
+            "Connecte-toi d'abord à NEXUS 360, puis reviens créer ta boutique.",
+            "error"
+          );
+
+          saveButton.disabled = true;
+          return;
+        }
+
+        currentUser = data.user;
+
+        const { data: store, error: storeError } = await supabase
+          .from("stores")
+          .select("*")
+          .eq("owner_id", currentUser.id)
+          .maybeSingle();
+
+        if (storeError) {
+          showMessage(
+            "Impossible de charger ta boutique. Vérifie la configuration Supabase.",
+            "error"
+          );
+          return;
+        }
+
+        if (store) {
+          existingStore = store;
+
+          storeName.value = store.store_name || "";
+          storeDescription.value = store.description || "";
+          storeCity.value = store.city || "";
+
+          formTitle.textContent = "Modifier ma boutique";
+          saveButton.innerHTML =
+            '<span class="button-icon" aria-hidden="true">▣</span>' +
+            '<span>Enregistrer les modifications</span>';
+
+          showMessage(
+            "Ta boutique existe déjà. Tu peux modifier ses informations.",
+            "info"
+          );
+        }
+      } catch (error) {
+        console.error("Erreur d'initialisation :", error);
         showMessage(
-          "Connecte-toi d'abord à NEXUS 360, puis reviens créer ta boutique.",
+          "Impossible de vérifier ta connexion. " +
+          (error.message || "Réessaie plus tard."),
           "error"
-        );
-
-        saveButton.disabled = true;
-        return;
-      }
-
-      currentUser = data.user;
-
-      const { data: store, error: storeError } = await supabase
-        .from("stores")
-        .select("*")
-        .eq("owner_id", currentUser.id)
-        .maybeSingle();
-
-      if (storeError) {
-        showMessage(
-          "Impossible de charger ta boutique. Vérifie la configuration Supabase.",
-          "error"
-        );
-        return;
-      }
-
-      if (store) {
-        existingStore = store;
-
-        storeName.value = store.store_name || "";
-        storeDescription.value = store.description || "";
-        storeCity.value = store.city || "";
-
-        formTitle.textContent = "🏪 Modifier ma boutique";
-        saveButton.textContent = "Enregistrer les modifications";
-
-        showMessage(
-          "Ta boutique existe déjà. Tu peux modifier ses informations.",
-          "info"
         );
       }
     }
@@ -276,7 +796,9 @@
       }
 
       saveButton.disabled = true;
-      saveButton.textContent = "Enregistrement...";
+      saveButton.innerHTML =
+        '<span class="button-icon" aria-hidden="true">⏳</span>' +
+        '<span>Enregistrement...</span>';
 
       const storeData = {
         owner_id: currentUser.id,
@@ -287,53 +809,59 @@
 
       let result;
 
-      if (existingStore) {
-        result = await supabase
-          .from("stores")
-          .update({
-            store_name: storeData.store_name,
-            description: storeData.description,
-            city: storeData.city
-          })
-          .eq("owner_id", currentUser.id)
-          .select()
-          .single();
-      } else {
-        result = await supabase
-          .from("stores")
-          .insert(storeData)
-          .select()
-          .single();
-      }
+      try {
+        if (existingStore) {
+          result = await supabase
+            .from("stores")
+            .update({
+              store_name: storeData.store_name,
+              description: storeData.description,
+              city: storeData.city
+            })
+            .eq("owner_id", currentUser.id)
+            .select()
+            .single();
+        } else {
+          result = await supabase
+            .from("stores")
+            .insert(storeData)
+            .select()
+            .single();
+        }
 
-      saveButton.disabled = false;
-      saveButton.textContent = existingStore
-        ? "Enregistrer les modifications"
-        : "Créer ma boutique";
+        if (result.error) throw result.error;
 
-      if (result.error) {
-        console.error(result.error);
+        existingStore = result.data;
+
+        formTitle.textContent = "Modifier ma boutique";
+        saveButton.innerHTML =
+          '<span class="button-icon" aria-hidden="true">▣</span>' +
+          '<span>Enregistrer les modifications</span>';
 
         showMessage(
-          "Erreur : " + result.error.message,
+          "Félicitations ! Ta boutique a été enregistrée avec succès.",
+          "success"
+        );
+      } catch (error) {
+        console.error("Erreur d'enregistrement :", error);
+
+        showMessage(
+          "Erreur : " + (error.message || "Une erreur est survenue."),
           "error"
         );
-        return;
+      } finally {
+        saveButton.disabled = false;
+
+        if (!existingStore) {
+          saveButton.innerHTML =
+            '<span class="button-icon" aria-hidden="true">▣</span>' +
+            '<span>Créer ma boutique</span>';
+        }
       }
-
-      existingStore = result.data;
-
-      formTitle.textContent = "🏪 Modifier ma boutique";
-      saveButton.textContent = "Enregistrer les modifications";
-
-      showMessage(
-        "Félicitations ! Ta boutique a été enregistrée avec succès.",
-        "success"
-      );
     });
 
     initializePage();
   </script>
 
 </body>
-  </html>
+</html>
