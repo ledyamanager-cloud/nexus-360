@@ -6,31 +6,155 @@
 <meta name="theme-color" content="#080d19">
 <meta name="description" content="NEXUS 360 : produits, promotions, automobile, colis et événements sur une seule marketplace.">
 <title>NEXUS 360 — Marketplace</title>
-<style>
-:root{--dark:#080d19;--dark2:#10192a;--blue:#0759dc;--yellow:#ffc900;--text:#13213b;--muted:#718096;--bg:#f5f7fb;--border:#e5eaf2;--white:#fff;--radius:12px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;font-size:14px}
-button,input{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
-.topbar{background:var(--dark);color:white}.header-main{min-height:72px;display:flex;align-items:center;gap:24px;padding:12px 3%}
-.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}.logo-symbol{font-size:48px;font-weight:900;line-height:1;color:var(--yellow);text-shadow:2px 2px #db8e00}.logo-name{font-size:27px;font-weight:900;white-space:nowrap}.logo-name span{color:#ff9c00}.logo-tag{font-size:11px;margin-top:3px;color:#d5dce8}
-.search{display:flex;align-items:center;flex:1;max-width:720px;height:43px;background:white;border-radius:12px;overflow:hidden;border:2px solid white}.search input{border:0;outline:0;padding:0 17px;width:100%;min-width:0;color:var(--text)}.search button{height:100%;width:48px;flex-shrink:0;border:0;background:var(--yellow);font-size:21px}
-.header-action{color:white;border:0;background:transparent;text-align:center;white-space:nowrap;font-size:12px;line-height:1.5}.header-action .icon{display:block;font-size:23px}.cart-button{position:relative}.cart-count{position:absolute;top:-3px;right:5px;background:#ed2525;color:white;border-radius:20px;font-size:10px;padding:2px 5px}
-.navbar{border-top:1px solid #20283a;min-height:39px;display:flex;align-items:center;gap:34px;padding:0 3%;overflow-x:auto;white-space:nowrap}.navbar a{padding:12px 0;font-size:12px}.navbar a:hover,.navbar a.active{color:var(--yellow)}.navbar .all-categories{font-weight:bold}
-main{max-width:1500px;margin:15px auto;padding:0 18px}.top-layout{display:grid;grid-template-columns:230px minmax(0,1fr) 228px;gap:15px;align-items:start}.panel{background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.side-menu{padding:8px 0;min-height:480px}.side-menu-title{margin:0 9px 6px;padding:10px;background:#fff5ce;border-radius:8px;font-weight:bold}.side-link{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;font-size:12px;transition:.2s}.side-link:hover{color:#0759dc;background:#f0f5ff}.side-link .left{display:flex;gap:10px;align-items:center}.side-link .emoji{font-size:17px;width:19px;text-align:center}.arrow{color:#8495b0}
-.hero{min-height:250px;border-radius:10px;overflow:hidden;position:relative;color:white;background:radial-gradient(ellipse at 80% 45%,#1652a1 0%,transparent 40%),linear-gradient(115deg,#06142b,#032d65 60%,#06152c);display:flex;align-items:center;padding:27px}.hero::after{content:"";position:absolute;width:250px;height:330px;right:45px;top:-35px;transform:rotate(25deg);border-left:18px solid #ffffff09;border-right:35px solid #ffffff08;pointer-events:none}.hero-content{position:relative;z-index:2;max-width:62%}.hero-logo{font-size:25px;font-weight:900;margin-bottom:14px}.hero-logo span{color:var(--yellow)}.hero h1{font-size:clamp(23px,2.4vw,34px);line-height:1.12;margin:0 0 14px;letter-spacing:-.6px}.hero h1 span{color:var(--yellow)}.hero p{font-size:13px;line-height:1.7;color:#e4ebf7}.primary-btn{background:var(--yellow);color:#111827;border:0;border-radius:25px;padding:13px 22px;font-weight:bold;margin-top:7px}.primary-btn:hover,.buy-btn:hover{background:#ffda40}.hero-image{position:absolute;right:12px;bottom:0;width:38%;height:94%;object-fit:contain;z-index:1;filter:drop-shadow(0 8px 16px #0005)}.discount-badge{position:absolute;z-index:3;top:25px;right:20px;width:76px;height:76px;border-radius:50%;background:var(--yellow);color:#111827;display:grid;place-content:center;text-align:center;font-weight:bold;font-size:12px}.discount-badge strong{font-size:24px}
-.category-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:15px}.category-card{min-width:0;text-align:center;font-weight:bold;font-size:11px}.category-image{height:78px;border-radius:10px;overflow:hidden;margin-bottom:8px;background:#eaf0fb}.category-image img{width:100%;height:100%;object-fit:cover;transition:transform .25s}.category-card:hover img{transform:scale(1.07)}
-.account-card{padding:15px;background:linear-gradient(135deg,#ffe994,#fff2b9);border:0}.account-heading{display:flex;align-items:center;gap:12px;margin-bottom:12px}.avatar{background:#101010;color:white;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:24px}.account-heading strong{display:block;margin-bottom:4px}.account-heading small{line-height:1.4}.dark-btn,.light-btn{width:100%;border-radius:8px;padding:10px;border:0;font-weight:bold;margin-top:7px}.dark-btn{color:white;background:var(--dark)}.light-btn{color:var(--text);background:white}
-.benefits{margin-top:12px}.benefit{display:flex;align-items:center;gap:12px;padding:14px 12px;border-bottom:1px solid var(--border)}.benefit:last-child{border-bottom:0}.benefit-icon{display:grid;place-items:center;width:35px;height:35px;border-radius:10px;background:#edf4ff;font-size:21px;flex-shrink:0}.benefit strong{display:block;font-size:11px;margin-bottom:5px}.benefit small{color:var(--muted);font-size:10px}
-.promos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}.promo{min-height:112px;border-radius:10px;color:white;padding:18px;overflow:hidden;position:relative;display:flex;align-items:center}.promo h3{margin:0 0 5px;font-size:15px}.promo p{margin:0;font-size:12px}.promo button{margin-top:12px;border:0;background:var(--yellow);padding:7px 13px;border-radius:8px;font-size:11px;font-weight:bold}.promo img{position:absolute;width:42%;height:100%;right:0;top:0;object-fit:contain}.promo-content{position:relative;z-index:2}.promo-blue{background:linear-gradient(110deg,#0759e6,#06318c)}.promo-red{background:linear-gradient(110deg,#ed252e,#b80020)}.promo-purple{background:linear-gradient(110deg,#7023d7,#3912a0)}
-.section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:23px 0 12px;flex-wrap:wrap}.tabs{display:flex;align-items:center;gap:20px;overflow-x:auto}.tab{background:transparent;border:0;padding:8px 2px;color:#64748b;white-space:nowrap;font-size:12px}.tab.active{color:var(--text);font-weight:bold;border-bottom:3px solid var(--yellow)}.see-all{color:#22375c;font-size:12px;white-space:nowrap}
-.product-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}.product-card{background:white;border:1px solid var(--border);border-radius:11px;padding:8px;min-width:0;transition:.2s;position:relative}.product-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px #14234412}.product-image{height:130px;border-radius:7px;overflow:hidden;background:#f4f6fa;position:relative}.product-image img{width:100%;height:100%;object-fit:cover}.sale-badge{position:absolute;top:7px;right:7px;background:#f32929;color:white;padding:4px 6px;font-size:10px;font-weight:bold;border-radius:5px}.favorite{position:absolute;left:8px;top:8px;border:0;border-radius:50%;background:white;width:29px;height:29px;font-size:17px;color:#69778d}.favorite.selected{color:#ef3048}.product-name{font-weight:600;font-size:11px;line-height:1.4;margin:8px 2px 5px;min-height:31px}.product-store{font-size:10px;color:var(--muted);margin:3px 2px}.stars{color:#ffb900;font-size:12px;margin:4px 2px}.stars small{color:var(--muted)}.price{color:#dc1717;font-weight:800;font-size:14px;margin:6px 2px;white-space:nowrap}.buy-btn{width:100%;background:var(--yellow);border:0;border-radius:6px;padding:8px 4px;font-size:10px;font-weight:bold;margin-top:5px}
-.bottom-layout{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin:15px 0}.seller-banner{border-radius:11px;min-height:145px;padding:20px;position:relative;overflow:hidden;color:white;background:linear-gradient(100deg,#07101f,#132740)}.seller-banner h2{font-size:20px;line-height:1.3;margin:10px 0;max-width:65%}.seller-banner p{max-width:65%;color:#d9e1ed;font-size:12px}.seller-banner img{position:absolute;width:42%;height:100%;right:0;top:0;object-fit:cover;opacity:.78}.services{padding:15px}.services h3{margin:0 0 12px;font-size:17px}.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.service-card{border:1px solid var(--border);border-radius:10px;padding:10px 7px;display:flex;align-items:center;gap:8px;min-width:0;background:#f8faff}.service-card .service-icon{font-size:24px}.service-card strong{font-size:10px;display:block;margin-bottom:4px}.service-card small{color:var(--muted);font-size:9px}.service-note{margin:14px 0 0;color:var(--muted);font-size:11px}
-footer{background:var(--dark);color:white;padding:20px 3%;margin-top:20px}.footer-inner{max-width:1450px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:11px}.footer-links a:hover{color:var(--yellow)}.footer-copy{font-size:10px;color:#b8c2d3}.empty-message{grid-column:1/-1;background:white;border-radius:10px;padding:35px;text-align:center;color:var(--muted)}.loading-message{grid-column:1/-1;background:white;border-radius:10px;padding:30px;text-align:center;color:var(--muted)}
-@media(max-width:1100px){.top-layout{grid-template-columns:200px minmax(0,1fr)}.right-column{display:none}.product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.header-main{gap:13px}.logo-name{font-size:21px}.category-row{grid-template-columns:repeat(3,minmax(0,1fr))}.category-card:nth-child(n+4){display:none}}
-@media(max-width:650px){.header-main{padding:12px;display:grid;grid-template-columns:1fr auto auto;gap:10px}.logo-symbol{font-size:35px}.logo-name{font-size:19px}.logo-tag{font-size:9px}.search{grid-column:1/-1;grid-row:2;max-width:none;height:42px}.header-action{font-size:10px}.header-action .icon{font-size:21px}.navbar{gap:20px;padding:0 12px}main{padding:0 10px;margin-top:10px}.top-layout{display:block}.left-column{display:none}.hero{min-height:245px;padding:18px}.hero-content{max-width:75%}.hero-logo{font-size:20px}.hero h1{font-size:24px}.hero p{font-size:11px}.hero-image{width:39%;height:70%;right:-3px}.discount-badge{width:55px;height:55px;top:12px;right:10px;font-size:9px}.discount-badge strong{font-size:18px}.category-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}.category-card:nth-child(n+4){display:block}.category-image{height:80px}.promos{grid-template-columns:1fr;gap:9px}.promo{min-height:115px}.promo img{width:38%}.section-heading{margin-top:20px}.tabs{gap:14px;max-width:100%}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.product-image{height:145px}.product-name{font-size:12px}.price{font-size:13px}.old-price{display:block;margin:4px 0 0}.bottom-layout{grid-template-columns:1fr}.seller-banner h2{font-size:18px}.service-grid{grid-template-columns:1fr}.service-card{padding:12px}.service-card strong{font-size:12px}.service-card small{font-size:11px}.footer-inner{justify-content:center;text-align:center}.footer-links{justify-content:center;gap:13px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 
-.stores-section{margin:25px 0;padding:22px;background:#fff;border:1px solid #e1eafa;border-radius:18px;box-shadow:0 8px 24px #0926530b}
+<style>
+:root{
+  --dark:#080d19;
+  --dark2:#10192a;
+  --blue:#0759dc;
+  --yellow:#ffc900;
+  --text:#13213b;
+  --muted:#718096;
+  --bg:#f3f6fc;
+  --border:#e5eaf2;
+  --white:#fff;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;font-size:14px}
+button,input{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+.topbar{background:var(--dark);color:white}
+.header-main{min-height:82px;display:flex;align-items:center;gap:24px;padding:12px 3%}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-symbol{font-size:48px;font-weight:900;line-height:1;color:var(--yellow);text-shadow:2px 2px #db8e00}
+.logo-name{font-size:27px;font-weight:900;white-space:nowrap}
+.logo-name span{color:#ff9c00}
+.logo-tag{font-size:11px;margin-top:3px;color:#d5dce8}
+
+.search{display:flex;align-items:center;flex:1;max-width:720px;height:43px;background:white;border-radius:12px;overflow:hidden;border:2px solid white}
+.search input{border:0;outline:0;padding:0 17px;width:100%;min-width:0;color:var(--text)}
+.search button{height:100%;width:48px;flex-shrink:0;border:0;background:var(--yellow);font-size:21px}
+
+.header-action{color:white;border:0;background:transparent;text-align:center;white-space:nowrap;font-size:12px;line-height:1.5}
+.header-action .icon{display:block;font-size:23px}
+.cart-button{position:relative}
+.cart-count{position:absolute;top:-3px;right:5px;background:#ed2525;color:white;border-radius:20px;font-size:10px;padding:2px 5px}
+
+.navbar{background:#fff;color:#17233b;border-top:0;border-bottom:1px solid #e9edf4;min-height:43px;display:flex;align-items:center;gap:34px;padding:0 3%;overflow-x:auto;white-space:nowrap}
+.navbar a{padding:13px 0;font-size:12px;font-weight:600}
+.navbar a:hover,.navbar a.active{color:var(--blue)}
+.navbar .all-categories{font-weight:bold}
+
+main{max-width:1500px;margin:20px auto;padding:0 18px}
+.top-layout{display:grid;grid-template-columns:230px minmax(0,1fr) 228px;gap:15px;align-items:start}
+.panel{background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 5px 20px rgba(18,39,75,.055)}
+
+.side-menu{padding:8px 0;min-height:480px}
+.side-menu-title{margin:0 9px 6px;padding:10px;background:#fff5ce;border-radius:8px;font-weight:bold}
+.side-link{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;font-size:12px;transition:.2s}
+.side-link:hover{color:#0759dc;background:#f0f5ff}
+.side-link .left{display:flex;gap:10px;align-items:center}
+.side-link .emoji{font-size:17px;width:19px;text-align:center}
+.arrow{color:#8495b0}
+
+.hero{
+  min-height:270px;
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  color:white;
+  background:radial-gradient(circle at 80% 40%,#1e65c5 0,transparent 38%),linear-gradient(115deg,#07152e,#0b3979 65%,#10234a);
+  display:flex;
+  align-items:center;
+  padding:27px;
+}
+.hero::after{content:"";position:absolute;width:250px;height:330px;right:45px;top:-35px;transform:rotate(25deg);border-left:18px solid #ffffff09;border-right:35px solid #ffffff08;pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:62%}
+.hero-logo{font-size:25px;font-weight:900;margin-bottom:14px}
+.hero-logo span{color:var(--yellow)}
+.hero h1{font-size:clamp(23px,2.4vw,34px);line-height:1.12;margin:0 0 14px;letter-spacing:-.8px;font-weight:900}
+.hero h1 span{color:var(--yellow)}
+.hero p{font-size:13px;line-height:1.7;color:#e4ebf7}
+.primary-btn{background:var(--yellow);color:#111827;border:0;border-radius:10px;padding:13px 22px;font-weight:bold;margin-top:7px;box-shadow:0 5px 14px rgba(255,201,0,.18)}
+.primary-btn:hover,.buy-btn:hover{background:#0759dc;color:white}
+.hero-image{position:absolute;right:12px;bottom:0;width:38%;height:94%;object-fit:contain;z-index:1;filter:drop-shadow(0 8px 16px #0005)}
+.discount-badge{position:absolute;z-index:3;top:25px;right:20px;width:76px;height:76px;border-radius:50%;background:var(--yellow);color:#111827;display:grid;place-content:center;text-align:center;font-weight:bold;font-size:12px}
+.discount-badge strong{font-size:24px}
+
+.category-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:15px}
+.category-card{min-width:0;text-align:center;font-weight:bold;font-size:11px;line-height:1.5}
+.category-image{height:90px;border-radius:13px;overflow:hidden;margin-bottom:8px;background:#eaf0fb;box-shadow:0 3px 12px rgba(20,40,80,.07)}
+.category-image img{width:100%;height:100%;object-fit:cover;transition:transform .25s}
+.category-card:hover img{transform:scale(1.07)}
+
+.account-card{padding:15px;background:linear-gradient(135deg,#ffe994,#fff2b9);border:0}
+.account-heading{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.avatar{background:#101010;color:white;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:24px}
+.account-heading strong{display:block;margin-bottom:4px}
+.account-heading small{line-height:1.4}
+.dark-btn,.light-btn{width:100%;border-radius:8px;padding:10px;border:0;font-weight:bold;margin-top:7px}
+.dark-btn{color:white;background:var(--dark)}
+.light-btn{color:var(--text);background:white}
+
+.benefits{margin-top:12px}
+.benefit{display:flex;align-items:center;gap:12px;padding:14px 12px;border-bottom:1px solid var(--border)}
+.benefit:last-child{border-bottom:0}
+.benefit-icon{display:grid;place-items:center;width:35px;height:35px;border-radius:10px;background:#edf4ff;font-size:21px;flex-shrink:0}
+.benefit strong{display:block;font-size:11px;margin-bottom:5px}
+.benefit small{color:var(--muted);font-size:10px}
+
+.promos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:20px 0}
+.promo{min-height:125px;border-radius:15px;color:white;padding:18px;overflow:hidden;position:relative;display:flex;align-items:center}
+.promo h3{margin:0 0 5px;font-size:15px}
+.promo p{margin:0;font-size:12px}
+.promo button{margin-top:12px;border:0;background:var(--yellow);padding:7px 13px;border-radius:8px;font-size:11px;font-weight:bold}
+.promo img{position:absolute;width:42%;height:100%;right:0;top:0;object-fit:contain}
+.promo-content{position:relative;z-index:2}
+.promo-blue{background:linear-gradient(110deg,#0759e6,#06318c)}
+.promo-red{background:linear-gradient(110deg,#ed252e,#b80020)}
+.promo-purple{background:linear-gradient(110deg,#7023d7,#3912a0)}
+
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:28px 0 15px;flex-wrap:wrap}
+.tabs{display:flex;align-items:center;gap:20px;overflow-x:auto}
+.tab{background:transparent;border:0;padding:8px 2px;color:#64748b;white-space:nowrap;font-size:13px;font-weight:600}
+.tab.active{color:var(--text);font-weight:bold;border-bottom:3px solid var(--yellow)}
+.see-all{color:#22375c;font-size:12px;white-space:nowrap}
+
+.product-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:15px}
+.product-card{background:white;border:1px solid #e9edf4;border-radius:14px;padding:10px;min-width:0;transition:transform .22s ease,box-shadow .22s ease;position:relative;box-shadow:0 5px 20px rgba(18,39,75,.045)}
+.product-card:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(18,39,75,.11)}
+.product-image{height:175px;border-radius:12px;overflow:hidden;background:#f1f4f9;position:relative}
+.product-image img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+.product-card:hover .product-image img{transform:scale(1.045)}
+.sale-badge{position:absolute;top:7px;right:7px;background:#f32929;color:white;padding:4px 6px;font-size:10px;font-weight:bold;border-radius:5px}
+.favorite{position:absolute;left:8px;top:8px;border:0;border-radius:50%;background:white;width:33px;height:33px;font-size:17px;color:#69778d;box-shadow:0 2px 8px #00000012}
+.favorite.selected{color:#ef3048}
+.product-name{font-weight:700;font-size:13px;line-height:1.45;margin:8px 2px 5px;min-height:38px}
+.product-store{font-size:11px;color:var(--muted);margin:3px 2px}
+.stars{color:#718096;font-size:11px;margin:4px 2px}
+.stars small{color:var(--muted)}
+.price{color:#a87500;font-weight:900;font-size:16px;margin:9px 2px;white-space:nowrap}
+.buy-btn{width:100%;background:#10264c;color:#fff;border:0;border-radius:9px;padding:11px 6px;font-size:11px;font-weight:800;margin-top:5px}
+
+.bottom-layout{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin:15px 0}
+.seller-banner{border-radius:16px;min-height:145px;padding:20px;position:relative;overflow:hidden;color:white;background:linear-gradient(100deg,#07101f,#132740)}
+.seller-banner h2{font-size:20px;line-height:1.3;margin:10px 0;max-width:65%}
+.seller-banner p{max-width:65%;color:#d9e1ed;font-size:12px}
+.seller-banner img{position:absolute;width:42%;height:100%;right:0;top:0;object-fit:cover;opacity:.78}
+.services{padding:15px}
+.services h3{margin:0 0 12px;font-size:17px}
+.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.service-card{border:1px solid var(--border);border-radius:12px;padding:10px 7px;display:flex;align-items:center;gap:8px;min-width:0;background:#f8faff}
+.service-card .service-icon{font-size:24px}
+.service-card strong{font-size:10px;display:block;margin-bottom:4px}
+.service-card small{color:var(--muted);font-size:9px}
+.service-note{margin:14px 0 0;color:var(--muted);font-size:11px}
+
+.stores-section{margin:25px 0;padding:25px;background:#fff;border:1px solid #e1eafa;border-radius:18px;box-shadow:0 8px 24px #0926530b}
 .stores-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:17px}
 .stores-title h2{margin:4px 0 5px;color:#092653;font-size:clamp(21px,3vw,28px)}
 .stores-title p{margin:0;color:#7185a3;font-size:14px}
@@ -39,84 +163,278 @@ footer{background:var(--dark);color:white;padding:20px 3%;margin-top:20px}.foote
 .stores-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .store-tile{display:flex;align-items:center;gap:13px;min-width:0;padding:15px;border:1px solid #e3ecf8;border-radius:14px;background:linear-gradient(135deg,#fff,#f4f8ff);text-decoration:none;color:#092653;transition:.2s}
 .store-tile:hover{transform:translateY(-3px);border-color:#9fc5f7;box-shadow:0 8px 20px #0759dc13}
-.store-mark{width:49px;height:49px;flex:0 0 49px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(140deg,#082b68,#0875ed);color:#fff;font-size:22px;font-weight:900}
+.store-mark{width:49px;height:49px;flex:0 0 49px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(140deg,#082b68,#0875ed);color:#fff;font-size:22px;font-weight:900}
 .store-tile strong{display:block;font-size:15px;overflow-wrap:anywhere}
 .store-tile small{display:block;margin-top:5px;color:#7185a3;line-height:1.35}
 .stores-state{grid-column:1/-1;margin:0;padding:18px;text-align:center;color:#7185a3;background:#f5f8fd;border-radius:12px}
-@media(max-width:650px){.stores-section{padding:15px;margin:17px 0}.stores-grid{grid-template-columns:1fr}.stores-title{align-items:flex-start;flex-direction:column}.stores-count{align-self:flex-start}}
 
+footer{background:var(--dark);color:white;padding:22px 3%;margin-top:30px}
+.footer-inner{max-width:1450px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:11px}
+.footer-links a:hover{color:var(--yellow)}
+.footer-copy{font-size:10px;color:#b8c2d3}
+.empty-message{grid-column:1/-1;background:white;border-radius:10px;padding:35px;text-align:center;color:var(--muted)}
+.loading-message{grid-column:1/-1;background:white;border-radius:10px;padding:30px;text-align:center;color:var(--muted)}
+.service-note{line-height:1.6}
+
+@media(max-width:1100px){
+  .top-layout{grid-template-columns:200px minmax(0,1fr)}
+  .right-column{display:none}
+  .product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .header-main{gap:13px}
+  .logo-name{font-size:21px}
+  .category-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .category-card:nth-child(n+4){display:none}
+  .product-image{height:160px}
+}
+@media(max-width:650px){
+  .header-main{padding:15px 12px;display:grid;grid-template-columns:1fr auto auto;gap:10px}
+  .logo-symbol{font-size:36px}
+  .logo-name{font-size:20px}
+  .logo-tag{font-size:9px}
+  .search{grid-column:1/-1;grid-row:2;max-width:none;height:42px;border-radius:10px;border:0}
+  .header-action{font-size:10px}
+  .header-action .icon{font-size:21px}
+  .navbar{gap:20px;padding:0 12px;min-height:43px}
+  .navbar a{font-size:11px}
+  main{padding:0 11px;margin-top:13px}
+  .top-layout{display:block}
+  .left-column{display:none}
+  .hero{min-height:225px;padding:17px;border-radius:15px}
+  .hero-content{max-width:75%}
+  .hero-logo{font-size:20px}
+  .hero h1{font-size:23px}
+  .hero p{font-size:10px}
+  .hero-image{width:39%;height:70%;right:-3px}
+  .discount-badge{width:55px;height:55px;top:12px;right:10px;font-size:9px}
+  .discount-badge strong{font-size:18px}
+  .category-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px 9px}
+  .category-card:nth-child(n+4){display:block}
+  .category-image{height:83px}
+  .promos{grid-template-columns:1fr;gap:10px}
+  .promo{min-height:115px;border-radius:13px}
+  .promo img{width:38%}
+  .section-heading{margin:22px 0 12px}
+  .tabs{gap:13px;max-width:100%}
+  .tab{font-size:11px}
+  .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .product-card{padding:8px;border-radius:13px}
+  .product-image{height:145px;border-radius:10px}
+  .product-name{font-size:12px;min-height:35px}
+  .price{font-size:14px}
+  .buy-btn{padding:10px 4px;font-size:10px}
+  .stores-section{padding:15px;margin:17px 0;border-radius:15px}
+  .stores-grid{grid-template-columns:1fr}
+  .stores-title{align-items:flex-start;flex-direction:column}
+  .stores-count{align-self:flex-start}
+  .store-tile{padding:13px}
+  .bottom-layout{grid-template-columns:1fr;gap:12px}
+  .seller-banner h2{font-size:18px}
+  .service-grid{grid-template-columns:1fr}
+  .service-card{padding:12px}
+  .service-card strong{font-size:12px}
+  .service-card small{font-size:11px}
+  .footer-inner{justify-content:center;text-align:center}
+  .footer-links{justify-content:center;gap:13px}
+  footer{padding:22px 12px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important}
+}
 </style>
 </head>
+
 <body>
 <header class="topbar">
   <div class="header-main">
-    <a href="#" class="logo" aria-label="NEXUS 360 accueil"><div class="logo-symbol">N</div><div><div class="logo-name">NEXUS <span>360</span></div><div class="logo-tag">Tout un monde de services</div></div></a>
-    <form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="Rechercher un produit, un véhicule, un service..." aria-label="Rechercher"><button type="submit" aria-label="Rechercher">⌕</button></form>
-    <button class="header-action" id="loginTop"><span class="icon">♙</span><span id="loginTopLabel">Se connecter</span></button>
-    <button class="header-action" id="favoritesTop"><span class="icon">♡</span>Favoris</button>
-    <button class="header-action cart-button" id="cartTop"><span class="icon">🛒<span class="cart-count" id="cartCount">0</span></span>Panier</button>
+    <a href="#" class="logo" aria-label="NEXUS 360 accueil">
+      <div class="logo-symbol">N</div>
+      <div>
+        <div class="logo-name">NEXUS <span>360</span></div>
+        <div class="logo-tag">Tout un monde de services</div>
+      </div>
+    </a>
+
+    <form class="search" id="searchForm">
+      <input id="searchInput" type="search" placeholder="Rechercher un produit, un véhicule, un service..." aria-label="Rechercher">
+      <button type="submit" aria-label="Rechercher">⌕</button>
+    </form>
+
+    <button class="header-action" id="loginTop">
+      <span class="icon">♙</span>
+      <span id="loginTopLabel">Se connecter</span>
+    </button>
+    <button class="header-action" id="favoritesTop">
+      <span class="icon">♡</span>Favoris
+    </button>
+    <button class="header-action cart-button" id="cartTop">
+      <span class="icon">🛒<span class="cart-count" id="cartCount">0</span></span>Panier
+    </button>
   </div>
+
   <nav class="navbar">
-    <a href="#categories" class="all-categories">☰ &nbsp; Toutes les catégories</a><a href="#" class="active">Accueil</a><a href="#promotions">Promotions</a><a href="#nexus-auto">NEXUS Auto</a><a href="#nexus-consigne">NEXUS Consigne</a><a href="#nexus-events">NEXUS Events</a><a href="#footer">Aide</a>
+    <a href="#categories" class="all-categories">☰ &nbsp; Toutes les catégories</a>
+    <a href="#" class="active">Accueil</a>
+    <a href="#promotions">Promotions</a>
+    <a href="#nexus-auto">NEXUS Auto</a>
+    <a href="#nexus-consigne">NEXUS Consigne</a>
+    <a href="#nexus-events">NEXUS Events</a>
+    <a href="#footer">Aide</a>
   </nav>
 </header>
+
 <main>
 <section class="top-layout">
+
 <aside class="panel side-menu left-column" id="categories">
-<div class="side-menu-title">▣ &nbsp; Toutes les catégories　›</div>
-<a href="#products" class="side-link" data-category="Électronique"><span class="left"><span class="emoji">📱</span>Électronique & High-Tech</span><span class="arrow">›</span></a>
-<a href="#products" class="side-link" data-category="Mode"><span class="left"><span class="emoji">👕</span>Mode & Beauté</span><span class="arrow">›</span></a>
-<a href="#products" class="side-link" data-category="Maison"><span class="left"><span class="emoji">🏠</span>Maison & Jardin</span><span class="arrow">›</span></a>
-<a href="#products" class="side-link" data-category="Sport"><span class="left"><span class="emoji">⚽</span>Sport & Loisirs</span><span class="arrow">›</span></a>
-<a href="#products" class="side-link" data-category="Santé"><span class="left"><span class="emoji">♡</span>Santé & Bien-être</span><span class="arrow">›</span></a>
-<a href="#products" class="side-link" data-category="Enfants"><span class="left"><span class="emoji">🧸</span>Enfants & Bébés</span><span class="arrow">›</span></a>
-<a href="#nexus-auto" class="side-link"><span class="left"><span class="emoji">🚘</span>Auto & Moto</span><span class="arrow">›</span></a>
-<a href="#nexus-auto" class="side-link"><span class="left"><span class="emoji">🚗</span>NEXUS Auto</span><span class="arrow">›</span></a>
-<a href="#nexus-consigne" class="side-link"><span class="left"><span class="emoji">📦</span>NEXUS Consigne</span><span class="arrow">›</span></a>
-<a href="#nexus-events" class="side-link"><span class="left"><span class="emoji">🎉</span>NEXUS Events</span><span class="arrow">›</span></a>
-<a href="#products" class="side-link" data-category="Produits locaux"><span class="left"><span class="emoji">🏪</span>Produits locaux</span><span class="arrow">›</span></a>
-<a href="#products" class="side-link"><span class="left"><span class="emoji">▣</span>Autres catégories</span><span class="arrow">›</span></a>
+  <div class="side-menu-title">▣ &nbsp; Toutes les catégories　›</div>
+  <a href="#products" class="side-link" data-category="Électronique"><span class="left"><span class="emoji">📱</span>Électronique & High-Tech</span><span class="arrow">›</span></a>
+  <a href="#products" class="side-link" data-category="Mode"><span class="left"><span class="emoji">👕</span>Mode & Beauté</span><span class="arrow">›</span></a>
+  <a href="#products" class="side-link" data-category="Maison"><span class="left"><span class="emoji">🏠</span>Maison & Jardin</span><span class="arrow">›</span></a>
+  <a href="#products" class="side-link" data-category="Sport"><span class="left"><span class="emoji">⚽</span>Sport & Loisirs</span><span class="arrow">›</span></a>
+  <a href="#products" class="side-link" data-category="Santé"><span class="left"><span class="emoji">♡</span>Santé & Bien-être</span><span class="arrow">›</span></a>
+  <a href="#products" class="side-link" data-category="Enfants"><span class="left"><span class="emoji">🧸</span>Enfants & Bébés</span><span class="arrow">›</span></a>
+  <a href="#nexus-auto" class="side-link"><span class="left"><span class="emoji">🚘</span>Auto & Moto</span><span class="arrow">›</span></a>
+  <a href="#nexus-auto" class="side-link"><span class="left"><span class="emoji">🚗</span>NEXUS Auto</span><span class="arrow">›</span></a>
+  <a href="#nexus-consigne" class="side-link"><span class="left"><span class="emoji">📦</span>NEXUS Consigne</span><span class="arrow">›</span></a>
+  <a href="#nexus-events" class="side-link"><span class="left"><span class="emoji">🎉</span>NEXUS Events</span><span class="arrow">›</span></a>
+  <a href="#products" class="side-link" data-category="Produits locaux"><span class="left"><span class="emoji">🏪</span>Produits locaux</span><span class="arrow">›</span></a>
+  <a href="#products" class="side-link"><span class="left"><span class="emoji">▣</span>Autres catégories</span><span class="arrow">›</span></a>
 </aside>
+
 <div class="center-column">
-<section class="hero"><div class="hero-content"><div class="hero-logo">N <span>NEXUS 360</span></div><h1>Des produits de qualité<br>à <span>prix imbattables</span></h1><p>Électronique &nbsp; • &nbsp; Mode &nbsp; • &nbsp; Maison &nbsp; • &nbsp; Auto &nbsp; • &nbsp; Events</p><button class="primary-btn" onclick="scrollToProducts()">Découvrir maintenant &nbsp; →</button></div><img class="hero-image" src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=700&q=85" alt="Smartphone moderne"><div class="discount-badge">Jusqu'à<strong>-70%</strong></div></section>
-<section class="category-row" aria-label="Catégories principales">
-<a class="category-card" href="#products" data-category="Électronique"><div class="category-image"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=300&q=80" alt="Téléphone"></div>Électronique</a>
-<a class="category-card" href="#products" data-category="Mode"><div class="category-image"><img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=300&q=80" alt="Vêtements"></div>Mode</a>
-<a class="category-card" href="#products" data-category="Maison"><div class="category-image"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=300&q=80" alt="Canapé"></div>Maison</a>
-<a class="category-card" href="#nexus-auto"><div class="category-image"><img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=300&q=80" alt="Voiture"></div>NEXUS Auto</a>
-<a class="category-card" href="#nexus-consigne"><div class="category-image"><img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=300&q=80" alt="Colis"></div>NEXUS Consigne</a>
-<a class="category-card" href="#nexus-events"><div class="category-image"><img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=300&q=80" alt="Événement"></div>NEXUS Events</a>
-</section>
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-logo">N <span>NEXUS 360</span></div>
+      <h1>Des produits de qualité<br>à <span>prix imbattables</span></h1>
+      <p>Électronique &nbsp; • &nbsp; Mode &nbsp; • &nbsp; Maison &nbsp; • &nbsp; Auto &nbsp; • &nbsp; Events</p>
+      <button class="primary-btn" onclick="scrollToProducts()">Découvrir maintenant &nbsp; →</button>
+    </div>
+    <img class="hero-image" src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=700&q=85" alt="Smartphone moderne">
+    <div class="discount-badge">Jusqu'à<strong>-70%</strong></div>
+  </section>
+
+  <section class="category-row" aria-label="Catégories principales">
+    <a class="category-card" href="#products" data-category="Électronique"><div class="category-image"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=300&q=80" alt="Téléphone"></div>Électronique</a>
+    <a class="category-card" href="#products" data-category="Mode"><div class="category-image"><img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=300&q=80" alt="Vêtements"></div>Mode</a>
+    <a class="category-card" href="#products" data-category="Maison"><div class="category-image"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=300&q=80" alt="Canapé"></div>Maison</a>
+    <a class="category-card" href="#nexus-auto"><div class="category-image"><img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=300&q=80" alt="Voiture"></div>NEXUS Auto</a>
+    <a class="category-card" href="#nexus-consigne"><div class="category-image"><img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=300&q=80" alt="Colis"></div>NEXUS Consigne</a>
+    <a class="category-card" href="#nexus-events"><div class="category-image"><img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=300&q=80" alt="Événement"></div>NEXUS Events</a>
+  </section>
 </div>
+
 <aside class="right-column">
-<section class="panel account-card"><div class="account-heading"><div class="avatar">♟</div><div><strong id="accountGreeting">Bonjour,</strong><small id="accountSubtext">Connecte-toi pour une meilleure expérience</small></div></div><button class="dark-btn" id="loginButton">Se connecter</button><button class="light-btn" id="registerButton">Créer un compte</button></section>
-<section class="panel benefits"><div class="benefit"><div class="benefit-icon">🚚</div><div><strong>Livraison rapide</strong><small>Selon le vendeur et la destination</small></div></div><div class="benefit"><div class="benefit-icon">🛡️</div><div><strong>Paiement sécurisé</strong><small>Solutions de paiement à intégrer</small></div></div><div class="benefit"><div class="benefit-icon">🎧</div><div><strong>Service client</strong><small>Toujours à votre écoute</small></div></div></section>
+  <section class="panel account-card">
+    <div class="account-heading">
+      <div class="avatar">♟</div>
+      <div>
+        <strong id="accountGreeting">Bonjour,</strong>
+        <small id="accountSubtext">Connecte-toi pour une meilleure expérience</small>
+      </div>
+    </div>
+    <button class="dark-btn" id="loginButton">Se connecter</button>
+    <button class="light-btn" id="registerButton">Créer un compte</button>
+  </section>
+
+  <section class="panel benefits">
+    <div class="benefit"><div class="benefit-icon">🚚</div><div><strong>Livraison rapide</strong><small>Selon le vendeur et la destination</small></div></div>
+    <div class="benefit"><div class="benefit-icon">🛡️</div><div><strong>Paiement sécurisé</strong><small>Solutions de paiement à intégrer</small></div></div>
+    <div class="benefit"><div class="benefit-icon">🎧</div><div><strong>Service client</strong><small>Toujours à votre écoute</small></div></div>
+  </section>
 </aside>
 </section>
+
 <section class="promos" id="promotions">
-<article class="promo promo-blue"><div class="promo-content"><h3>⚡ VENTES FLASH</h3><p>Découvrez nos produits</p><button onclick="filterProducts('')">Voir les offres</button></div><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=350&q=80" alt="Casque audio"></article>
-<article class="promo promo-red"><div class="promo-content"><h3>NOUVEAUX ARRIVAGES</h3><p>Découvrez les dernières tendances</p><button onclick="setProductFilter('new')">Voir maintenant</button></div><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=350&q=80" alt="Sac tendance"></article>
-<article class="promo promo-purple" id="nexus-auto"><div class="promo-content"><h3>NEXUS AUTO</h3><p>Véhicules & pièces détachées</p><button onclick="window.location.href='./catalogue.html'">Voir les véhicules</button></div><img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=350&q=80" alt="Automobile"></article>
+  <article class="promo promo-blue">
+    <div class="promo-content"><h3>⚡ VENTES FLASH</h3><p>Découvrez nos produits</p><button onclick="filterProducts('')">Voir les offres</button></div>
+    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=350&q=80" alt="Casque audio">
+  </article>
+  <article class="promo promo-red">
+    <div class="promo-content"><h3>NOUVEAUX ARRIVAGES</h3><p>Découvrez les dernières tendances</p><button onclick="setProductFilter('new')">Voir maintenant</button></div>
+    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=350&q=80" alt="Sac tendance">
+  </article>
+  <article class="promo promo-purple" id="nexus-auto">
+    <div class="promo-content"><h3>NEXUS AUTO</h3><p>Véhicules & pièces détachées</p><button onclick="window.location.href='./catalogue.html'">Voir les véhicules</button></div>
+    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=350&q=80" alt="Automobile">
+  </article>
 </section>
+
 <section id="products">
-<div class="section-heading"><div class="tabs"><button class="tab active" data-filter="popular">🔥 Populaires</button><button class="tab" data-filter="best">ϟ Meilleures ventes</button><button class="tab" data-filter="new">♧ Nouveautés</button><button class="tab" data-filter="sale">♡ Promotions</button></div><a href="#products" class="see-all" id="showAll">Voir tout →</a></div>
-<div class="product-grid" id="productGrid"><p class="loading-message">Chargement des produits NEXUS 360…</p></div>
-<p id="noResults" class="empty-message" hidden>Aucun produit ne correspond à votre recherche.</p>
+  <div class="section-heading">
+    <div class="tabs">
+      <button class="tab active" data-filter="popular">🔥 Populaires</button>
+      <button class="tab" data-filter="best">ϟ Meilleures ventes</button>
+      <button class="tab" data-filter="new">♧ Nouveautés</button>
+      <button class="tab" data-filter="sale">♡ Promotions</button>
+    </div>
+    <a href="#products" class="see-all" id="showAll">Voir tout →</a>
+  </div>
+  <div class="product-grid" id="productGrid"><p class="loading-message">Chargement des produits NEXUS 360…</p></div>
+  <p id="noResults" class="empty-message" hidden>Aucun produit ne correspond à votre recherche.</p>
 </section>
 
 <section class="stores-section" id="boutiques">
-  <div class="stores-title"><div><span class="eyebrow">NOTRE RÉSEAU</span><h2>Découvrez nos boutiques</h2><p>Des vendeurs et des produits réunis sur NEXUS 360.</p></div><span class="stores-count" id="storesCount">Boutiques partenaires</span></div>
+  <div class="stores-title">
+    <div>
+      <span class="eyebrow">NOTRE RÉSEAU</span>
+      <h2>Découvrez nos boutiques</h2>
+      <p>Des vendeurs et des produits réunis sur NEXUS 360.</p>
+    </div>
+    <span class="stores-count" id="storesCount">Boutiques partenaires</span>
+  </div>
   <div class="stores-grid" id="storesGrid"><p class="stores-state">Chargement des boutiques partenaires…</p></div>
 </section>
 
 <section class="bottom-layout">
-<article class="seller-banner"><div style="font-weight:900;font-size:17px"><span style="color:#ffc900">N</span> NEXUS 360</div><h2>Vendez vos produits<br>en toute simplicité !</h2><p>Rejoignez notre marketplace et présentez vos produits à davantage de clients.</p><button class="primary-btn" id="sellerButton">Devenir vendeur</button><img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=650&q=80" alt="Espace de travail professionnel"></article>
-<section class="panel services"><h3>Nos services</h3><div class="service-grid"><a href="#nexus-auto" class="service-card"><span class="service-icon">🚘</span><span><strong>NEXUS Auto</strong><small>Véhicules & entretien</small></span></a><a href="#nexus-consigne" class="service-card"><span class="service-icon">📦</span><span><strong>NEXUS Consigne</strong><small>Dépôt & transport</small></span></a><a href="#nexus-events" class="service-card"><span class="service-icon">🎉</span><span><strong>NEXUS Events</strong><small>Salles & décoration</small></span></a></div><p class="service-note">Plus qu'une marketplace, un écosystème complet.</p></section>
+  <article class="seller-banner">
+    <div style="font-weight:900;font-size:17px"><span style="color:#ffc900">N</span> NEXUS 360</div>
+    <h2>Vendez vos produits<br>en toute simplicité !</h2>
+    <p>Rejoignez notre marketplace et présentez vos produits à davantage de clients.</p>
+    <button class="primary-btn" id="sellerButton">Devenir vendeur</button>
+    <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=650&q=80" alt="Espace de travail professionnel">
+  </article>
+
+  <section class="panel services">
+    <h3>Nos services</h3>
+    <div class="service-grid">
+      <a href="#nexus-auto" class="service-card"><span class="service-icon">🚘</span><span><strong>NEXUS Auto</strong><small>Véhicules & entretien</small></span></a>
+      <a href="#nexus-consigne" class="service-card"><span class="service-icon">📦</span><span><strong>NEXUS Consigne</strong><small>Dépôt & transport</small></span></a>
+      <a href="#nexus-events" class="service-card"><span class="service-icon">🎉</span><span><strong>NEXUS Events</strong><small>Salles & décoration</small></span></a>
+    </div>
+    <p class="service-note">Plus qu'une marketplace, un écosystème complet.</p>
+  </section>
 </section>
-<section class="panel services" id="nexus-consigne" style="margin-bottom:12px"><h3>📦 NEXUS CONSIGNE — Dépôt et transport de colis</h3><p style="color:#718096;line-height:1.7">Retrouvez prochainement les services de dépôt, d'expédition et de transport de colis proposés par les prestataires inscrits sur la plateforme.</p></section>
-<section class="panel services" id="nexus-events"><h3>🎉 NEXUS EVENTS — Préparez vos événements</h3><p style="color:#718096;line-height:1.7">Découvrez les prestataires événementiels : salles, chaises, tentes, décoration, photographie, DJ et restauration.</p></section>
+
+<section class="panel services" id="nexus-consigne" style="margin-bottom:12px">
+  <h3>📦 NEXUS CONSIGNE — Dépôt et transport de colis</h3>
+  <p style="color:#718096;line-height:1.7">Retrouvez prochainement les services de dépôt, d'expédition et de transport de colis proposés par les prestataires inscrits sur la plateforme.</p>
+</section>
+
+<section class="panel services" id="nexus-events">
+  <h3>🎉 NEXUS EVENTS — Préparez vos événements</h3>
+  <p style="color:#718096;line-height:1.7">Découvrez les prestataires événementiels : salles, chaises, tentes, décoration, photographie, DJ et restauration.</p>
+</section>
 </main>
-<footer id="footer"><div class="footer-inner"><a href="#" class="logo"><div class="logo-symbol" style="font-size:35px">N</div><div><div class="logo-name" style="font-size:19px">NEXUS <span>360</span></div><div class="logo-tag">Tout un monde de services</div></div></a><nav class="footer-links"><a href="#">À propos</a><a href="#">Conditions d'utilisation</a><a href="#">Confidentialité</a><a href="mailto:ngomafilscher@gmail.com">Contact</a></nav><div class="footer-copy">© <span id="year"></span> NEXUS 360. Tous droits réservés.</div></div></footer>
+
+<footer id="footer">
+  <div class="footer-inner">
+    <a href="#" class="logo">
+      <div class="logo-symbol" style="font-size:35px">N</div>
+      <div>
+        <div class="logo-name" style="font-size:19px">NEXUS <span>360</span></div>
+        <div class="logo-tag">Tout un monde de services</div>
+      </div>
+    </a>
+    <nav class="footer-links">
+      <a href="#">À propos</a>
+      <a href="#">Conditions d'utilisation</a>
+      <a href="#">Confidentialité</a>
+      <a href="mailto:ngomafilscher@gmail.com">Contact</a>
+    </nav>
+    <div class="footer-copy">© <span id="year"></span> NEXUS 360. Tous droits réservés.</div>
+  </div>
+</footer>
 
 <script type="module">
 import { supabase } from "./supabase.js";
@@ -142,18 +460,22 @@ function readStorage(key, fallback) {
     return fallback;
   }
 }
+
 function money(value) {
   const amount = Number(value);
   return Number.isFinite(amount) ? amount.toLocaleString("fr-FR") + " FC" : "Prix à confirmer";
 }
+
 function safeText(value) {
   return String(value ?? "");
 }
+
 function updateCart() {
   document.getElementById("cartCount").textContent =
     cart.reduce((sum, item) => sum + Math.max(1, Number(item.quantity) || 1), 0);
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
+
 function updateFavorites() {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
   document.querySelectorAll(".favorite[data-product-id]").forEach(button => {
@@ -162,32 +484,31 @@ function updateFavorites() {
     button.textContent = selected ? "♥" : "♡";
   });
 }
-function productMatchesCategory(product, category) {
-  if (!category) return true;
-  const haystack = `${product.product_name || ""} ${product.description || ""} ${product.store_name || ""}`.toLowerCase();
-  return haystack.includes(category.toLowerCase());
-}
+
 function renderProducts() {
   const filtered = allProducts.filter(product => {
     const text = `${product.product_name || ""} ${product.description || ""} ${product.store_name || ""}`.toLowerCase();
-    const queryMatch = !currentQuery || text.includes(currentQuery);
-    // La base actuelle ne contient pas de champ fiable pour classer les produits par popularité/ventes.
-    // Les onglets affichent donc les produits actifs sans inventer de statistiques.
-    return queryMatch;
+    return !currentQuery || text.includes(currentQuery);
   });
+
   productGrid.innerHTML = "";
+
   if (!filtered.length) {
     noResults.hidden = false;
     return;
   }
+
   noResults.hidden = true;
+
   filtered.forEach(product => {
     const card = document.createElement("article");
     card.className = "product-card";
+
     const image = product.image_url || "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=450&q=80";
     const productId = safeText(product.id);
     const name = safeText(product.product_name || "Produit NEXUS 360");
     const price = Number(product.price);
+
     card.innerHTML = `
       <div class="product-image">
         <img loading="lazy" src="${escapeAttribute(image)}" alt="${escapeAttribute(name)}">
@@ -198,22 +519,28 @@ function renderProducts() {
       <div class="stars">NEXUS 360 <small>• Produit disponible</small></div>
       <div class="price"></div>
       <button class="buy-btn" type="button">Ajouter au panier</button>`;
+
     card.querySelector(".product-name").textContent = name;
     card.querySelector(".product-store").textContent = product.store_name ? "Boutique : " + product.store_name : "";
     card.querySelector(".price").textContent = money(price);
     card.querySelector(".buy-btn").addEventListener("click", () => addToCart(product));
     card.querySelector(".favorite").addEventListener("click", () => toggleFavorite(productId));
+
     productGrid.appendChild(card);
   });
+
   updateFavorites();
 }
+
 function escapeAttribute(value) {
   return safeText(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;")
     .replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("'", "&#39;");
 }
+
 function addToCart(product) {
   const id = safeText(product.id);
   const existing = cart.find(item => String(item.product_id || item.id) === id);
+
   if (existing) {
     existing.quantity = (Number(existing.quantity) || 1) + 1;
   } else {
@@ -228,61 +555,76 @@ function addToCart(product) {
       store_id: safeText(product.store_id)
     });
   }
+
   updateCart();
+
   const button = [...document.querySelectorAll(".buy-btn")].find(btn =>
     btn.closest(".product-card")?.querySelector(".product-name")?.textContent === product.product_name
   );
+
   if (button) {
     const original = button.textContent;
     button.textContent = "✓ Ajouté au panier";
     setTimeout(() => button.textContent = original, 1200);
   }
 }
+
 function toggleFavorite(id) {
   favorites = favorites.includes(id) ? favorites.filter(item => item !== id) : [...favorites, id];
   updateFavorites();
 }
+
 function filterProducts(category) {
   currentQuery = (category || "").toLowerCase();
   searchInput.value = category || "";
   renderProducts();
   scrollToProducts();
 }
+
 function scrollToProducts() {
   document.getElementById("products").scrollIntoView({ behavior: "smooth" });
 }
+
 function setProductFilter(filter) {
   currentFilter = filter;
   currentQuery = "";
   searchInput.value = "";
-  document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab.dataset.filter === filter));
+  document.querySelectorAll(".tab").forEach(tab =>
+    tab.classList.toggle("active", tab.dataset.filter === filter)
+  );
   renderProducts();
   scrollToProducts();
 }
+
 window.scrollToProducts = scrollToProducts;
 window.filterProducts = filterProducts;
 window.setProductFilter = setProductFilter;
 
 document.getElementById("year").textContent = new Date().getFullYear();
+
 document.getElementById("searchForm").addEventListener("submit", event => {
   event.preventDefault();
   currentQuery = searchInput.value.trim().toLowerCase();
   renderProducts();
   scrollToProducts();
 });
+
 searchInput.addEventListener("input", () => {
   currentQuery = searchInput.value.trim().toLowerCase();
   renderProducts();
 });
+
 document.querySelectorAll("[data-category]").forEach(link => {
   link.addEventListener("click", event => {
     event.preventDefault();
     filterProducts(link.dataset.category);
   });
 });
+
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", () => setProductFilter(tab.dataset.filter));
 });
+
 document.getElementById("showAll").addEventListener("click", event => {
   event.preventDefault();
   currentFilter = "";
@@ -291,6 +633,7 @@ document.getElementById("showAll").addEventListener("click", event => {
   document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
   renderProducts();
 });
+
 document.getElementById("cartTop").addEventListener("click", () => {
   if (!cart.length) {
     alert("Votre panier est encore vide.\n\nAjoutez un ou plusieurs produits au panier pour commencer votre commande.");
@@ -298,32 +641,36 @@ document.getElementById("cartTop").addEventListener("click", () => {
   }
   window.location.href = CHECKOUT_URL;
 });
+
 document.getElementById("favoritesTop").addEventListener("click", () => {
   if (!favorites.length) {
     alert("Aucun favori pour le moment.\n\nTouchez le cœur d’un produit pour l’ajouter à votre liste de favoris.");
     return;
   }
+
   const favoriteProducts = allProducts.filter(product => favorites.includes(String(product.id)));
+
   if (!favoriteProducts.length) {
     alert("Vos favoris ne sont pas encore visibles.\n\nActualisez le catalogue et réessayez.");
     return;
   }
+
   currentQuery = "";
   productGrid.innerHTML = "";
   noResults.hidden = true;
+
   favoriteProducts.forEach(product => {
-    const oldFilter = currentFilter;
-    currentFilter = "";
     const card = document.createElement("article");
     card.className = "product-card";
     card.innerHTML = `<div class="product-image"><img loading="lazy" src="${escapeAttribute(product.image_url || "")}" alt=""></div><div class="product-name"></div><div class="price"></div>`;
     card.querySelector(".product-name").textContent = product.product_name || "Produit";
     card.querySelector(".price").textContent = money(product.price);
     productGrid.appendChild(card);
-    currentFilter = oldFilter;
   });
+
   scrollToProducts();
 });
+
 async function loadProducts() {
   try {
     const { data, error } = await supabase
@@ -331,11 +678,14 @@ async function loadProducts() {
       .select("id, store_id, product_name, description, price, stock, image_url, is_active, created_at, stores(store_name)")
       .eq("is_active", true)
       .order("created_at", { ascending: false });
+
     if (error) throw error;
+
     allProducts = (data || []).map(item => ({
       ...item,
       store_name: Array.isArray(item.stores) ? item.stores[0]?.store_name : item.stores?.store_name
     }));
+
     renderProducts();
   } catch (error) {
     console.error("Erreur de chargement des produits :", error);
@@ -348,14 +698,18 @@ async function loadStores() {
   const grid = document.getElementById("storesGrid");
   const count = document.getElementById("storesCount");
   if (!grid) return;
+
   try {
     const { data, error } = await supabase.from("stores")
       .select("id, store_name, description, store_number")
       .order("store_name", { ascending: true });
+
     if (error) throw error;
+
     const stores = data || [];
     grid.replaceChildren();
     count.textContent = stores.length + (stores.length > 1 ? " boutiques partenaires" : " boutique partenaire");
+
     if (!stores.length) {
       const state = document.createElement("p");
       state.className = "stores-state";
@@ -363,18 +717,23 @@ async function loadStores() {
       grid.appendChild(state);
       return;
     }
+
     stores.forEach(store => {
       const link = document.createElement("a");
       link.className = "store-tile";
       link.href = "./catalogue.html";
+
       const mark = document.createElement("span");
       mark.className = "store-mark";
       mark.textContent = (store.store_name || "N").trim().charAt(0).toUpperCase();
+
       const info = document.createElement("span");
       const name = document.createElement("strong");
       name.textContent = store.store_name || "Boutique partenaire";
+
       const desc = document.createElement("small");
       desc.textContent = store.description || "Découvrez les produits de cette boutique sur NEXUS 360.";
+
       info.append(name, desc);
       link.append(mark, info);
       grid.appendChild(link);
@@ -382,6 +741,7 @@ async function loadStores() {
   } catch (error) {
     console.error("Chargement des boutiques impossible :", error);
     grid.replaceChildren();
+
     const state = document.createElement("p");
     state.className = "stores-state";
     state.textContent = "Les boutiques ne peuvent pas être affichées pour le moment. Vérifiez les autorisations de lecture de la table stores dans Supabase.";
@@ -397,6 +757,7 @@ function openLogin(mode = "login") {
     window.location.href = "./connexion.html";
   }
 }
+
 document.getElementById("loginTop").addEventListener("click", () => openLogin("login"));
 document.getElementById("loginButton").addEventListener("click", () => openLogin("login"));
 document.getElementById("registerButton").addEventListener("click", () => openLogin("register"));
@@ -408,4 +769,4 @@ loadProducts();
 loadStores();
 </script>
 </body>
-</html>
+  </html>
