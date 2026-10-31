@@ -1,66 +1,193 @@
-<!DOCTYPE html><html lang="fr">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suivi de commande - NEXUS 360</title>  <style>
-    * { box-sizing: border-box; }
+  <title>Suivi de commande - NEXUS 360</title>
+
+  <style>
+    :root {
+      --navy: #061b49;
+      --blue: #0759dc;
+      --blue-dark: #123c69;
+      --yellow: #ffc900;
+      --text: #172b4d;
+      --muted: #718096;
+      --bg: #f3f6fc;
+      --border: #e2e8f0;
+      --white: #fff;
+      --green: #15803d;
+      --red: #b91c1c;
+      --radius: 16px;
+      --shadow: 0 8px 28px rgba(15, 35, 75, .08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      padding: 20px;
       font-family: Arial, sans-serif;
-      background: #f3f5f9;
-      color: #172033;
+      background: var(--bg);
+      color: var(--text);
     }
 
-    .container {
-      max-width: 700px;
-      margin: 30px auto;
-      background: white;
-      padding: 25px;
+    /* En-tête NEXUS 360 */
+    .site-header {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(115deg, #061b49, #063b9a 75%, #0759dc);
+      color: white;
+      padding: 22px 20px;
+    }
+
+    .site-header::after {
+      content: "";
+      position: absolute;
+      width: 320px;
+      height: 100px;
+      right: -80px;
+      bottom: -60px;
+      border-top: 16px solid var(--yellow);
+      border-radius: 50%;
+      transform: rotate(-15deg);
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .brand-mark {
+      width: 54px;
+      height: 54px;
+      flex: 0 0 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #0874ef, #043b9a);
+      color: var(--yellow);
+      font-size: 35px;
+      font-weight: 900;
+      font-style: italic;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.15);
+    }
+
+    .brand-name {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: 900;
+      letter-spacing: -.5px;
+    }
+
+    .brand-name span {
+      color: var(--yellow);
+    }
+
+    .brand-tagline {
+      margin: 5px 0 0;
+      font-size: 13px;
+      color: #e4edff;
+    }
+
+    /* Contenu */
+    main {
+      width: min(100% - 28px, 900px);
+      margin: 32px auto;
+    }
+
+    .page-card {
+      background: var(--white);
+      border: 1px solid #edf1f7;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 36px);
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .heading-icon {
+      width: 54px;
+      height: 54px;
+      flex: 0 0 54px;
+      display: grid;
+      place-items: center;
       border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.08);
+      background: #e8f1ff;
+      color: var(--blue);
+      font-size: 27px;
     }
 
     h1 {
-      text-align: center;
-      color: #123c69;
+      margin: 2px 0 8px;
+      font-size: clamp(23px, 4vw, 30px);
+      color: var(--navy);
     }
-
-    h2 { color: #123c69; }
 
     .intro {
-      text-align: center;
-      color: #64748b;
+      margin: 0;
+      color: var(--muted);
       line-height: 1.6;
+      font-size: 15px;
     }
 
+    /* Formulaire */
     label {
       display: block;
-      margin-top: 18px;
-      font-weight: bold;
+      margin: 20px 0 8px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #243b60;
     }
 
     input {
       width: 100%;
-      padding: 14px;
-      margin-top: 8px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
+      min-height: 52px;
+      padding: 14px 16px;
+      border: 1px solid #d5deeb;
+      border-radius: 11px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
       font-size: 16px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(7, 89, 220, .1);
     }
 
     button {
       width: 100%;
-      padding: 15px;
-      margin-top: 22px;
-      border: none;
-      border-radius: 8px;
-      background: #123c69;
-      color: white;
+      min-height: 54px;
+      margin-top: 24px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--yellow);
+      color: #14213d;
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 800;
       cursor: pointer;
+      transition: transform .15s, filter .15s;
+    }
+
+    button:hover:not(:disabled) {
+      filter: brightness(.97);
+      transform: translateY(-1px);
     }
 
     button:disabled {
@@ -69,11 +196,13 @@
     }
 
     #message {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 8px;
       display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 11px;
       line-height: 1.5;
+      overflow-wrap: anywhere;
+      font-size: 14px;
     }
 
     .error {
@@ -88,28 +217,54 @@
       color: #166534;
     }
 
+    /* Résultats */
     #result {
       display: none;
-      margin-top: 25px;
+      margin-top: 32px;
     }
 
-    .card {
-      background: #f8fafc;
-      padding: 18px;
-      margin-top: 15px;
-      border-radius: 9px;
-      border: 1px solid #e2e8f0;
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 30px 0 16px;
+      font-size: 21px;
+      color: var(--navy);
     }
 
-    .card p {
-      margin: 9px 0;
-      line-height: 1.5;
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    .result-card {
+      margin-top: 18px;
+      padding: clamp(17px, 3vw, 24px);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: #f9fbff;
+    }
+
+    .result-card h2 {
+      margin: 0 0 18px;
+      font-size: 20px;
+      color: var(--blue-dark);
+    }
+
+    .order-details p {
+      margin: 12px 0;
+      line-height: 1.6;
       overflow-wrap: anywhere;
+      font-size: 14px;
     }
 
+    .order-details strong {
+      color: #243b60;
+    }
+
+    /* Timeline */
     .timeline {
-      margin-top: 25px;
-      padding: 10px 5px;
+      margin-top: 24px;
+      padding: 5px 0;
     }
 
     .timeline-item {
@@ -120,20 +275,20 @@
     }
 
     .timeline-left {
-      width: 35px;
-      flex-shrink: 0;
+      width: 38px;
+      flex: 0 0 38px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
     .timeline-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 50%;
       background: #e2e8f0;
       color: #64748b;
       font-size: 17px;
@@ -148,11 +303,11 @@
     }
 
     .timeline-content {
-      padding-bottom: 25px;
+      padding-bottom: 24px;
     }
 
     .timeline-content h3 {
-      margin: 5px 0;
+      margin: 5px 0 7px;
       color: #64748b;
       font-size: 16px;
     }
@@ -161,19 +316,20 @@
       margin: 5px 0;
       color: #94a3b8;
       font-size: 14px;
+      line-height: 1.5;
     }
 
     .timeline-item.completed .timeline-icon {
-      background: #16a34a;
+      background: var(--green);
       color: white;
     }
 
     .timeline-item.completed .timeline-line {
-      background: #16a34a;
+      background: var(--green);
     }
 
     .timeline-item.completed h3 {
-      color: #15803d;
+      color: var(--green);
     }
 
     .timeline-item.completed .timeline-content p {
@@ -181,14 +337,14 @@
     }
 
     .timeline-item.current .timeline-icon {
-      background: #2563eb;
+      background: var(--blue);
       color: white;
       box-shadow: 0 0 0 5px #dbeafe;
     }
 
     .timeline-item.current h3 {
-      color: #1d4ed8;
-      font-weight: bold;
+      color: var(--blue);
+      font-weight: 800;
     }
 
     .timeline-item:last-child {
@@ -199,13 +355,22 @@
       display: none;
     }
 
+    .refresh-info {
+      margin: 20px 0 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Paiement */
     .payment-status {
-      padding: 14px;
-      border-radius: 9px;
+      padding: 15px 17px;
+      border-radius: 11px;
       background: #fff7ed;
       color: #9a3412;
       line-height: 1.5;
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 14px;
     }
 
     .payment-status.paid {
@@ -213,108 +378,290 @@
       color: #166534;
     }
 
+    /* Produits */
     .item {
-      border-bottom: 1px solid #e2e8f0;
-      padding: 12px 0;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .item:first-child {
+      padding-top: 0;
     }
 
     .item:last-child {
-      border-bottom: none;
+      border-bottom: 0;
+      padding-bottom: 0;
     }
 
-    .refresh-info {
-      text-align: center;
-      color: #64748b;
-      font-size: 13px;
-      margin-top: 15px;
+    .item strong {
+      color: var(--navy);
+    }
+
+    .item p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
     }
 
     .back {
-      display: block;
-      text-align: center;
-      margin-top: 22px;
-      color: #123c69;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 25px;
+      color: var(--blue-dark);
       text-decoration: none;
-      font-weight: bold;
+      font-weight: 700;
     }
 
-    @media (max-width: 480px) {
-      .container {
-        padding: 18px;
-        margin: 10px auto;
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    /* Pied de page */
+    footer {
+      position: relative;
+      overflow: hidden;
+      margin-top: 50px;
+      padding: 30px 20px;
+      background: linear-gradient(115deg, #061b49, #063b9a);
+      color: white;
+    }
+
+    .footer-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-brand .brand-mark {
+      width: 42px;
+      height: 42px;
+      flex-basis: 42px;
+      font-size: 27px;
+    }
+
+    .footer-brand .brand-name {
+      font-size: 20px;
+    }
+
+    .footer-brand .brand-tagline {
+      font-size: 11px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .footer-links a {
+      color: #e4edff;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .footer-links a:hover {
+      color: var(--yellow);
+    }
+
+    .copyright {
+      width: 100%;
+      margin: 0;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.15);
+      text-align: center;
+      color: #d7e3fa;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        width: calc(100% - 20px);
+        margin: 18px auto;
+      }
+
+      .site-header {
+        padding: 17px 14px;
+      }
+
+      .brand-mark {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+        font-size: 30px;
+      }
+
+      .brand-tagline {
+        font-size: 11px;
+      }
+
+      .page-card {
+        padding: 20px 16px;
+        border-radius: 17px;
+      }
+
+      .page-heading {
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .heading-icon {
+        width: 45px;
+        height: 45px;
+        flex-basis: 45px;
+        font-size: 23px;
+      }
+
+      .section-title {
+        font-size: 19px;
+      }
+
+      .timeline-item {
+        gap: 11px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .footer-links {
+        gap: 14px;
       }
     }
-  </style></head><body>
-  <main class="container"><h1>📦 Suivi de commande</h1>
+  </style>
+</head>
 
-<p class="intro">
-  Suivez votre colis étape par étape grâce à NEXUS 360.
-</p>
+<body>
 
-<form id="trackingForm">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-mark" aria-hidden="true">N</div>
+      <div>
+        <p class="brand-name">NEXUS <span>360</span></p>
+        <p class="brand-tagline">Tout un monde de services</p>
+      </div>
+    </div>
+  </header>
 
-  <label for="orderNumber">Numéro de commande</label>
-  <input
-    type="text"
-    id="orderNumber"
-    placeholder="Ex : 20261030-001B-6"
-    required
-  >
+  <main>
+    <section class="page-card">
 
-  <label for="phone">Téléphone utilisé lors de l'achat</label>
-  <input
-    type="tel"
-    id="phone"
-    placeholder="Ex : +243..."
-    required
-  >
+      <div class="page-heading">
+        <div class="heading-icon" aria-hidden="true">📦</div>
+        <div>
+          <h1>Suivi de commande</h1>
+          <p class="intro">
+            Suivez votre colis étape par étape grâce à NEXUS 360.
+          </p>
+        </div>
+      </div>
 
-  <button type="submit" id="searchButton">
-    Rechercher ma commande
-  </button>
+      <form id="trackingForm">
 
-</form>
+        <label for="orderNumber">Numéro de commande</label>
+        <input
+          type="text"
+          id="orderNumber"
+          placeholder="Ex. : 20261030-001B-6"
+          autocomplete="off"
+          required
+        >
 
-<div id="message"></div>
+        <label for="phone">Téléphone utilisé lors de l'achat</label>
+        <input
+          type="tel"
+          id="phone"
+          placeholder="Ex. : +243..."
+          autocomplete="tel"
+          required
+        >
 
-<section id="result">
+        <button type="submit" id="searchButton">
+          Rechercher ma commande
+        </button>
 
-  <h2>📋 Informations de la commande</h2>
+      </form>
 
-  <div class="card" id="orderInfo"></div>
+      <div id="message" role="status" aria-live="polite"></div>
 
-  <div class="card">
-    <h2>🚚 Progression de la livraison</h2>
+      <section id="result">
 
-    <p>
-      Les étapes se mettent à jour automatiquement
-      selon l'avancement réel de votre colis.
-    </p>
+        <h2 class="section-title">📋 Informations de la commande</h2>
+        <div class="result-card order-details" id="orderInfo"></div>
 
-    <div class="timeline" id="timeline"></div>
+        <div class="result-card">
+          <h2>🚚 Progression de la livraison</h2>
 
-    <p class="refresh-info">
-      🔄 Actualisation automatique toutes les 5 secondes.
-    </p>
-  </div>
+          <p class="intro">
+            Les étapes se mettent à jour automatiquement selon
+            l'avancement réel de votre colis.
+          </p>
 
-  <div class="card">
-    <h2>💰 État du paiement</h2>
-    <div id="paymentInfo"></div>
-  </div>
+          <div class="timeline" id="timeline"></div>
 
-  <div class="card">
-    <h2>🛍️ Produits commandés</h2>
-    <div id="itemsList"></div>
-  </div>
+          <p class="refresh-info">
+            🔄 Actualisation automatique toutes les 5 secondes.
+          </p>
+        </div>
 
-</section>
+        <div class="result-card">
+          <h2>💰 État du paiement</h2>
+          <div id="paymentInfo"></div>
+        </div>
 
-<a href="index.html" class="back">
-  ← Retour à l'accueil
-</a>
+        <div class="result-card">
+          <h2>🛍️ Produits commandés</h2>
+          <div id="itemsList"></div>
+        </div>
 
-  </main>  <script type="module">
+      </section>
+
+      <a href="./index.html" class="back">
+        ← Retour à l'accueil
+      </a>
+
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <div class="brand-mark" aria-hidden="true">N</div>
+        <div>
+          <p class="brand-name">NEXUS <span>360</span></p>
+          <p class="brand-tagline">Tout un monde de services</p>
+        </div>
+      </div>
+
+      <nav class="footer-links" aria-label="Liens de pied de page">
+        <a href="./index.html">Accueil</a>
+        <a href="./catalogue.html">Catalogue</a>
+        <a href="./boutique.html">Ma boutique</a>
+        <a href="./index.html#contact">Contact</a>
+      </nav>
+
+      <p class="copyright">
+        © <span id="year"></span> NEXUS 360. Tous droits réservés.
+      </p>
+
+    </div>
+  </footer>
+
+  <script type="module">
     import { supabase } from "./supabase.js";
 
     const form = document.getElementById("trackingForm");
@@ -333,6 +680,9 @@
 
     let isSearching = false;
     let lastSuccessfulSearch = false;
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
 
     function showMessage(text, type) {
       message.textContent = text;
@@ -652,6 +1002,7 @@
         }
       }
     }, 5000);
+  </script>
 
-  </script></body>
-</html>
+</body>
+  </html>
